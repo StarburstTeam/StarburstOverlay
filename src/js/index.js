@@ -1,16 +1,23 @@
 const remote = require('electron').remote;
 const { Notification } = remote;
 const { Tail } = require('tail');
+const fs = require('fs');
 
-let inLobby = true, players = [], hypixel = null;
+const configPath = './config.json';
 let config = {
-    filePath: 'your log path',
+    logPath: '',
     apiKey: ''
 };
 
+let inLobby = true, players = [], hypixel = null;
+
 window.onload = e => {
+    if (!fs.existsSync(configPath))
+        fs.writeFileSync(configPath, JSON.stringify(config));
+    config = JSON.parse(fs.readFileSync(configPath));
+
     hypixel = new Hypixel(config.apiKey);
-    const tail = new Tail(config.filePath, {/*logger: con, */useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
+    const tail = new Tail(config.logPath, {/*logger: con, */useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
     tail.on('line', data => {
         let s = data.indexOf('[CHAT]');
         if (s == -1) return;//not a chat log
@@ -86,6 +93,7 @@ window.onload = e => {
             hypixel.owner = null;
             hypixel.verified = false;
             hypixel.verifyKey();
+            fs.writeFileSync(configPath, JSON.stringify(config));
         }
         if (changed) {
             console.log(players);
