@@ -1,35 +1,29 @@
-const { app, BrowserWindow, globalShortcut } = require('electron');
-let win;
+const { app, BrowserWindow } = require('electron');
 const windowConfig = {
-  width: 1150,
+  width: 900,
   height: 600,
-  frame: true,
+  frame: false,
   transparent: true,
   useContentSize: true,
   maximizable: false,
   minimizable: true,
-  resizable:false,
+  resizable: false,
   x: 40,
   y: 20,
   minWidth: 400,
   // icon: __dirname + '/logo.ico',
-  // alwaysOnTop: true,
+  alwaysOnTop: true,
   webPreferences: { nodeIntegration: true, enableRemoteModule: true, contextIsolation: false }
 };
-
 const createWindow = () => {
-  win = new BrowserWindow(windowConfig);
+  let win = new BrowserWindow(windowConfig);
   win.loadFile('src/index.html');
   win.webContents.openDevTools({ mode: "detach", activate: true });
-  win.on('close', () => { win = null; });
+  win.on('close', () => win = null);
 }
-
 app.on('ready', createWindow);
-app.on('window-all-closed', () => {
-  app.quit();
-});
-
+app.on('window-all-closed', () => app.quit());
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length == null)
     createWindow();
-})
+});

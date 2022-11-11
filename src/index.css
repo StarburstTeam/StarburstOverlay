@@ -1,0 +1,103 @@
+@font-face {
+    font-family: "Minecraftia";
+    src: url("Minecraftia.ttf");
+}
+
+@font-face {
+    font-family: "abnes";
+    src: url("abnes.ttf");
+}
+
+html,
+body {
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 0;
+    height: 100%;
+}
+
+.title {
+    font-family: abnes;
+    font-size: 35px;
+    color: aqua;
+    display: inline;
+    font-weight: bold;
+}
+
+.menu {
+    background: rgba(2, 2, 2, 0.199);
+    -webkit-app-region: drag;
+    height: 40px;
+    width: 100%;
+}
+
+#quit {
+    background: transparent;
+    background-image: url("../src/img/quit1.png");
+    background-size: cover;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
+    -webkit-app-region: no-drag;
+}
+
+#quit:hover {
+    background: transparent;
+    background-image: url("../src/img/quit2.png");
+    background-size: cover;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+
+#minimize {
+    background: transparent;
+    background-image: url("../src/img/min1.png");
+    background-size: cover;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
+    -webkit-app-region: no-drag;
+}
+
+#minimize:hover {
+    background: transparent;
+    background-image: url("../src/img/min2.png");
+    background-size: cover;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+
+#show {
+    background: transparent;
+    background-image: url("../src/img/show1.png");
+    background-size: cover;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
+    -webkit-app-region: no-drag;
+    transition: all 0.1s ease-out;
+}
+
+#show:hover {
+    background: transparent;
+    background-image: url("../src/img/show2.png");
+    background-size: cover;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+
+.main {
+    font-family: Minecraftia;
+    font-size: 20px;
+}
+
+.data {
+    display: inline;
+    position: absolute;
+    text-align: center;
+    top:30px;
+}

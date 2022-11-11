@@ -4,6 +4,7 @@ const { Tail } = require('tail');
 const fs = require('fs');
 
 const configPath = './config.json';
+const currentWindow = remote.getCurrentWindow();
 let config = {
     logPath: '',
     apiKey: ''
@@ -103,18 +104,25 @@ window.onload = e => {
     tail.on('error', (err) => console.log(err));
 }
 
+let nowType = 'mm';
 const updateHTML = () => {
-    let context = document.getElementById('main');// will make the html later
-    context.innerHTML = '';
+    let title = hypixel.getTitle(nowType);
     for (let i = 0; i < players.length; i++) {
         if (hypixel.data[players[i]] == null) throw 'The data is null!';
         if (hypixel.data[players[i]].success == false) continue;// wait for download
-        let data = hypixel.getData(players[i], 'mm');
-        if (data.basic.nick)
-            context.innerHTML += `${formatColor(data.basic.name)}  NICK<br>`;
-        else
-            context.innerHTML += `[lv ${data.basic.lvl}] ${formatColor(data.basic.name)}   ${data.winrate} ${data.kill} ${data.murderer_chance} ${data.detective_chance} ${data.alpha_chance}<br>`;
+        let data = hypixel.getData(players[i], nowType);
+        document.getElementById('Players').innerHTML += data[0] + '<br>';
+        for (let j = 1; j < data.length; j++)
+            document.getElementById(title[j - 1]).innerHTML += data[j] + '<br>';
     }
+}
+
+const width = 100;
+const changeCategory = (type) => {
+    let main = document.getElementById('main'), category = hypixel.getTitle(type);
+    main.innerHTML = '<ul id="Players" class="data" style="width:300px">Players<br></ul>';
+    for (let i = 0; i < category.length; i++)
+        main.innerHTML += `<ul id="${category[i]}" class="data" style="left:${300 + width * i}px;width:${width}px">${category[i]}<br></ul>`
 }
 
 //color parser
@@ -127,4 +135,22 @@ const formatColor = (data) => {
     return data.split('').reduce((ret, char, index, arr) =>
         ret += char == '§' ? '</span>' : arr[index - 1] == '§' ? '<span style="color:' + colors[parseInt(char, 16)] + '">' : char,
         '<span style="color:' + colors[0] + '">') + '</span>';
+}
+
+const closeWindow = () => currentWindow.close();
+
+const minimize = () => currentWindow.minimize();
+
+let nowShow = true;
+const showClick = () => {
+    resize(null);
+}
+const resize = (show) => {
+    if (show != null) nowShow = show;
+    else nowShow ^= true;
+    document.getElementById('show').style.transform = `rotate(${nowShow ? 0 : 90}deg)`;
+    let height = nowShow ? 600 : 40;
+    currentWindow.setResizable(true);
+    currentWindow.setSize(900, height, true);
+    currentWindow.setResizable(false);
 }

@@ -19,24 +19,23 @@ class Hypixel {
         this.verified = true;
     }
     getPlayerUuid = async (name) => {//null when the player not found
-        console.log(1);
         try {
             const a = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`)
-                .then(res => res.json());
+                .then(res => res.json())
+                .catch(reason => console.log(reason));
             return a.id;
         } catch (err) {
             console.log(err);
+            console.log('This error probably caused by a nicked player.');
             return null;
         }
     }
     getPlayerData = async (uuid) => {
-        console.log(2);
         return await fetch(`https://api.hypixel.net/player?key=${this.apiKey}&uuid=${uuid}`)
             .then(res => res.json())
             .catch(reason => console.log(reason));
     }
     getGuildData = async (uuid) => {
-        console.log(3);
         return await fetch(`https://api.hypixel.net/guild?key=${this.apiKey}&player=${uuid}`)
             .then(res => res.json())
             .catch(reason => console.log(reason));
@@ -95,36 +94,36 @@ class Hypixel {
     formatName = (name) => {
         return `${this.getRank(name)}${name}§f`;
     }
-    getLevel = (exp) => exp < 0 ? 1 : (1 - 3.5 + Math.sqrt(12.25 + 0.0008 * (exp ?? 0))).toFixed(2);
+    getLevel = (exp) => exp < 0 ? 1 : (1 - 3.5 + Math.sqrt(12.25 + 0.0008 * (exp ?? 0))).toFixed(0);
+    getTitle = (type) => {
+        if (type == 'bw')
+            return ['WS', 'FKDR', 'WLR', 'Finals', 'Wins'];
+        if (type == 'mm')// mc=murderer_chance dc=detective_chance ac=alpha_chance
+            return ['WinRate', 'Kills', 'MC', 'DC', 'AC'];
+    }
     getData = (name, type) => {
         let api = this.data[name].player;
-        if (this.data[name].nick) return { basic: { name: name, nick: true } };
+        if (this.data[name].nick) return [name, 'NICK'];
         let basic = {
             name: this.formatName(name),
-            lvl: this.getLevel(api.networkExp ?? 0),
+            lvl: this.getLevel(api?.networkExp ?? 0),
             nick: false
         };
-        if (type == 'bw') {
-            return {
-                basic: basic,
-                lvl: api.achievements?.bedwars_level ?? 1,
-                winstreak: api.stats?.Bedwars?.winstreak ?? 0,
-                fkdr: ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2),
-                wlr: ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2),
-                final: api.stats?.Bedwars?.final_kills_bedwars ?? 0,
-                win: api.stats?.Bedwars?.wins_bedwars ?? 0
-            }
-        }
-        if (type == 'mm') {
-            return {
-                basic: basic,
-                winrate: (100 * (api.stats?.MurderMystery?.wins ?? 0) / (api.stats?.MurderMystery?.games ?? 0)).toFixed(2),
-                kill: api.stats?.MurderMystery?.kills ?? 0,
-                murderer_chance: (api.stats?.MurderMystery?.murderer_chance ?? 0) + '%',
-                detective_chance: (api.stats?.MurderMystery?.detective_chance ?? 0) + '%',
-                alpha_chance: (api.stats?.MurderMystery?.alpha_chance ?? 0) + '%',
-            }
-        }
+        if (type == 'bw')
+            return [`[${basic.lvl}] [${api.achievements?.bedwars_level ?? 1}✪] ${formatColor(basic.name)}`,
+            api.stats?.Bedwars?.winstreak ?? 0,
+            ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2),
+            ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2),
+            api.stats?.Bedwars?.final_kills_bedwars ?? 0,
+            api.stats?.Bedwars?.wins_bedwars ?? 0];
+        if (type == 'mm')
+            return [`[${basic.lvl}] ${formatColor(basic.name)}`,
+            (100 * (api.stats?.MurderMystery?.wins ?? 0) / (api.stats?.MurderMystery?.games ?? 0)).toFixed(1) + '%',
+            api.stats?.MurderMystery?.kills ?? 0,
+            (api.stats?.MurderMystery?.murderer_chance ?? 0) + '%',
+            (api.stats?.MurderMystery?.detective_chance ?? 0) + '%',
+            (api.stats?.MurderMystery?.alpha_chance ?? 0) + '%'];
+
     }
 }
 
