@@ -132,3 +132,14 @@ const colorMap = Object.fromEntries([
     'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow', 'white'
 ].map((c, i) => [c, "§" + i.toString(16)]))
 const formatColorFromString = name => colorMap[name.toLowerCase()];
+//color parser
+const colors = [
+    '#000000', '#0000AA', '#00AA00', '#00AAAA', '#AA0000', '#AA00AA', '#FFAA00', '#AAAAAA',
+    '#555555', '#5555FF', '#55FF55', '#55FFFF', '#FF5555', '#FF55FF', '#FFFF55', '#FFFFFF'
+];
+const formatColor = (data) => {
+    if (data == null) return 'Fail to get';
+    return data.split('').reduce((ret, char, index, arr) =>
+        ret += char == '§' ? '</span>' : arr[index - 1] == '§' ? '<span style="color:' + colors[parseInt(char, 16)] + '">' : char,
+        '<span style="color:' + colors[0] + '">') + '</span>';
+}

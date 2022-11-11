@@ -95,9 +95,16 @@ body {
     font-size: 20px;
 }
 
+.subtitle {
+    display: inline;
+    position: absolute;
+    text-align: center;
+    top:25px;
+}
+
 .data {
     display: inline;
     position: absolute;
     text-align: center;
-    top:30px;
+    top:50px;
 }

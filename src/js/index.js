@@ -16,8 +16,11 @@ window.onload = e => {
     if (!fs.existsSync(configPath))
         fs.writeFileSync(configPath, JSON.stringify(config));
     config = JSON.parse(fs.readFileSync(configPath));
-
     hypixel = new Hypixel(config.apiKey);
+
+    nowType = 'bw';
+    changeCategory('bw');
+
     const tail = new Tail(config.logPath, {/*logger: con, */useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
     tail.on('line', data => {
         let s = data.indexOf('[CHAT]');
@@ -107,6 +110,9 @@ window.onload = e => {
 let nowType = 'mm';
 const updateHTML = () => {
     let title = hypixel.getTitle(nowType);
+    document.getElementById('Players').innerHTML = '';
+    for (let j = 0; j < title.length; j++)
+        document.getElementById(title[j]).innerHTML = '';
     for (let i = 0; i < players.length; i++) {
         if (hypixel.data[players[i]] == null) throw 'The data is null!';
         if (hypixel.data[players[i]].success == false) continue;// wait for download
@@ -120,21 +126,13 @@ const updateHTML = () => {
 const width = 100;
 const changeCategory = (type) => {
     let main = document.getElementById('main'), category = hypixel.getTitle(type);
-    main.innerHTML = '<ul id="Players" class="data" style="width:300px">Players<br></ul>';
-    for (let i = 0; i < category.length; i++)
-        main.innerHTML += `<ul id="${category[i]}" class="data" style="left:${300 + width * i}px;width:${width}px">${category[i]}<br></ul>`
-}
-
-//color parser
-const colors = [
-    '#000000', '#0000AA', '#00AA00', '#00AAAA', '#AA0000', '#AA00AA', '#FFAA00', '#AAAAAA',
-    '#555555', '#5555FF', '#55FF55', '#55FFFF', '#FF5555', '#FF55FF', '#FFFF55', '#FFFFFF'
-];
-const formatColor = (data) => {
-    if (data == null) return 'Fail to get';
-    return data.split('').reduce((ret, char, index, arr) =>
-        ret += char == '§' ? '</span>' : arr[index - 1] == '§' ? '<span style="color:' + colors[parseInt(char, 16)] + '">' : char,
-        '<span style="color:' + colors[0] + '">') + '</span>';
+    main.innerHTML = '<ul class="subtitle" style="width:450px">Players</ul>';
+    main.innerHTML += '<ul id="Players" class="data" style="width:450px;text-align:left;"></ul>';
+    for (let i = 0; i < category.length; i++) {
+        main.innerHTML += `<ul class="subtitle" style="left:${450 + width * i}px;width:${width}px">${category[i]}</ul>`;
+        main.innerHTML += `<ul id="${category[i]}" class="data" style="left:${450 + width * i}px;width:${width}px"></ul>`;
+    }
+    updateHTML();
 }
 
 const closeWindow = () => currentWindow.close();
@@ -151,6 +149,6 @@ const resize = (show) => {
     document.getElementById('show').style.transform = `rotate(${nowShow ? 0 : 90}deg)`;
     let height = nowShow ? 600 : 40;
     currentWindow.setResizable(true);
-    currentWindow.setSize(900, height, true);
+    currentWindow.setSize(1000, height, true);
     currentWindow.setResizable(false);
 }
