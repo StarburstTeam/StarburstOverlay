@@ -1,28 +1,33 @@
 //this file contains api to hypixel
 class Hypixel {
-    constructor(apiKey) {
+    constructor(apiKey, callback) {
         this.apiKey = apiKey;
         this.data = {};
         this.owner = null;//uuid
         this.verified = false;
-        this.verifyKey();
+        this.verifying = true;
+        this.verifyKey(callback);
     }
-    verifyKey = async () => {
-        const a = await fetch(`https://api.hypixel.net/key?key=${this.apiKey}`)
-            .then(res => res.json())
-            .catch(reason => console.log(reason));
-        if (a.success == false) {
+    verifyKey = async (callback) => {
+        try {
+            let a = await fetch(`https://api.hypixel.net/key?key=${this.apiKey}`)
+                .catch(err => { throw err })
+                .then(res => res.json());
+            if (a.success == false) throw null;
+            this.owner = a.record.owner;
+            this.verified = true;
+            this.verifying = false;
+        } catch (err) {
             this.verified = false;
-            return;
+            this.verifying = false;
         }
-        this.owner = a.record.owner;
-        this.verified = true;
+        callback();
     }
     getPlayerUuid = async (name) => {//null when the player not found
         try {
-            const a = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`)
-                .then(res => res.json())
-                .catch(reason => console.log(reason));
+            let a = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`)
+                .catch(err => { throw err })
+                .then(res => res.json());
             return a.id;
         } catch (err) {
             console.log(err);
@@ -32,13 +37,13 @@ class Hypixel {
     }
     getPlayerData = async (uuid) => {
         return await fetch(`https://api.hypixel.net/player?key=${this.apiKey}&uuid=${uuid}`)
-            .then(res => res.json())
-            .catch(reason => console.log(reason));
+            .catch(err => { throw err })
+            .then(res => res.json());
     }
     getGuildData = async (uuid) => {
         return await fetch(`https://api.hypixel.net/guild?key=${this.apiKey}&player=${uuid}`)
-            .then(res => res.json())
-            .catch(reason => console.log(reason));
+            .catch(err => { throw err })
+            .then(res => res.json());
     }
     download = async (name, callback) => {//true if success, false if player not found, null if api error
         if (this.data[name] != null && this.data[name].success == true && this.data[name].time + 120 * 1000 > new Date().getTime())

@@ -10,16 +10,18 @@ let config = {
     apiKey: ''
 };
 
-let inLobby = true, players = [], hypixel = null;
+let inLobby = true, players = [], hypixel = null, numplayers = 0;
+let missingPlayer = false;
 
 window.onload = e => {
     if (!fs.existsSync(configPath))
         fs.writeFileSync(configPath, JSON.stringify(config));
     config = JSON.parse(fs.readFileSync(configPath));
-    hypixel = new Hypixel(config.apiKey);
+    hypixel = new Hypixel(config.apiKey,updateHTML);
 
-    nowType = 'bw';
-    changeCategory('bw');
+    nowType = 'mm';
+    changeCategory('mm');
+    updateHTML();
 
     const tail = new Tail(config.logPath, {/*logger: con, */useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
     tail.on('line', data => {
@@ -29,6 +31,7 @@ window.onload = e => {
         let msg = data.substring(s + 7).replace(' [C]', '');
         console.log(msg);
         if (msg.indexOf('ONLINE:') != -1 && msg.indexOf(',') != -1) {//the result of /who command
+            resize(true);
             if (inLobby) return;
             let who = msg.substring(8).split(', ');
             players = [];
@@ -37,8 +40,10 @@ window.onload = e => {
                 players.push(who[i]);
                 hypixel.download(who[i], updateHTML);
             }
+            missingPlayer = players.length < numplayers;
             changed = true;
         } else if (msg.indexOf('has joined') != -1 && msg.indexOf(':') == -1) {
+            resize(true);
             inLobby = false;
             let join = msg.split(' ')[0];
             if (players.find(x => x == join) == null) {
@@ -48,8 +53,7 @@ window.onload = e => {
             }
             if (msg.indexOf('/') != -1) {
                 numplayers = Number(msg.substring(msg.indexOf('(') + 1, msg.indexOf('/')));
-                if (players.length < numplayers)
-                    console.log('Missing player, please type /who');
+                missingPlayer = players.length < numplayers;
             }
         } else if (msg.indexOf('has quit') != -1 && msg.indexOf(':') == -1) {
             inLobby = false;
@@ -59,10 +63,12 @@ window.onload = e => {
                 changed = true;
             }
         } else if (msg.indexOf('Sending you') != -1 && msg.indexOf(':') == -1) {
+            resize(false);
             inLobby = false;
             players = [];
             changed = true;
         } else if ((msg.indexOf('joined the lobby!') != -1 || msg.indexOf('rewards!') != -1) && msg.indexOf(':') == -1) {
+            resize(false);
             inLobby = true;
             players = [];
             changed = true;
@@ -87,16 +93,19 @@ window.onload = e => {
             // } else if (msg.indexOf('Can\'t find a') !== -1 && msg.indexOf('\'!') !== -1 && msg.indexOf(':') === -1) {
             // } else if (msg.indexOf('Can\'t find a') !== -1 && msg.indexOf('\'') !== -1 && msg.indexOf(':') === -1) {
         } else if (msg.indexOf('The game starts in 1 second!') != -1 && msg.indexOf(':') == -1) {
+            resize(false);
             new Notification({
                 title: 'Game Started!',
                 body: 'Your Hypixel game has started!'
-                // icon: path.join(__dirname, '../assets/logo.ico')
             }).show();
-        } else if (msg.indexOf('new API key') != -1 && msg.indexOf(':') == -1) {
+        } else if (msg.indexOf('The game starts in 0 second!') != -1 && msg.indexOf(':') == -1)
+            resize(false);
+        else if (msg.indexOf('new API key') != -1 && msg.indexOf(':') == -1) {
             hypixel.apiKey = msg.substring(msg.indexOf('is ') + 3);
             hypixel.owner = null;
             hypixel.verified = false;
             hypixel.verifyKey();
+            config.apiKey = hypixel.apiKey;
             fs.writeFileSync(configPath, JSON.stringify(config));
         }
         if (changed) {
@@ -109,6 +118,10 @@ window.onload = e => {
 
 let nowType = 'mm';
 const updateHTML = () => {
+    if (!hypixel.verified && !hypixel.verifying) {
+        document.getElementById('Players').innerHTML += `${formatColor('§cInvalid API Key')}<br>`;
+        return;
+    }
     let title = hypixel.getTitle(nowType);
     document.getElementById('Players').innerHTML = '';
     for (let j = 0; j < title.length; j++)
@@ -116,11 +129,19 @@ const updateHTML = () => {
     for (let i = 0; i < players.length; i++) {
         if (hypixel.data[players[i]] == null) throw 'The data is null!';
         if (hypixel.data[players[i]].success == false) continue;// wait for download
+        if (hypixel.data[players[i]].nick == true) {
+            document.getElementById('Players').innerHTML += data[0] + '<br>';
+            for (let j = 0; j < title.length; j++)
+                document.getElementById(title[j]).innerHTML = '<br>';
+            continue;
+        }
         let data = hypixel.getData(players[i], nowType);
         document.getElementById('Players').innerHTML += data[0] + '<br>';
         for (let j = 1; j < data.length; j++)
             document.getElementById(title[j - 1]).innerHTML += data[j] + '<br>';
     }
+    if (missingPlayer)
+        document.getElementById('Players').innerHTML += `${formatColor('§cMissing players')}<br>${formatColor('§cPlease type /who')}<br>`;
 }
 
 const width = 100;
@@ -132,7 +153,6 @@ const changeCategory = (type) => {
         main.innerHTML += `<ul class="subtitle" style="left:${450 + width * i}px;width:${width}px">${category[i]}</ul>`;
         main.innerHTML += `<ul id="${category[i]}" class="data" style="left:${450 + width * i}px;width:${width}px"></ul>`;
     }
-    updateHTML();
 }
 
 const closeWindow = () => currentWindow.close();
