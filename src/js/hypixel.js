@@ -99,13 +99,27 @@ class Hypixel {
             return `${formatColorFromString(guildJson.tagColor)}[${guildJson.tag}]`;
         return ``;
     }
-    formatName = (name) => `${this.getRank(name)}${name} ${this.getGuildTag(name)}`;
+    formatName = (name) => `${this.getRank(name)}${this.data[name].player.displayname}${this.getGuildTag(name)}`;
     getLevel = (exp) => exp < 0 ? 1 : (1 - 3.5 + Math.sqrt(12.25 + 0.0008 * (exp ?? 0))).toFixed(1);
     getTitle = (type) => {
         if (type == 'bw')
             return ['WS', 'FKDR', 'WLR', 'Finals', 'Wins'];
+        if (type == 'sw')
+            return ['WS', 'KDR', 'WLR', 'Kills', 'Wins'];
+        if (type == 'duel')
+            return ['WS', 'KDR', 'WLR', 'Kills', 'Wins'];
         if (type == 'mm')// mc=murderer_chance dc=detective_chance ac=alpha_chance
             return ['WR', 'Kills', 'MC', 'DC', 'AC'];
+    }
+    getTag = (name) => {
+        let api = this.data[name].player;
+        if (name == 'IAFEnvoy') return '§6DEV';
+        else if ((api.achievements.bedwars_level < 15 && api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars > 5) || (api.achievements.bedwars_level > 15 && api.achievements.bedwars_level < 100 && api.achievements.bedwars_level / (api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars) <= 5))
+            return '§cALT';
+        else if (api.achievements.bedwars_level < 150 && api.stats.Bedwars.final_deaths_bedwars / api.stats.Bedwars.losses_bedwars < 0.75 && api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars < 1.5)
+            return '§aSNPR';
+        else if (api.channel == 'PARTY') return '§9PRTY';
+        return '§7-'
     }
     getData = (name, type) => {
         let api = this.data[name].player;
@@ -119,10 +133,26 @@ class Hypixel {
             return [`${basic.lvl}`,
             `[${api.achievements?.bedwars_level ?? 1}✪] ${formatColor(basic.name)}`,
             buildSpan(wsColorList.bw, api.stats?.Bedwars?.winstreak ?? 0),
-            buildSpan(fkdrColorList.bw, ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2)),
+            buildSpan(kdrColorList.bw, ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.bw, ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.bw, api.stats?.Bedwars?.final_kills_bedwars ?? 0),
             buildSpan(winsColorList.bw, api.stats?.Bedwars?.wins_bedwars ?? 0)];
+        if (type == 'sw')
+            return [`${basic.lvl}`,
+            `[${formatColor(api.stats?.SkyWars?.levelFormatted ?? '§71⋆')}] ${formatColor(basic.name)}`,
+            buildSpan(wsColorList.sw, api.stats?.SkyWars?.win_streak ?? 0),
+            buildSpan(kdrColorList.sw, ((api.stats?.SkyWars?.kills ?? 0) / (api.stats?.SkyWars?.deaths ?? 0)).toFixed(2)),
+            buildSpan(wlrColorList.sw, ((api.stats?.SkyWars?.wins ?? 0) / (api.stats?.SkyWars?.losses ?? 0)).toFixed(2)),
+            buildSpan(finalsColorList.sw, api.stats?.SkyWars?.kills ?? 0),
+            buildSpan(winsColorList.sw, api.stats?.SkyWars?.wins ?? 0)];
+        if (type == 'duel')
+            return [`${basic.lvl}`,
+            `${formatColor(basic.name)}`,
+            buildSpan(wsColorList.duel, api.stats?.Duels?.current_winstreak ?? 0),
+            buildSpan(kdrColorList.duel, ((api.stats?.Duels?.kills ?? 0) / (api.stats?.Duels?.deaths ?? 0)).toFixed(2)),
+            buildSpan(wlrColorList.duel, ((api.stats?.Duels?.wins ?? 0) / (api.stats?.Duels?.losses ?? 0)).toFixed(2)),
+            buildSpan(finalsColorList.duel, api.stats?.Duels?.kills ?? 0),
+            buildSpan(winsColorList.duel, api.stats?.Duels?.wins ?? 0)];
         if (type == 'mm')
             return [`${basic.lvl}`,
             `${formatColor(basic.name)}`,
@@ -157,7 +187,7 @@ const wsColorList = {
     bw: [4, 10, 25, 50, 100, Infinity],
     sw: [50, 100, 150, 200, 250, Infinity],
     duel: [4, 10, 25, 50, 100, Infinity]
-}, fkdrColorList = {
+}, kdrColorList = {
     bw: [1, 3, 5, 10, 25, Infinity],
     sw: [1, 2, 3, 4, 5, Infinity],
     duel: [1, 2, 3, 5, 7.5, Infinity]

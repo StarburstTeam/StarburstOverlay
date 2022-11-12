@@ -90,24 +90,47 @@ body {
     transition: all 0.2s ease-out;
 }
 
+#settings {
+    background: transparent;
+    background-image: url("../src/img/settings1.png");
+    background-size: cover;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
+    -webkit-app-region: no-drag;
+    transition: all 0.1s ease-out;
+}
+
+#settings:hover {
+    background: transparent;
+    background-image: url("../src/img/settings2.png");
+    background-size: cover;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+}
+
 .main {
     font-family: Minecraftia;
+    color:white;
 }
 
 .subtitle {
     display: inline;
     position: absolute;
     text-align: center;
-    top:25px;
+    top: 25px;
     font-size: 25px;
+    color:aqua;
+    padding-inline-start: 10px;
 }
 
 .data {
     display: inline;
     position: absolute;
     text-align: center;
-    top:65px;
-    font-size: 20px;
+    top: 70px;
+    font-size: 15px;
     white-space: break-spaces;
-    padding-inline-start:10px;
+    padding-inline-start: 10px;
 }
