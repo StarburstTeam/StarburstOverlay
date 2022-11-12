@@ -7,6 +7,7 @@ class Hypixel {
         this.verified = false;
         this.verifying = true;
         this.verifyKey(callback);
+        this.uuids = [];
     }
     verifyKey = async (callback) => {
         try {
@@ -28,6 +29,7 @@ class Hypixel {
             let a = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`)
                 .catch(err => { throw err })
                 .then(res => res.json());
+            this.uuids[name] = a.id;
             return a.id;
         } catch (err) {
             console.log(err);
@@ -45,6 +47,7 @@ class Hypixel {
             .catch(err => { throw err })
             .then(res => res.json());
     }
+    getUuid = (name) => this.uuids[name];
     download = async (name, callback) => {//true if success, false if player not found, null if api error
         if (this.data[name] != null && this.data[name].success == true && this.data[name].time + 120 * 1000 > new Date().getTime())
             return;
@@ -91,20 +94,18 @@ class Hypixel {
             console.log('data is null');
             return ``;
         }
-        let guildJson = this.data[name].guild.guild;
+        let guildJson = this.data[name].guild;
         if (guildJson != null && guildJson.tag != null && guildJson.tagColor != null)
             return `${formatColorFromString(guildJson.tagColor)}[${guildJson.tag}]`;
         return ``;
     }
-    formatName = (name) => {
-        return `${this.getRank(name)}${name}§f`;
-    }
-    getLevel = (exp) => exp < 0 ? 1 : (1 - 3.5 + Math.sqrt(12.25 + 0.0008 * (exp ?? 0))).toFixed(0);
+    formatName = (name) => `${this.getRank(name)}${name} ${this.getGuildTag(name)}`;
+    getLevel = (exp) => exp < 0 ? 1 : (1 - 3.5 + Math.sqrt(12.25 + 0.0008 * (exp ?? 0))).toFixed(1);
     getTitle = (type) => {
         if (type == 'bw')
             return ['WS', 'FKDR', 'WLR', 'Finals', 'Wins'];
         if (type == 'mm')// mc=murderer_chance dc=detective_chance ac=alpha_chance
-            return ['WinRate', 'Kills', 'MC', 'DC', 'AC'];
+            return ['WR', 'Kills', 'MC', 'DC', 'AC'];
     }
     getData = (name, type) => {
         let api = this.data[name].player;
@@ -115,14 +116,16 @@ class Hypixel {
             nick: false
         };
         if (type == 'bw')
-            return [`[${basic.lvl}] [${api.achievements?.bedwars_level ?? 1}✪] ${formatColor(basic.name)}`,
-            api.stats?.Bedwars?.winstreak ?? 0,
-            ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2),
-            ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2),
-            api.stats?.Bedwars?.final_kills_bedwars ?? 0,
-            api.stats?.Bedwars?.wins_bedwars ?? 0];
+            return [`${basic.lvl}`,
+            `[${api.achievements?.bedwars_level ?? 1}✪] ${formatColor(basic.name)}`,
+            buildSpan(wsColorList.bw, api.stats?.Bedwars?.winstreak ?? 0),
+            buildSpan(fkdrColorList.bw, ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2)),
+            buildSpan(wlrColorList.bw, ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2)),
+            buildSpan(finalsColorList.bw, api.stats?.Bedwars?.final_kills_bedwars ?? 0),
+            buildSpan(winsColorList.bw, api.stats?.Bedwars?.wins_bedwars ?? 0)];
         if (type == 'mm')
-            return [`[${basic.lvl}] ${formatColor(basic.name)}`,
+            return [`${basic.lvl}`,
+            `${formatColor(basic.name)}`,
             (100 * (api.stats?.MurderMystery?.wins ?? 0) / (api.stats?.MurderMystery?.games ?? 0)).toFixed(1) + '%',
             api.stats?.MurderMystery?.kills ?? 0,
             (api.stats?.MurderMystery?.murderer_chance ?? 0) + '%',
@@ -148,3 +151,31 @@ const formatColor = (data) => {
         ret += char == '§' ? '</span>' : arr[index - 1] == '§' ? '<span style="color:' + colors[parseInt(char, 16)] + '">' : char,
         '<span style="color:' + colors[0] + '">') + '</span>';
 }
+
+const colorList = ['#AAAAAA', '#FFFFFF', '#FFAA00', '#00AAAA', '#AA0000', '#AA00AA'];
+const wsColorList = {
+    bw: [4, 10, 25, 50, 100, Infinity],
+    sw: [50, 100, 150, 200, 250, Infinity],
+    duel: [4, 10, 25, 50, 100, Infinity]
+}, fkdrColorList = {
+    bw: [1, 3, 5, 10, 25, Infinity],
+    sw: [1, 2, 3, 4, 5, Infinity],
+    duel: [1, 2, 3, 5, 7.5, Infinity]
+}, wlrColorList = {
+    bw: [1, 2, 5, 7, 10, Infinity],
+    sw: [0.1, 0.25, 0.5, 0.75, 1, Infinity],
+    duel: [1, 2, 3, 5, 7.5, Infinity]
+}, bblrColorList = {
+    bw: [1, 2, 3, 5, 7.5, Infinity]
+}, finalsColorList = {
+    bw: [1000, 5000, 10000, 20000, 30000, Infinity],
+    sw: [1000, 5000, 15000, 30000, 75000, Infinity],
+    duel: [500, 1500, 4000, 10000, 17500, Infinity]
+}, winsColorList = {
+    bw: [500, 1000, 3000, 5000, 10000, Infinity],
+    sw: [100, 750, 4000, 10000, 25000, Infinity],
+    duel: [500, 1500, 4000, 10000, 17500, Infinity]
+}
+
+const pickColor = (list, value) => colorList[list.indexOf(list.find(v => v >= value))];
+const buildSpan = (list, value) => `<span style="color:${pickColor(list, value)}">${value}</span>`

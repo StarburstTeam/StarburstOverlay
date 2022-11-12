@@ -92,7 +92,6 @@ body {
 
 .main {
     font-family: Minecraftia;
-    font-size: 20px;
 }
 
 .subtitle {
@@ -100,11 +99,15 @@ body {
     position: absolute;
     text-align: center;
     top:25px;
+    font-size: 25px;
 }
 
 .data {
     display: inline;
     position: absolute;
     text-align: center;
-    top:50px;
+    top:65px;
+    font-size: 20px;
+    white-space: break-spaces;
+    padding-inline-start:10px;
 }

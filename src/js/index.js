@@ -17,10 +17,10 @@ window.onload = e => {
     if (!fs.existsSync(configPath))
         fs.writeFileSync(configPath, JSON.stringify(config));
     config = JSON.parse(fs.readFileSync(configPath));
-    hypixel = new Hypixel(config.apiKey,updateHTML);
+    hypixel = new Hypixel(config.apiKey, updateHTML);
 
-    nowType = 'mm';
-    changeCategory('mm');
+    nowType = 'bw';
+    changeCategory('bw');
     updateHTML();
 
     const tail = new Tail(config.logPath, {/*logger: con, */useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
@@ -127,31 +127,41 @@ const updateHTML = () => {
     for (let j = 0; j < title.length; j++)
         document.getElementById(title[j]).innerHTML = '';
     for (let i = 0; i < players.length; i++) {
-        if (hypixel.data[players[i]] == null) throw 'The data is null!';
-        if (hypixel.data[players[i]].success == false) continue;// wait for download
-        if (hypixel.data[players[i]].nick == true) {
-            document.getElementById('Players').innerHTML += data[0] + '<br>';
-            for (let j = 0; j < title.length; j++)
-                document.getElementById(title[j]).innerHTML = '<br>';
+        if (hypixel.data[players[i]] == null){
+            console.log('The data is null!');
             continue;
         }
+        if (hypixel.data[players[i]].success == false) continue;// wait for download
         let data = hypixel.getData(players[i], nowType);
-        document.getElementById('Players').innerHTML += data[0] + '<br>';
-        for (let j = 1; j < data.length; j++)
-            document.getElementById(title[j - 1]).innerHTML += data[j] + '<br>';
+        if (hypixel.data[players[i]].nick == true) {
+            document.getElementById('Players').innerHTML += `${toLength(`[1.0]`, 12)}${data[0]}<br>`;
+            for (let j = 0; j < title.length; j++)
+                document.getElementById(title[j]).innerHTML += '<br>';
+            continue;
+        }
+        document.getElementById('Players').innerHTML += `${toLength(`[${data[0]}]`, 9)}`;
+        document.getElementById('Players').innerHTML += `<img src="https://crafatar.com/avatars/${hypixel.getUuid(players[i])}?overlay" style="width:20px;height:20px">`;
+        document.getElementById('Players').innerHTML += ` ${data[1]}<br>`
+        for (let j = 0; j < title.length; j++)
+            document.getElementById(title[j]).innerHTML += data[j+2] + '<br>';
     }
     if (missingPlayer)
         document.getElementById('Players').innerHTML += `${formatColor('§cMissing players')}<br>${formatColor('§cPlease type /who')}<br>`;
+}
+
+const toLength = (string, length) => {
+    while (string.length < length) string += ' ';
+    return string;
 }
 
 const width = 100;
 const changeCategory = (type) => {
     let main = document.getElementById('main'), category = hypixel.getTitle(type);
     main.innerHTML = '<ul class="subtitle" style="width:450px">Players</ul>';
-    main.innerHTML += '<ul id="Players" class="data" style="width:450px;text-align:left;"></ul>';
+    main.innerHTML += '<ul id="Players" class="data" style="width:auto;text-align:left;" onclick="clickPlayerName(event)"></ul>';
     for (let i = 0; i < category.length; i++) {
         main.innerHTML += `<ul class="subtitle" style="left:${450 + width * i}px;width:${width}px">${category[i]}</ul>`;
-        main.innerHTML += `<ul id="${category[i]}" class="data" style="left:${450 + width * i}px;width:${width}px"></ul>`;
+        main.innerHTML += `<ul id="${category[i]}" class="data" style="left:${475 + width * i}px;width:${width}px"></ul>`;
     }
 }
 
@@ -171,4 +181,9 @@ const resize = (show) => {
     currentWindow.setResizable(true);
     currentWindow.setSize(1000, height, true);
     currentWindow.setResizable(false);
+}
+const clickPlayerName = (e) => {
+    let y = e.offsetY;
+    let i = Math.floor(y / 20);
+    console.log(players[i]);
 }
