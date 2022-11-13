@@ -22,7 +22,8 @@ class Hypixel {
             this.verified = false;
             this.verifying = false;
         }
-        callback();
+        if (callback != null)
+            callback();
     }
     getPlayerUuid = async (name) => {//null when the player not found
         try {

@@ -1,29 +1,26 @@
 const { remote, shell } = require('electron');
 const { Notification } = remote;
 const { Tail } = require('tail');
-const fs = require('fs');
 
 const configPath = './config.json';
 const currentWindow = remote.getCurrentWindow();
-let config = {
+let config = new Config('./config.json', {
     logPath: '',
-    apiKey: ''
-};
+    apiKey: '',
+    lastType: 'bw'
+});
 
 let inLobby = true, players = [], hypixel = null, numplayers = 0;
 let missingPlayer = false;
 
 window.onload = async () => {
-    if (!fs.existsSync(configPath))
-        fs.writeFileSync(configPath, JSON.stringify(config));
-    config = JSON.parse(fs.readFileSync(configPath));
-    hypixel = new Hypixel(config.apiKey, updateHTML);
+    hypixel = new Hypixel(config.get('apiKey'), updateHTML);
 
-    nowType = 'bw';
+    nowType = config.get('lastType');
     changeCategory();
     updateHTML();
 
-    const tail = new Tail(config.logPath, {/*logger: con, */useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
+    const tail = new Tail(config.get('logPath'), {/*logger: con, */useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
     tail.on('line', data => {
         let s = data.indexOf('[CHAT]');
         if (s == -1) return;//not a chat log
@@ -36,7 +33,6 @@ window.onload = async () => {
             let who = msg.substring(8).split(', ');
             players = [];
             for (let i = 0; i < who.length; i++) {
-                //save for future expand
                 players.push(who[i]);
                 hypixel.download(who[i], updateHTML);
             }
@@ -105,8 +101,8 @@ window.onload = async () => {
             hypixel.owner = null;
             hypixel.verified = false;
             hypixel.verifyKey();
-            config.apiKey = hypixel.apiKey;
-            fs.writeFileSync(configPath, JSON.stringify(config));
+            config.set('apiKey', hypixel.apiKey);
+            config.save();
         }
         if (changed) {
             console.log(players);
@@ -164,7 +160,7 @@ const updateHTML = () => {
             continue;
         }
         document.getElementById('Levels').innerHTML += `<div>[${data[0]}]</div>`;
-        document.getElementById('Avatars').innerHTML += `<img src="https://crafatar.com/avatars/${hypixel.getUuid(players[i])}?overlay" style="width:20px;height:20px"><br>`;
+        document.getElementById('Avatars').innerHTML += `<img src="https://crafatar.com/avatars/${hypixel.getUuid(players[i])}?overlay" style="width:15px;height:15px"><br>`;
         document.getElementById('Players').innerHTML += `<div onclick="clickPlayerName('${players[i]}')">${data[1]}</div>`
         document.getElementById('Tags').innerHTML += `<div style="width:${width / 2}px">${formatColor(hypixel.getTag(players[i]))}</div>`;
         for (let j = 0; j < title.length; j++)
@@ -187,6 +183,7 @@ const changeCategory = () => {
         main.innerHTML += `<ul class="subtitle" style="left:${500 + width * i}px;width:${width}px">${category[i]}</ul>`;
         main.innerHTML += `<ul id="${category[i]}" class="data" style="left:${500 + width * i}px;width:${width}px"></ul>`;
     }
+    config.set('lastType', nowType);
 }
 
 const closeWindow = () => currentWindow.close();
@@ -279,8 +276,9 @@ const showDetail = (mode) => {
 }
 
 const downloadSkin = () => {
+    if (searchPlayerName == null || searchPlayerName == '') return;
     let a = document.createElement('a');
     a.href = `https://crafatar.com/skins/${hypixel.getUuid(searchPlayerName)}`;
-    a.download = `${getUuid(searchPlayerName)}.png`;
+    a.download = `${hypixel.getUuid(searchPlayerName)}.png`;
     a.click();
 }
