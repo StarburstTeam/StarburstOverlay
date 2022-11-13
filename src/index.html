@@ -17,8 +17,8 @@
   <div id="menu" class="menu">
     <div class="title" style="position:absolute;left:5px;top:5px">Starburst</div>
     <div id="buttons" style="float:right;margin-right:5px;margin-top:2px;">
-      <button id="info" onclick="showSearchPage()"></button>
-      <button id="settings" onclick=""></button>
+      <button id="info" class="info" onclick="switchPage('infoPage')"></button>
+      <button id="settings" class="settings" onclick="switchPage('settingPage')"></button>
       <button id="show" onclick="showClick()"></button>
       <button id="minimize" onclick="minimize()"></button>
       <button id="quit" onclick="closeWindow()"></button>
@@ -30,7 +30,8 @@
     <div id="playerinput">
       <div class="infoFont" style="position:absolute;top:50px;left:30px">Player Name :</div>
       <input id="playername" type="text" style="position: absolute;top:55px;left:300px;width:350px">
-      <button class="searchButton" id="search" style="position: absolute;top:55px;left:670px;width:80px;height:32px" onclick="search()">Go!</button>
+      <button class="searchButton" id="search" style="position: absolute;top:55px;left:670px;width:80px;height:32px"
+        onclick="search()">Go!</button>
     </div>
     <div id="searchResult" style="height:auto">
       <div style="position:absolute;top:85px;left:10px;width:410px;height:auto">
@@ -42,9 +43,13 @@
       <div id="details" style="position: absolute;top:85px;left:410px;width:500px;height: auto"> </div>
       <div style="position: absolute;top:85px;left:930px;width:120px;height:270px">
         <img id="skin">
-        <button class="download" style="position:absolute;top:280px;left:-20px;width:160px;height:30px" onclick="downloadSkin()">Download Skin</button>
+        <button class="download" style="position:absolute;top:280px;left:-20px;width:160px;height:30px"
+          onclick="downloadSkin()">Download Skin</button>
         <div id="socialMedia" style="position:absolute;top:320px;left:-20px;width:auto"></div>
       </div>
     </div>
+  </div>
+  <div id="settingPage" hidden>
+    <!--TODO-->
   </div>
 </body>

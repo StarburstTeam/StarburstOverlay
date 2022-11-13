@@ -2,7 +2,6 @@ const { remote, shell } = require('electron');
 const { Notification } = remote;
 const { Tail } = require('tail');
 
-const configPath = './config.json';
 const currentWindow = remote.getCurrentWindow();
 let config = new Config('./config.json', {
     logPath: '',
@@ -197,13 +196,20 @@ const showSearchPage = () => {
     else switchPage('infoPage');
 }
 
+let lastPage = 'main';
 const switchPage = (page) => {
+    if (document.getElementById('main').hidden && lastPage == page) page = 'main';
+    lastPage = page;
     document.getElementById('main').hidden = true;
     document.getElementById('infoPage').hidden = true;
-    document.getElementById('info').style.backgroundImage = 'url(../src/img/info1.png)';
+    document.getElementById('settingPage').hidden = true;
+    document.getElementById('info').className = 'info';
+    document.getElementById('settings').className = 'settings';
     document.getElementById(page).hidden = false;
     if (page == 'infoPage')
-        document.getElementById('info').style.backgroundImage = 'url(../src/img/info2.png)';
+        document.getElementById('info').className = 'info_stay';
+    if (page == 'settingPage')
+        document.getElementById('settings').className = 'settings_stay';
 }
 
 let nowShow = true;

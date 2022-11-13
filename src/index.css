@@ -90,7 +90,7 @@ body {
     transition: all 0.2s ease-out;
 }
 
-#settings {
+.settings {
     background: transparent;
     background-image: url("../src/img/settings1.png");
     background-size: cover;
@@ -101,15 +101,21 @@ body {
     -webkit-app-region: no-drag;
 }
 
-#settings:hover {
+.settings_stay,
+.settings:hover {
     background: transparent;
     background-image: url("../src/img/settings2.png");
     background-size: cover;
     cursor: pointer;
     transition: all 0.2s ease-out;
+    -webkit-app-region: no-drag;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
 }
 
-#info {
+.info {
     background: transparent;
     background-image: url("../src/img/info1.png");
     background-size: cover;
@@ -120,12 +126,18 @@ body {
     -webkit-app-region: no-drag;
 }
 
-#info:hover {
+.info_stay,
+.info:hover {
     background: transparent;
     background-image: url("../src/img/info2.png");
     background-size: cover;
     cursor: pointer;
     transition: all 0.2s ease-out;
+    -webkit-app-region: no-drag;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
 }
 
 .main {
