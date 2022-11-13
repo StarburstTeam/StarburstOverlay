@@ -50,13 +50,13 @@ class Hypixel {
     getUuid = (name) => this.uuids[name];
     download = async (name, callback) => {//true if success, false if player not found, null if api error
         if (this.data[name] != null && this.data[name].success == true && this.data[name].time + 120 * 1000 > new Date().getTime())
-            return;
+            return true;
         this.data[name] = { success: false };
         let uuid = await this.getPlayerUuid(name);
         if (uuid == null) {
             let time = new Date().getTime();
             this.data[name] = { success: true, time: time, nick: true };
-            return;
+            return false;
         }
         let playerData = await this.getPlayerData(uuid);
         let guildData = await this.getGuildData(uuid);
@@ -64,6 +64,7 @@ class Hypixel {
         let time = new Date().getTime();
         this.data[name] = { success: true, time: time, nick: false, player: playerData.player, guild: guildData.guild };
         if (callback != null) callback();
+        return true;
     }
     getRank = (name) => {
         if (this.data[name] == null || this.data[name].player == null) {
@@ -121,7 +122,7 @@ class Hypixel {
         else if (api.channel == 'PARTY') return '§9PRTY';
         return '§7-'
     }
-    getData = (name, type) => {
+    getMiniData = (name, type) => {
         let api = this.data[name].player;
         if (this.data[name].nick) return [name, 'NICK'];
         let basic = {
@@ -162,6 +163,34 @@ class Hypixel {
             (api.stats?.MurderMystery?.detective_chance ?? 0) + '%',
             (api.stats?.MurderMystery?.alpha_chance ?? 0) + '%'];
 
+    }
+    getGuild = (name) => {
+        let guildJson = this.data[name].guild;
+        if (guildJson == null)
+            return 'Guild : No Guild';
+        let data = `Guild : ${guildJson.name}<br>
+        Level : ${getGuildLevel(guildJson.exp).toFixed(2)}<br>
+        Members : ${guildJson.members.length}<br>`
+        let playerGuildJson = guildJson.members.find(member => member.uuid == this.uuids[name]);
+        let rankJson = guildJson.ranks.find(rank => rank.name == playerGuildJson.rank);
+        if (playerGuildJson == null || rankJson == null) return data;
+        return data + `Join Time : ${formatDateTime(playerGuildJson.joined)}<br>
+        Rank : ${playerGuildJson.rank} (${formatColor(formatColorFromString(guildJson.tagColor) + '[' + rankJson.tag + ']')})`;
+    }
+
+    getStatus = async (name) => {
+        const b = await fetch(`https://api.hypixel.net/status?key=${this.apiKey}&uuid=${this.getUuid(name)}`)
+            .catch(reason => console.log(reason))
+            .then(res => res.json());
+        if (!b.success)
+            return document.getElementById('status').innerHTML = b.cause;
+        let statusJson = b.session;
+        if (statusJson.online)
+            if (statusJson.map != null)
+                return `Status : Online<br>Game Type : ${formatNameString(statusJson.gameType)}<br>Mode : ${formatNameString(statusJson.mode)}<br>Map : ${statusJson.map}`;
+            else
+                return `Status : Online<br>Game Type : ${formatNameString(statusJson.gameType)}<br>Mode : ${formatNameString(statusJson.mode)}`;
+        else return `Status : Offline`;
     }
 }
 
@@ -208,4 +237,15 @@ const wsColorList = {
 }
 
 const pickColor = (list, value) => colorList[list.indexOf(list.find(v => v >= value))];
-const buildSpan = (list, value) => `<span style="color:${pickColor(list, value)}">${value}</span>`
+const buildSpan = (list, value) => `<span style="color:${pickColor(list, value)}">${value}</span>`;
+
+const getGuildLevel = (exp) => {
+    let guildLevelTables = [100000, 150000, 250000, 500000, 750000, 1000000, 1250000, 1500000, 2000000, 2500000, 2500000, 2500000, 2500000, 2500000, 3000000];
+    let level = 0;
+    for (let i = 0; ; i++) {
+        need = i >= guildLevelTables.length ? guildLevelTables[guildLevelTables.length - 1] : guildLevelTables[i];
+        exp -= need;
+        if (exp < 0) return level + 1 + exp / need;
+        else level++;
+    }
+}

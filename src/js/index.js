@@ -1,4 +1,4 @@
-const remote = require('electron').remote;
+const { remote, shell } = require('electron');
 const { Notification } = remote;
 const { Tail } = require('tail');
 const fs = require('fs');
@@ -13,7 +13,7 @@ let config = {
 let inLobby = true, players = [], hypixel = null, numplayers = 0;
 let missingPlayer = false;
 
-window.onload = e => {
+window.onload = async () => {
     if (!fs.existsSync(configPath))
         fs.writeFileSync(configPath, JSON.stringify(config));
     config = JSON.parse(fs.readFileSync(configPath));
@@ -114,6 +114,24 @@ window.onload = e => {
         }
     });
     tail.on('error', (err) => console.log(err));
+
+    //init search page
+    let games = await fetch('json/games.json').then(res => res.json());
+    modeList.reduce((p, c) => {
+        let root = document.createElement('div');
+        root.className = 'dataStyle';
+        root.id = c;
+        root.addEventListener('click', (e) => { showDetail(e.path[1].id); });
+        let name = document.createElement('div');
+        name.style.fontSize = '20px';
+        name.innerHTML = games.find(it => it.short == c).name;
+        let detail = document.createElement('div');
+        detail.id = c + 'detail';
+        root.appendChild(name);
+        root.appendChild(detail);
+        p.appendChild(root);
+        return p;
+    }, document.getElementById('details'));
 }
 
 let nowType = 'mm';
@@ -135,12 +153,12 @@ const updateHTML = () => {
             continue;
         }
         if (hypixel.data[players[i]].success == false) continue;// wait for download
-        let data = hypixel.getData(players[i], nowType);
+        let data = hypixel.getMiniData(players[i], nowType);
         if (hypixel.data[players[i]].nick == true) {
             document.getElementById('Levels').innerHTML += `<div>[ ? ]</div>`;
             document.getElementById('Avatars').innerHTML += `<div></div>`;
             document.getElementById('Players').innerHTML += `<div>${data[0]}</div>`;
-            document.getElementById('Tags').innerHTML += `<div style="width:${width/2}px">${formatColor('§eNICK')}</div>`;
+            document.getElementById('Tags').innerHTML += `<div style="width:${width / 2}px">${formatColor('§eNICK')}</div>`;
             for (let j = 0; j < title.length; j++)
                 document.getElementById(title[j]).innerHTML += '<div></div>';
             continue;
@@ -148,7 +166,7 @@ const updateHTML = () => {
         document.getElementById('Levels').innerHTML += `<div>[${data[0]}]</div>`;
         document.getElementById('Avatars').innerHTML += `<img src="https://crafatar.com/avatars/${hypixel.getUuid(players[i])}?overlay" style="width:20px;height:20px"><br>`;
         document.getElementById('Players').innerHTML += `<div onclick="clickPlayerName('${players[i]}')">${data[1]}</div>`
-        document.getElementById('Tags').innerHTML += `<div style="width:${width/2}px">${formatColor(hypixel.getTag(players[i]))}</div>`;
+        document.getElementById('Tags').innerHTML += `<div style="width:${width / 2}px">${formatColor(hypixel.getTag(players[i]))}</div>`;
         for (let j = 0; j < title.length; j++)
             document.getElementById(title[j]).innerHTML += `<div>${data[j + 2]}</div>`
     }
@@ -156,7 +174,7 @@ const updateHTML = () => {
         document.getElementById('Players').innerHTML += `<div>${formatColor('§cMissing players')}</div><div>${formatColor('§cPlease type /who')}</div>`;
 }
 
-const width = 90;
+const width = 100;
 const changeCategory = () => {
     let main = document.getElementById('main'), category = hypixel.getTitle(nowType);
     main.innerHTML = '<ul class="subtitle" style="width:450px">Players</ul>';
@@ -175,6 +193,19 @@ const closeWindow = () => currentWindow.close();
 
 const minimize = () => currentWindow.minimize();
 
+const openUrl = (url) => shell.openExternal(url);
+
+const showSearchPage = () => {
+    if (document.getElementById('main').hidden) switchPage('main');
+    else switchPage('infoPage');
+}
+
+const switchPage = (page) => {
+    document.getElementById('main').hidden = true;
+    document.getElementById('infoPage').hidden = true;
+    document.getElementById(page).hidden = false;
+}
+
 let nowShow = true;
 const showClick = () => {
     resize(null);
@@ -185,7 +216,7 @@ const resize = (show) => {
     document.getElementById('show').style.transform = `rotate(${nowShow ? 0 : 90}deg)`;
     let height = nowShow ? 600 : 40;
     currentWindow.setResizable(true);
-    currentWindow.setSize(1000, height, true);
+    currentWindow.setSize(1090, height, true);
     currentWindow.setResizable(false);
 }
 const clickPlayerName = (name) => {
@@ -196,4 +227,56 @@ const test = async (name) => {
     await hypixel.download(name);
     players.push(name);
     updateHTML();
+}
+
+let searchPlayerName = null;
+const search = async (name) => {
+    if (name == null) name = document.getElementById('playername').value;
+    searchPlayerName = name;
+    let i = await hypixel.download(name);
+    console.log(i);
+    if (i == null) return alert('API Error');
+    if (i == false) return alert('Player Not Found!');
+
+    let data = hypixel.data[name];
+    if (data.success == false) return console.log(data);
+
+    document.getElementById('playerName').innerHTML = formatColor(hypixel.formatName(name));
+    document.getElementById('skin').src = `https://crafatar.com/renders/body/${hypixel.getUuid(name)}?overlay`;
+    document.getElementById('networkinfo').innerHTML = getData['ov'](data.player);
+    document.getElementById('guild').innerHTML = hypixel.getGuild(name);
+    document.getElementById('status').innerHTML = await hypixel.getStatus(name);
+    document.getElementById('socialMedia').innerHTML = '';
+    socialMediaList.reduce((prev, cur) => {
+        let link = getSocialMedia(cur, data.player);
+        if (link != null) {
+            let icon = document.createElement('img');
+            icon.src = 'img/icons/' + cur.toLowerCase() + '.png';
+            icon.style = 'width:70px;height:70px;';
+            icon.addEventListener('click', (e) => openUrl(link));
+            prev.appendChild(icon);
+        }
+        return prev;
+    }, document.getElementById('socialMedia'));
+}
+
+let latestmode = '';
+const showDetail = (mode) => {
+    if (searchPlayerName == null || mode == 'details') return;
+    if (latestmode == mode) {
+        document.getElementById(latestmode + 'detail').innerHTML = '';
+        latestmode = '';
+    } else {
+        if (latestmode != '')
+            document.getElementById(latestmode + 'detail').innerHTML = '';
+        document.getElementById(mode + 'detail').innerHTML = getData[mode](hypixel.data[searchPlayerName].player);
+        latestmode = mode;
+    }
+}
+
+const downloadSkin = () => {
+    let a = document.createElement('a');
+    a.href = `https://crafatar.com/skins/${hypixel.getUuid(searchPlayerName)}`;
+    a.download = `${getUuid(searchPlayerName)}.png`;
+    a.click();
 }
