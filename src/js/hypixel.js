@@ -164,12 +164,22 @@ class Hypixel {
             (api.stats?.MurderMystery?.alpha_chance ?? 0) + '%'];
 
     }
+    getGuildLevel = (exp) => {
+        let guildLevelTables = [100000, 150000, 250000, 500000, 750000, 1000000, 1250000, 1500000, 2000000, 2500000, 2500000, 2500000, 2500000, 2500000, 3000000];
+        let level = 0;
+        for (let i = 0; ; i++) {
+            let need = i >= guildLevelTables.length ? guildLevelTables[guildLevelTables.length - 1] : guildLevelTables[i];
+            exp -= need;
+            if (exp < 0) return level + 1 + exp / need;
+            else level++;
+        }
+    }
     getGuild = (name) => {
         let guildJson = this.data[name].guild;
         if (guildJson == null)
             return 'Guild : No Guild';
         let data = `Guild : ${guildJson.name}<br>
-        Level : ${getGuildLevel(guildJson.exp).toFixed(2)}<br>
+        Level : ${this.getGuildLevel(guildJson.exp).toFixed(2)}<br>
         Members : ${guildJson.members.length}<br>`
         let playerGuildJson = guildJson.members.find(member => member.uuid == this.uuids[name]);
         let rankJson = guildJson.ranks.find(rank => rank.name == playerGuildJson.rank);
@@ -177,7 +187,6 @@ class Hypixel {
         return data + `Join Time : ${formatDateTime(playerGuildJson.joined)}<br>
         Rank : ${playerGuildJson.rank} (${formatColor(formatColorFromString(guildJson.tagColor) + '[' + rankJson.tag + ']')})`;
     }
-
     getStatus = async (name) => {
         const b = await fetch(`https://api.hypixel.net/status?key=${this.apiKey}&uuid=${this.getUuid(name)}`)
             .catch(reason => console.log(reason))
@@ -238,14 +247,3 @@ const wsColorList = {
 
 const pickColor = (list, value) => colorList[list.indexOf(list.find(v => v >= value))];
 const buildSpan = (list, value) => `<span style="color:${pickColor(list, value)}">${value}</span>`;
-
-const getGuildLevel = (exp) => {
-    let guildLevelTables = [100000, 150000, 250000, 500000, 750000, 1000000, 1250000, 1500000, 2000000, 2500000, 2500000, 2500000, 2500000, 2500000, 3000000];
-    let level = 0;
-    for (let i = 0; ; i++) {
-        need = i >= guildLevelTables.length ? guildLevelTables[guildLevelTables.length - 1] : guildLevelTables[i];
-        exp -= need;
-        if (exp < 0) return level + 1 + exp / need;
-        else level++;
-    }
-}

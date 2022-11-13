@@ -203,7 +203,10 @@ const showSearchPage = () => {
 const switchPage = (page) => {
     document.getElementById('main').hidden = true;
     document.getElementById('infoPage').hidden = true;
+    document.getElementById('info').style.backgroundImage = 'url(../src/img/info1.png)';
     document.getElementById(page).hidden = false;
+    if (page == 'infoPage')
+        document.getElementById('info').style.backgroundImage = 'url(../src/img/info2.png)';
 }
 
 let nowShow = true;
@@ -220,7 +223,8 @@ const resize = (show) => {
     currentWindow.setResizable(false);
 }
 const clickPlayerName = (name) => {
-    console.log(name);
+    switchPage('infoPage');
+    search(name);
 }
 
 const test = async (name) => {

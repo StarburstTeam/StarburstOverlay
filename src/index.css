@@ -183,6 +183,7 @@ input {
   color: #FFFFFF;
 }
 
+.download,
 .searchButton {
   background: transparent;
   font-family: "Minecraftia";
