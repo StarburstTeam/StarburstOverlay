@@ -16,6 +16,7 @@ window.onload = async () => {
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
 
     nowType = config.get('lastType');
+    document.getElementById('infotype').value = nowType;
     changeCategory();
     updateHTML();
 
@@ -228,6 +229,12 @@ const resize = (show) => {
 const clickPlayerName = (name) => {
     switchPage('infoPage');
     search(name);
+}
+
+const changeDiv = () => {
+    nowType = document.getElementById('infotype').value;
+    changeCategory();
+    config.save();
 }
 
 const test = async (name) => {
