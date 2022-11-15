@@ -225,36 +225,37 @@ const formatColor = (data) => {
 
 const colorList = ['7', 'f', '6', '3', 'c', 'd'];
 const lvlList = {
-    lvl: [50, 100, 150, 200, 250, Infinity]
+    lvl: [50, 100, 150, 200, 250]
 }, wsColorList = {
-    bw: [4, 10, 25, 50, 100, Infinity],
-    sw: [50, 100, 150, 200, 250, Infinity],
-    duel: [4, 10, 25, 50, 100, Infinity]
+    bw: [4, 10, 25, 50, 100],
+    sw: [50, 100, 150, 200, 250],
+    duel: [4, 10, 25, 50, 100]
 }, kdrColorList = {
-    bw: [1, 3, 5, 10, 25, Infinity],
-    sw: [1, 2, 3, 4, 5, Infinity],
-    duel: [1, 2, 3, 5, 7.5, Infinity]
+    bw: [1, 3, 5, 10, 25],
+    sw: [1, 2, 3, 4, 5],
+    duel: [1, 2, 3, 5, 7.5]
 }, wlrColorList = {
-    bw: [1, 2, 5, 7, 10, Infinity],
-    sw: [0.1, 0.25, 0.5, 0.75, 1, Infinity],
+    bw: [1, 2, 5, 7, 10],
+    sw: [0.1, 0.25, 0.5, 0.75, 1],
     mm: [70, 80, 85, 90, 95, 100],
-    duel: [1, 2, 3, 5, 7.5, Infinity]
+    duel: [1, 2, 3, 5, 7.5]
 }, bblrColorList = {
-    bw: [1, 2, 3, 5, 7.5, Infinity]
+    bw: [1, 2, 3, 5, 7.5]
 }, finalsColorList = {
-    bw: [1000, 5000, 10000, 20000, 30000, Infinity],
-    sw: [1000, 5000, 15000, 30000, 75000, Infinity],
-    mm: [500, 1000, 4000, 10000, 20000, Infinity],
-    duel: [500, 1500, 4000, 10000, 17500, Infinity]
+    bw: [1000, 5000, 10000, 20000, 30000],
+    sw: [1000, 5000, 15000, 30000, 75000],
+    mm: [500, 1000, 4000, 10000, 20000],
+    duel: [500, 1500, 4000, 10000, 17500]
 }, winsColorList = {
-    bw: [500, 1000, 3000, 5000, 10000, Infinity],
-    sw: [100, 750, 4000, 10000, 25000, Infinity],
-    duel: [500, 1500, 4000, 10000, 17500, Infinity]
+    bw: [500, 1000, 3000, 5000, 10000],
+    sw: [100, 750, 4000, 10000, 25000],
+    duel: [500, 1500, 4000, 10000, 17500]
 }, probabilityList = {
-    murderer_chance: [1, 3, 5, 10, 15, Infinity],
-    detective_chance: [1, 3, 5, 10, 15, Infinity],
-    alpha_chance: [1, 3, 5, 10, 15, Infinity],
+    murderer_chance: [1, 3, 5, 10, 15],
+    detective_chance: [1, 3, 5, 10, 15],
+    alpha_chance: [1, 3, 5, 10, 15],
 }
 
-const pickColor = (list, value) => colorList[list.indexOf(list.find(v => v >= value))];
+const toDefault = (v, u, d) => v == u ? d : v;
+const pickColor = (list, value) => colorList[toDefault(list.indexOf(list.find(v => v >= value)), -1, 5)];
 const buildSpan = (list, value, prefix, suffix) => formatColor(`§${pickColor(list, value)}${prefix ?? ''}${value}${suffix ?? ''}`);
