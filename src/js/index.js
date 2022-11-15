@@ -1,4 +1,4 @@
-const { remote, shell } = require('electron');
+const { remote, shell, dialog, app } = require('electron');
 const { Notification } = remote;
 const { Tail } = require('tail');
 
@@ -11,6 +11,7 @@ let config = new Config('./config.json', {
 
 let inLobby = true, players = [], hypixel = null, numplayers = 0;
 let missingPlayer = false;
+let nowType = null;
 
 window.onload = async () => {
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
@@ -130,10 +131,17 @@ window.onload = async () => {
     }, document.getElementById('details'));
 }
 
-let nowType = 'mm';
 const updateHTML = () => {
+    if (config.get('logPath')=='') {
+        document.getElementById('Players').innerHTML += `${formatColor('§cLog Path Not Found')}<br>${formatColor('§cSet Log Path In Settings')}`;
+        return;
+    }
+    if (config.get('apiKey')=='') {
+        document.getElementById('Players').innerHTML += `${formatColor('§cAPI Key Not Found')}<br>${formatColor('§cType /api new To Get')}`;
+        return;
+    }
     if (!hypixel.verified && !hypixel.verifying) {
-        document.getElementById('Players').innerHTML += `${formatColor('§cInvalid API Key')}<br>`;
+        document.getElementById('Players').innerHTML += `${formatColor('§cInvalid API Key')}`;
         return;
     }
     let title = hypixel.getTitle(nowType);
@@ -152,14 +160,14 @@ const updateHTML = () => {
         let data = hypixel.getMiniData(players[i], nowType);
         if (hypixel.data[players[i]].nick == true) {
             document.getElementById('Levels').innerHTML += `<div>[ ? ]</div>`;
-            document.getElementById('Avatars').innerHTML += `<div></div>`;
+            document.getElementById('Avatars').innerHTML += `<div></div><br>`;
             document.getElementById('Players').innerHTML += `<div>${data[0]}</div>`;
             document.getElementById('Tags').innerHTML += `<div style="width:${width / 2}px">${formatColor('§eNICK')}</div>`;
             for (let j = 0; j < title.length; j++)
-                document.getElementById(title[j]).innerHTML += '<div></div>';
+                document.getElementById(title[j]).innerHTML += '<div></div><br>';
             continue;
         }
-        document.getElementById('Levels').innerHTML += `<div>[${data[0]}]</div>`;
+        document.getElementById('Levels').innerHTML += `<div>${data[0]}</div>`;
         document.getElementById('Avatars').innerHTML += `<img src="https://crafatar.com/avatars/${hypixel.getUuid(players[i])}?overlay" style="width:15px;height:15px"><br>`;
         document.getElementById('Players').innerHTML += `<div onclick="clickPlayerName('${players[i]}')">${data[1]}</div>`
         document.getElementById('Tags').innerHTML += `<div style="width:${width / 2}px">${formatColor(hypixel.getTag(players[i]))}</div>`;
@@ -174,7 +182,7 @@ const width = 100;
 const changeCategory = () => {
     let main = document.getElementById('main'), category = hypixel.getTitle(nowType);
     main.innerHTML = '<ul class="subtitle" style="width:450px">Players</ul>';
-    main.innerHTML += '<ul id="Levels" class="data" style="left:0px;text-align:left"></ul>';
+    main.innerHTML += '<ul id="Levels" class="data" style="left:0px;text-align:right"></ul>';
     main.innerHTML += '<ul id="Avatars" class="data" style="left:75px"></ul>';
     main.innerHTML += '<ul id="Players" class="data" style="left:100px;text-align:left"></ul>';
     main.innerHTML += '<ul class="subtitle" style="left:450px">Tag</ul>';
@@ -235,6 +243,7 @@ const changeDiv = () => {
     nowType = document.getElementById('infotype').value;
     changeCategory();
     config.save();
+    updateHTML();
 }
 
 const test = async (name) => {
@@ -294,4 +303,21 @@ const downloadSkin = () => {
     a.href = `https://crafatar.com/skins/${hypixel.getUuid(searchPlayerName)}`;
     a.download = `${hypixel.getUuid(searchPlayerName)}.png`;
     a.click();
+}
+
+const selectLogFile = () => {
+    let temppath = dialog.showOpenDialogSync(currentWindow, {
+        title: 'Select latest.log file',
+        defaultPath: app.getPath('home').replaceAll('\\', '/'),
+        buttonLabel: 'Select log file',
+        filters: [{
+            name: 'Latest log',
+            extensions: ['log']
+        }]
+    });
+    if (temppath == null) return;
+    config.set('logPath', temppath[0].replaceAll('\\', '/'));
+    app.relaunch();
+    app.exit(0);
+    app.quit();
 }

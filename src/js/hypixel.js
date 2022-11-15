@@ -127,29 +127,31 @@ class Hypixel {
         let api = this.data[name].player;
         if (this.data[name].nick) return [name, 'NICK'];
         let basic = {
-            name: this.formatName(name),
-            lvl: this.getLevel(api?.networkExp ?? 0),
+            name: formatColor(this.formatName(name)),
+            lvl: buildSpan(lvlList.lvl, this.getLevel(api?.networkExp ?? 0), '[', ']'),
             nick: false
         };
         if (type == 'bw')
             return [`${basic.lvl}`,
-            `[${api.achievements?.bedwars_level ?? 1}✪] ${formatColor(basic.name)}`,
+            `[${api.achievements?.bedwars_level ?? 1}✪] ${basic.name}`,
             buildSpan(wsColorList.bw, api.stats?.Bedwars?.winstreak ?? 0),
             buildSpan(kdrColorList.bw, ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.bw, ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.bw, api.stats?.Bedwars?.final_kills_bedwars ?? 0),
             buildSpan(winsColorList.bw, api.stats?.Bedwars?.wins_bedwars ?? 0)];
-        if (type == 'sw')
+        if (type == 'sw') {
+            let level = api.stats?.SkyWars?.levelFormatted ?? '§71⋆';
             return [`${basic.lvl}`,
-            `[${formatColor(api.stats?.SkyWars?.levelFormatted ?? '§71⋆')}] ${formatColor(basic.name)}`,
+            `${formatColor(`${level.substring(0, 2)}[${level.substring(2)}]`)} ${basic.name}`,
             buildSpan(wsColorList.sw, api.stats?.SkyWars?.win_streak ?? 0),
             buildSpan(kdrColorList.sw, ((api.stats?.SkyWars?.kills ?? 0) / (api.stats?.SkyWars?.deaths ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.sw, ((api.stats?.SkyWars?.wins ?? 0) / (api.stats?.SkyWars?.losses ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.sw, api.stats?.SkyWars?.kills ?? 0),
             buildSpan(winsColorList.sw, api.stats?.SkyWars?.wins ?? 0)];
+        }
         if (type == 'duel')
             return [`${basic.lvl}`,
-            `${formatColor(basic.name)}`,
+            `${basic.name}`,
             buildSpan(wsColorList.duel, api.stats?.Duels?.current_winstreak ?? 0),
             buildSpan(kdrColorList.duel, ((api.stats?.Duels?.kills ?? 0) / (api.stats?.Duels?.deaths ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.duel, ((api.stats?.Duels?.wins ?? 0) / (api.stats?.Duels?.losses ?? 0)).toFixed(2)),
@@ -157,12 +159,12 @@ class Hypixel {
             buildSpan(winsColorList.duel, api.stats?.Duels?.wins ?? 0)];
         if (type == 'mm')
             return [`${basic.lvl}`,
-            `${formatColor(basic.name)}`,
-            (100 * (api.stats?.MurderMystery?.wins ?? 0) / (api.stats?.MurderMystery?.games ?? 0)).toFixed(1) + '%',
-            api.stats?.MurderMystery?.kills ?? 0,
-            (api.stats?.MurderMystery?.murderer_chance ?? 0) + '%',
-            (api.stats?.MurderMystery?.detective_chance ?? 0) + '%',
-            (api.stats?.MurderMystery?.alpha_chance ?? 0) + '%'];
+            `${basic.name}`,
+            buildSpan(wlrColorList.mm, (100 * (api.stats?.MurderMystery?.wins ?? 0) / (api.stats?.MurderMystery?.games ?? 0)).toFixed(1), '', '%'),
+            buildSpan(finalsColorList.mm, api.stats?.MurderMystery?.kills ?? 0),
+            buildSpan(probabilityList.murderer_chance, (api.stats?.MurderMystery?.murderer_chance ?? 0), '', '%'),
+            buildSpan(probabilityList.detective_chance, (api.stats?.MurderMystery?.detective_chance ?? 0), '', '%'),
+            buildSpan(probabilityList.alpha_chance, (api.stats?.MurderMystery?.alpha_chance ?? 0), '', '%')];
 
     }
     getGuildLevel = (exp) => {
@@ -221,8 +223,10 @@ const formatColor = (data) => {
         '<span style="color:' + colors[0] + '">') + '</span>';
 }
 
-const colorList = ['#AAAAAA', '#FFFFFF', '#FFAA00', '#00AAAA', '#AA0000', '#AA00AA'];
-const wsColorList = {
+const colorList = ['7', 'f', '6', '3', 'c', 'd'];
+const lvlList = {
+    lvl: [50, 100, 150, 200, 250, Infinity]
+}, wsColorList = {
     bw: [4, 10, 25, 50, 100, Infinity],
     sw: [50, 100, 150, 200, 250, Infinity],
     duel: [4, 10, 25, 50, 100, Infinity]
@@ -233,18 +237,24 @@ const wsColorList = {
 }, wlrColorList = {
     bw: [1, 2, 5, 7, 10, Infinity],
     sw: [0.1, 0.25, 0.5, 0.75, 1, Infinity],
+    mm: [70, 80, 85, 90, 95, 100],
     duel: [1, 2, 3, 5, 7.5, Infinity]
 }, bblrColorList = {
     bw: [1, 2, 3, 5, 7.5, Infinity]
 }, finalsColorList = {
     bw: [1000, 5000, 10000, 20000, 30000, Infinity],
     sw: [1000, 5000, 15000, 30000, 75000, Infinity],
+    mm: [500, 1000, 4000, 10000, 20000, Infinity],
     duel: [500, 1500, 4000, 10000, 17500, Infinity]
 }, winsColorList = {
     bw: [500, 1000, 3000, 5000, 10000, Infinity],
     sw: [100, 750, 4000, 10000, 25000, Infinity],
     duel: [500, 1500, 4000, 10000, 17500, Infinity]
+}, probabilityList = {
+    murderer_chance: [1, 3, 5, 10, 15, Infinity],
+    detective_chance: [1, 3, 5, 10, 15, Infinity],
+    alpha_chance: [1, 3, 5, 10, 15, Infinity],
 }
 
 const pickColor = (list, value) => colorList[list.indexOf(list.find(v => v >= value))];
-const buildSpan = (list, value) => `<span style="color:${pickColor(list, value)}">${value}</span>`;
+const buildSpan = (list, value, prefix, suffix) => formatColor(`§${pickColor(list, value)}${prefix ?? ''}${value}${suffix ?? ''}`);
