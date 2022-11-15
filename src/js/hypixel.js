@@ -151,7 +151,7 @@ class Hypixel {
         }
         if (type == 'duel')
             return [`${basic.lvl}`,
-            `${basic.name}`,
+            `${pickDuelLvl(api.stats?.Duels?.wins ?? 0)} ${basic.name}`,
             buildSpan(wsColorList.duel, api.stats?.Duels?.current_winstreak ?? 0),
             buildSpan(kdrColorList.duel, ((api.stats?.Duels?.kills ?? 0) / (api.stats?.Duels?.deaths ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.duel, ((api.stats?.Duels?.wins ?? 0) / (api.stats?.Duels?.losses ?? 0)).toFixed(2)),
@@ -255,7 +255,20 @@ const lvlList = {
     detective_chance: [1, 3, 5, 10, 15],
     alpha_chance: [1, 3, 5, 10, 15],
 }
-
 const toDefault = (v, u, d) => v == u ? d : v;
 const pickColor = (list, value) => colorList[toDefault(list.indexOf(list.find(v => v >= value)), -1, 5)];
 const buildSpan = (list, value, prefix, suffix) => formatColor(`§${pickColor(list, value)}${prefix ?? ''}${value}${suffix ?? ''}`);
+
+const duelLvlList = [
+    { lvl: 100, txt: '' },
+    { lvl: 120, txt: '§7[I]' }, { lvl: 140, txt: '§7[II]' }, { lvl: 160, txt: '§7[III]' }, { lvl: 180, txt: '§7[IV]' }, { lvl: 200, txt: '§7[V]' },
+    { lvl: 260, txt: '§f[I]' }, { lvl: 320, txt: '§f[II]' }, { lvl: 380, txt: '§f[III]' }, { lvl: 440, txt: '§f[IV]' }, { lvl: 500, txt: '§f[V]' },
+    { lvl: 600, txt: '§6[I]' }, { lvl: 700, txt: '§6[II]' }, { lvl: 800, txt: '§6[III]' }, { lvl: 900, txt: '§6[IV]' }, { lvl: 1000, txt: '§6[V]' },
+    { lvl: 1200, txt: '§3[I]' }, { lvl: 1400, txt: '§3[II]' }, { lvl: 1600, txt: '§3[III]' }, { lvl: 1800, txt: '§3[IV]' }, { lvl: 2000, txt: '§3[V]' },
+    { lvl: 2400, txt: '§2[I]' }, { lvl: 2800, txt: '§2[II]' }, { lvl: 3200, txt: '§2[III]' }, { lvl: 3600, txt: '§2[IV]' }, { lvl: 4000, txt: '§2[V]' },
+    { lvl: 5200, txt: '§4[I]' }, { lvl: 6400, txt: '§4[II]' }, { lvl: 7600, txt: '§4[III]' }, { lvl: 8800, txt: '§4[IV]' }, { lvl: 10000, txt: '§4[V]' },
+    { lvl: 12000, txt: '§e[I]' }, { lvl: 14000, txt: '§e[II]' }, { lvl: 16000, txt: '§e[III]' }, { lvl: 18000, txt: '§e[IV]' }, { lvl: 20000, txt: '§e[V]' },
+    { lvl: 24000, txt: '§5[I]' }, { lvl: 28000, txt: '§5[II]' }, { lvl: 32000, txt: '§5[III]' }, { lvl: 36000, txt: '§5[IV]' }, { lvl: 40000, txt: '§5[V]' },
+    { lvl: 44000, txt: '§5[VI]' }, { lvl: 48000, txt: '§5[VII]' }, { lvl: 52000, txt: '§5[VII]' }, { lvl: 56000, txt: '§5[IX]' }, { lvl: Infinity, txt: '§5[X]' },
+];
+const pickDuelLvl = (wins) => formatColor(duelLvlList.find(x => x.lvl >= wins).txt);
