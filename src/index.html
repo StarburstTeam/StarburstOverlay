@@ -10,6 +10,7 @@
   <script src="js/search.js"></script>
   <script src="js/index.js"></script>
   <link rel="styleSheet" href="scrollbar.css">
+  <link rel="styleSheet" href="switch.css">
   <link rel="styleSheet" href="index.css">
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
 </head>
@@ -64,6 +65,18 @@
     <div>
       <div class="setting_subtitle" style="float:left">Log Path (Will Restart) :</div>
       <button class="setting_button" onclick="selectLogFile()">Change Log Path</button>
-    </div>
+    </div><br>
+    <div>
+      <div class="setting_subtitle">Hypixel Language :</div>
+      <select id="hyplang" style="height:auto" onchange="changeLang()">
+      </select>
+    </div><br>
+    <div>
+      <div class="setting_subtitle">Auto Shrink :</div>
+      <label class="switch">
+        <input type="checkbox" onchange="console.log(this.checked)">
+        <div class="slider round"></div>
+      </label>
+    </div><br>
   </div>
 </body>

@@ -9,18 +9,19 @@ let config = new Config('./config.json', {
     lastType: 'bw'
 });
 
-let inLobby = true, players = [], hypixel = null, numplayers = 0;
+let inLobby = true, players = [], hypixel = null, i18n = null, numplayers = 0;
 let missingPlayer = false;
 let nowType = null;
 
 window.onload = async () => {
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
+    i18n = new I18n('./lang');
 
     nowType = config.get('lastType');
     document.getElementById('infotype').value = nowType;
     changeCategory();
     updateHTML();
-    
+
     //init search page
     let games = await fetch('json/games.json').then(res => res.json());
     modeList.reduce((p, c) => {
@@ -39,8 +40,13 @@ window.onload = async () => {
         return p;
     }, document.getElementById('details'));
 
-    if(config.get('logPath')=='') return;
-    const tail = new Tail(config.get('logPath'), {/*logger: con, */useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
+    //init lang select element
+    for (let i in i18n.langs)
+        if (i18n.langs[i].id != null)
+            document.getElementById('hyplang').innerHTML += `<option value="${i18n.langs[i].id}">${i18n.langs[i].display}</option>`;
+
+    if (config.get('logPath') == '') return;
+    const tail = new Tail(config.get('logPath'), {useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
     tail.on('line', data => {
         let s = data.indexOf('[CHAT]');
         if (s == -1) return;//not a chat log
@@ -133,11 +139,11 @@ window.onload = async () => {
 }
 
 const updateHTML = () => {
-    if (config.get('logPath')=='') {
+    if (config.get('logPath') == '') {
         document.getElementById('Players').innerHTML = `${formatColor('§cLog Path Not Found')}<br>${formatColor('§cSet Log Path In Settings')}`;
         return;
     }
-    if (config.get('apiKey')=='') {
+    if (config.get('apiKey') == '') {
         document.getElementById('Players').innerHTML = `${formatColor('§cAPI Key Not Found')}<br>${formatColor('§cType /api new To Get')}`;
         return;
     }
@@ -322,4 +328,8 @@ const selectLogFile = () => {
     app.relaunch();
     app.exit(0);
     app.quit();
+}
+
+const changeLang = () => {
+    this.i18n.current = document.getElementById('hyplang').value;
 }

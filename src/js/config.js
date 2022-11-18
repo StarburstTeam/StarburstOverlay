@@ -1,12 +1,11 @@
-const fs = require('fs');
-
 class Config {
     constructor(path, defaultValue) {
         this.path = path;
         this.defaultValue = defaultValue;
-        if (!fs.existsSync(path))
-            fs.writeFileSync(path, JSON.stringify(defaultValue));
-        this.config = JSON.parse(fs.readFileSync(path));
+        this.fs = require('fs');
+        if (!this.fs.existsSync(path))
+            this.fs.writeFileSync(path, JSON.stringify(defaultValue));
+        this.config = JSON.parse(this.fs.readFileSync(path));
     }
     get = (name) => {
         if (this.config[name] == null) {
@@ -17,6 +16,5 @@ class Config {
         } else return this.config[name];
     }
     set = (name, val) => this.config[name] = val;
-
-    save = () => fs.writeFileSync(this.path, JSON.stringify(this.config));
+    save = () => this.fs.writeFileSync(this.path, JSON.stringify(this.config));
 }

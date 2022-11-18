@@ -1,25 +1,31 @@
-const fs = require('fs');
-
-class Language {
+class I18n {
     constructor(folder) {
         this.folder = folder;
-        this.langs = [];
+        this.langs = {};
+        this.current = 'en';
+        this.fs = require('fs');
+        this.load();
     }
     load = () => {
-        let files = fs.readdirSync(this.folder, 'utf-8');
-        let langFiles = files.reduce((p, c) => {
+        let files = this.fs.readdirSync(this.folder, 'utf-8');
+        files.reduce((p, c) => {
             if (c.endsWith('.json'))
                 p.push(c);
             return p;
-        }, []);
-        langFiles.forEach(path => {
+        }, []).forEach(path => {
             try {
-                let text = fs.readFileSync('./lang/' + path);
+                let text = this.fs.readFileSync('./lang/' + path);
                 let json = JSON.parse(text);
-                this.langs[json.name] = { display: json.display, value: json.value };
+                this.langs[json.id] = { id: json.id, display: json.display, value: json.value };
             } catch (err) {
                 console.log(err);
             }
         });
+    }
+    translate = (text) => {
+        if (this.current == 'en') return text;
+        let res = this.langs[this.current]?.value[text] ?? undefined;
+        if (res == null) res = text;
+        return res;
     }
 }

@@ -12,7 +12,7 @@
   "description": "",
   "dependencies": {
     "auto-git-update": "^1.1.1",
-    "electron": "^21.2.3",
+    "electron": "^13.0.0",
     "tail": "^2.2.4"
   }
 }
