@@ -1,5 +1,5 @@
-const { remote, shell, dialog, app } = require('electron');
-const { Notification } = remote;
+const { remote, shell } = require('electron');
+const { Notification, dialog, app } = remote;
 const { Tail } = require('tail');
 
 const currentWindow = remote.getCurrentWindow();
@@ -20,7 +20,26 @@ window.onload = async () => {
     document.getElementById('infotype').value = nowType;
     changeCategory();
     updateHTML();
+    
+    //init search page
+    let games = await fetch('json/games.json').then(res => res.json());
+    modeList.reduce((p, c) => {
+        let root = document.createElement('div');
+        root.className = 'dataStyle';
+        root.id = c;
+        root.addEventListener('click', (e) => { showDetail(e.path[1].id); });
+        let name = document.createElement('div');
+        name.style.fontSize = '20px';
+        name.innerHTML = games.find(it => it.short == c).name;
+        let detail = document.createElement('div');
+        detail.id = c + 'detail';
+        root.appendChild(name);
+        root.appendChild(detail);
+        p.appendChild(root);
+        return p;
+    }, document.getElementById('details'));
 
+    if(config.get('logPath')=='') return;
     const tail = new Tail(config.get('logPath'), {/*logger: con, */useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
     tail.on('line', data => {
         let s = data.indexOf('[CHAT]');
@@ -111,37 +130,19 @@ window.onload = async () => {
         }
     });
     tail.on('error', (err) => console.log(err));
-
-    //init search page
-    let games = await fetch('json/games.json').then(res => res.json());
-    modeList.reduce((p, c) => {
-        let root = document.createElement('div');
-        root.className = 'dataStyle';
-        root.id = c;
-        root.addEventListener('click', (e) => { showDetail(e.path[1].id); });
-        let name = document.createElement('div');
-        name.style.fontSize = '20px';
-        name.innerHTML = games.find(it => it.short == c).name;
-        let detail = document.createElement('div');
-        detail.id = c + 'detail';
-        root.appendChild(name);
-        root.appendChild(detail);
-        p.appendChild(root);
-        return p;
-    }, document.getElementById('details'));
 }
 
 const updateHTML = () => {
     if (config.get('logPath')=='') {
-        document.getElementById('Players').innerHTML += `${formatColor('§cLog Path Not Found')}<br>${formatColor('§cSet Log Path In Settings')}`;
+        document.getElementById('Players').innerHTML = `${formatColor('§cLog Path Not Found')}<br>${formatColor('§cSet Log Path In Settings')}`;
         return;
     }
     if (config.get('apiKey')=='') {
-        document.getElementById('Players').innerHTML += `${formatColor('§cAPI Key Not Found')}<br>${formatColor('§cType /api new To Get')}`;
+        document.getElementById('Players').innerHTML = `${formatColor('§cAPI Key Not Found')}<br>${formatColor('§cType /api new To Get')}`;
         return;
     }
     if (!hypixel.verified && !hypixel.verifying) {
-        document.getElementById('Players').innerHTML += `${formatColor('§cInvalid API Key')}`;
+        document.getElementById('Players').innerHTML = `${formatColor('§cInvalid API Key')}`;
         return;
     }
     let title = hypixel.getTitle(nowType);
@@ -308,7 +309,7 @@ const downloadSkin = () => {
 const selectLogFile = () => {
     let temppath = dialog.showOpenDialogSync(currentWindow, {
         title: 'Select latest.log file',
-        defaultPath: app.getPath('home').replaceAll('\\', '/'),
+        defaultPath: app.getPath('home').split('\\').join('/'),
         buttonLabel: 'Select log file',
         filters: [{
             name: 'Latest log',
@@ -316,7 +317,8 @@ const selectLogFile = () => {
         }]
     });
     if (temppath == null) return;
-    config.set('logPath', temppath[0].replaceAll('\\', '/'));
+    config.set('logPath', temppath[0].split('\\').join('/'));
+    config.save();
     app.relaunch();
     app.exit(0);
     app.quit();

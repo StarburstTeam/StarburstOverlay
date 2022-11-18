@@ -133,7 +133,7 @@ class Hypixel {
         };
         if (type == 'bw')
             return [`${basic.lvl}`,
-            `[${api.achievements?.bedwars_level ?? 1}✪] ${basic.name}`,
+            `${formatBwLevel(api.achievements?.bedwars_level ?? 1)} ${basic.name}`,
             buildSpan(wsColorList.bw, api.stats?.Bedwars?.winstreak ?? 0),
             buildSpan(kdrColorList.bw, ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.bw, ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2)),
@@ -272,3 +272,43 @@ const duelLvlList = [
     { lvl: 44000, txt: '§5[VI]' }, { lvl: 48000, txt: '§5[VII]' }, { lvl: 52000, txt: '§5[VII]' }, { lvl: 56000, txt: '§5[IX]' }, { lvl: Infinity, txt: '§5[X]' },
 ];
 const pickDuelLvl = (wins) => formatColor(duelLvlList.find(x => x.lvl >= wins).txt);
+
+const bwLvlProvider = [
+    (lvl) => `§7[${lvl}✪]`,
+    (lvl) => `§f[${lvl}✪]`,
+    (lvl) => `§6[${lvl}✪]`,
+    (lvl) => `§b[${lvl}✪]`,
+    (lvl) => `§2[${lvl}✪]`,
+    (lvl) => `§3[${lvl}✪]`,
+    (lvl) => `§4[${lvl}✪]`,
+    (lvl) => `§d[${lvl}✪]`,
+    (lvl) => `§9[${lvl}✪]`,
+    (lvl) => `§5[${lvl}✪]`,
+    (lvl) => `§c[§61§e${Math.floor((lvl % 1000) / 100)}§a${Math.floor((lvl % 100) / 10)}§b${lvl % 10}§d✫§5]`,
+    (lvl) => `§7[§f${lvl}§7✪§7]`,
+    (lvl) => `§7[§e${lvl}§6✪§7]`,
+    (lvl) => `§7[§e${lvl}§6✪§7]`,
+    (lvl) => `§7[§b${lvl}§3✪§7]`,
+    (lvl) => `§7[§a${lvl}§2✪§7]`,
+    (lvl) => `§7[§3${lvl}§9✪§7]`,
+    (lvl) => `§7[§c${lvl}§4✪§7]`,
+    (lvl) => `§7[§d${lvl}§5✪§7]`,
+    (lvl) => `§7[§9${lvl}§1✪§7]`,
+    (lvl) => `§7[§5${lvl}§8✪§7]`,
+    (lvl) => `§8[§72§f${Math.floor(lvl / 10 % 100)}§7${lvl % 10}✪§8]`,
+    (lvl) => `§f[2§e${Math.floor(lvl / 10 % 100)}§6${lvl % 10}⚝]`,
+    (lvl) => `§6[2§f${Math.floor(lvl / 10 % 100)}§b${lvl % 10}§3⚝]`,
+    (lvl) => `§5[2§d${Math.floor(lvl / 10 % 100)}§6${lvl % 10}§e⚝]`,
+    (lvl) => `§b[2§f${Math.floor(lvl / 10 % 100)}§7${lvl % 10}⚝§8]`,
+    (lvl) => `§f[2§a${Math.floor(lvl / 10 % 100)}§2${lvl % 10}⚝]`,
+    (lvl) => `§4[2§c${Math.floor(lvl / 10 % 100)}§d${lvl % 10}⚝§5]`,
+    (lvl) => `§e[2§f${Math.floor(lvl / 10 % 100)}§8${lvl % 10}⚝]`,
+    (lvl) => `§a[${Math.floor(lvl / 1000)}§2${Math.floor(lvl / 100 % 10)}${Math.floor(lvl / 10 % 10)}§6${lvl % 10}⚝§c]`,
+    (lvl) => `§b[${Math.floor(lvl / 1000)}§3${Math.floor(lvl / 100 % 10)}${Math.floor(lvl / 10 % 10)}§9${lvl % 10}⚝§1]`
+], bwLvlProviderMax = (lvl) => `§e[3§6${Math.floor(lvl / 10 % 100)}§c${lvl % 10}⚝§4]`;
+const formatBwLevel = (lvl) => {
+    let i = Math.floor((lvl - 1) / 100);
+    let ret = bwLvlProvider[i];
+    if (ret == null) ret = bwLvlProviderMax;
+    return formatColor(ret(lvl));
+}
