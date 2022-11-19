@@ -41,6 +41,7 @@ body {
     border: none;
     outline: none;
     -webkit-app-region: no-drag;
+    transition: all 0.2s ease-out;
 }
 
 #quit:hover {
@@ -60,6 +61,7 @@ body {
     border: none;
     outline: none;
     -webkit-app-region: no-drag;
+    transition: all 0.2s ease-out;
 }
 
 #minimize:hover {
@@ -79,7 +81,7 @@ body {
     border: none;
     outline: none;
     -webkit-app-region: no-drag;
-    transition: all 0.1s ease-out;
+    transition: all 0.2s ease-out;
 }
 
 #show:hover {
@@ -99,6 +101,7 @@ body {
     border: none;
     outline: none;
     -webkit-app-region: no-drag;
+    transition: all 0.2s ease-out;
 }
 
 .settings_stay,
@@ -107,12 +110,38 @@ body {
     background-image: url("../src/img/settings2.png");
     background-size: cover;
     cursor: pointer;
-    transition: all 0.2s ease-out;
     -webkit-app-region: no-drag;
     height: 35px;
     width: 35px;
     border: none;
     outline: none;
+    transition: all 0.2s ease-out;
+}
+
+.search {
+    background: transparent;
+    background-image: url("../src/img/search1.png");
+    background-size: cover;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
+    -webkit-app-region: no-drag;
+    transition: all 0.2s ease-out;
+}
+
+.search_stay,
+.search:hover {
+    background: transparent;
+    background-image: url("../src/img/search2.png");
+    background-size: cover;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
+    transition: all 0.2s ease-out;
 }
 
 .info {
@@ -124,6 +153,7 @@ body {
     border: none;
     outline: none;
     -webkit-app-region: no-drag;
+    transition: all 0.2s ease-out;
 }
 
 .info_stay,
@@ -132,12 +162,12 @@ body {
     background-image: url("../src/img/info2.png");
     background-size: cover;
     cursor: pointer;
-    transition: all 0.2s ease-out;
     -webkit-app-region: no-drag;
     height: 35px;
     width: 35px;
     border: none;
     outline: none;
+    transition: all 0.2s ease-out;
 }
 
 .main {
@@ -242,4 +272,5 @@ select {
     border-style: solid;
     border-color: #b9b9b9;
     display: inline-block;
+    padding: 0 22px;
 }

@@ -7,7 +7,9 @@ let config = new Config('./config.json', {
     logPath: '',
     apiKey: '',
     lastType: 'bw',
-    autoShrink: true
+    lang: 'en',
+    autoShrink: true,
+    notification: true
 });
 
 let inLobby = true, players = [], hypixel = null, i18n = null, numplayers = 0;
@@ -17,10 +19,12 @@ let nowType = null;
 window.onload = async () => {
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
     i18n = new I18n('./lang');
+    i18n.current = config.get('lang');
 
     nowType = config.get('lastType');
     document.getElementById('infotype').value = nowType;
     document.getElementById('autoShrink').checked = config.get('autoShrink');
+    document.getElementById('notification').checked = config.get('notification');
     changeCategory();
     updateHTML();
 
@@ -58,7 +62,7 @@ window.onload = async () => {
         if (msg.indexOf(i18n.translate('chat.online')) != -1 && msg.indexOf(',') != -1) {//ONLINE: 
             if (inLobby) return;
             resize(true, false);
-            let who = msg.replace(i18n.translate('chat.online'),'').split(', ');
+            let who = msg.replace(i18n.translate('chat.online'), '').split(', ');
             players = [];
             for (let i = 0; i < who.length; i++) {
                 players.push(who[i]);
@@ -118,10 +122,11 @@ window.onload = async () => {
             // } else if (msg.indexOf('Can\'t find a') !== -1 && msg.indexOf('\'') !== -1 && msg.indexOf(':') === -1) {
         } else if (msg.indexOf(i18n.translate('chat.game.start.1')) != -1 && msg.indexOf(':') == -1) {//The game starts in 1 second!
             resize(false, false);
-            new Notification({
-                title: i18n.translate('chat.game.start.notification.title'),
-                body: i18n.translate('chat.game.start.notification.body')
-            }).show();
+            if (config.get('notification'))
+                new Notification({
+                    title: i18n.translate('chat.game.start.notification.title'),
+                    body: i18n.translate('chat.game.start.notification.body')
+                }).show();
         } else if (msg.indexOf(i18n.translate('chat.game.start.0')) != -1 && msg.indexOf(':') == -1)//The game starts in 0 second!
             resize(false, false);
         else if (msg.indexOf(i18n.translate('chat.api.new_api_key')) != -1 && msg.indexOf(':') == -1) {//new API key
@@ -211,7 +216,7 @@ const openUrl = (url) => shell.openExternal(url);
 
 const showSearchPage = () => {
     if (document.getElementById('main').hidden) switchPage('main');
-    else switchPage('infoPage');
+    else switchPage('searchPage');
 }
 
 let lastPage = 'main';
@@ -219,15 +224,19 @@ const switchPage = (page) => {
     if (document.getElementById('main').hidden && lastPage == page) page = 'main';
     lastPage = page;
     document.getElementById('main').hidden = true;
-    document.getElementById('infoPage').hidden = true;
+    document.getElementById('searchPage').hidden = true;
     document.getElementById('settingPage').hidden = true;
-    document.getElementById('info').className = 'info';
+    document.getElementById('infoPage').hidden = true;
+    document.getElementById('search').className = 'search';
     document.getElementById('settings').className = 'settings';
+    document.getElementById('info').className = 'info';
     document.getElementById(page).hidden = false;
-    if (page == 'infoPage')
-        document.getElementById('info').className = 'info_stay';
+    if (page == 'searchPage')
+        document.getElementById('search').className = 'search_stay';
     if (page == 'settingPage')
         document.getElementById('settings').className = 'settings_stay';
+    if (page == 'infoPage')
+        document.getElementById('info').className = 'info_stay';
 }
 
 let nowShow = true;
@@ -245,7 +254,7 @@ const resize = (show, force) => {
     currentWindow.setResizable(false);
 }
 const clickPlayerName = (name) => {
-    switchPage('infoPage');
+    switchPage('searchPage');
     search(name);
 }
 
@@ -335,9 +344,16 @@ const selectLogFile = () => {
 
 const changeLang = () => {
     i18n.current = document.getElementById('hyplang').value;
+    config.set('lang', i18n.current);
+    config.save();
 }
 
 const setAutoShrink = () => {
     config.set('autoShrink', document.getElementById('autoShrink').checked);
+    config.save();
+}
+
+const setNotification = () => {
+    config.set('notification', document.getElementById('notification').checked);
     config.save();
 }
