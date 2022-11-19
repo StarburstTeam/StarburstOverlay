@@ -10,16 +10,11 @@ let config = new Config('./config.json', {
     autoShrink: true,
     notification: true
 });
-
-let inLobby = true, players = [], hypixel = null, i18n = null, numplayers = 0;
-let missingPlayer = false;
-let nowType = null;
+let players = [], hypixel = null, nowType = null, inLobby = true, missingPlayer = false, numplayers = 0;
 
 window.onload = async () => {
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
-
-    nowType = config.get('lastType');
-    document.getElementById('infotype').value = nowType;
+    document.getElementById('infotype').value = nowType = config.get('lastType');
     document.getElementById('autoShrink').checked = config.get('autoShrink');
     document.getElementById('notification').checked = config.get('notification');
     changeCategory();
@@ -31,12 +26,12 @@ window.onload = async () => {
         let root = document.createElement('div');
         root.className = 'dataStyle';
         root.id = c;
-        root.addEventListener('click', (e) => { showDetail(e.path[1].id); });
+        root.addEventListener('click', (e) => showDetail(e.path[1].id));
         let name = document.createElement('div');
         name.style.fontSize = '20px';
         name.innerHTML = games.find(it => it.short == c).name;
         let detail = document.createElement('div');
-        detail.id = c + 'detail';
+        detail.id = `${c}detail`;
         root.appendChild(name);
         root.appendChild(detail);
         p.appendChild(root);
@@ -44,7 +39,7 @@ window.onload = async () => {
     }, document.getElementById('details'));
 
     if (config.get('logPath') == '') return;
-    const tail = new Tail(config.get('logPath'), {useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
+    const tail = new Tail(config.get('logPath'), { useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
     tail.on('line', data => {
         let s = data.indexOf('[CHAT]');
         if (s == -1) return;//not a chat log
@@ -52,8 +47,8 @@ window.onload = async () => {
         let msg = data.substring(s + 7).replace(' [C]', '');
         console.log(msg);
         if (msg.indexOf('ONLINE:') != -1 && msg.indexOf(',') != -1) {//the result of /who command
-            resize(true);
             if (inLobby) return;
+            resize(true);
             let who = msg.substring(8).split(', ');
             players = [];
             for (let i = 0; i < who.length; i++) {
@@ -114,19 +109,16 @@ window.onload = async () => {
             // } else if (msg.indexOf('Can\'t find a') !== -1 && msg.indexOf('\'') !== -1 && msg.indexOf(':') === -1) {
         } else if (msg.indexOf('The game starts in 1 second!') != -1 && msg.indexOf(':') == -1) {
             resize(false);
-            new Notification({
-                title: 'Game Started!',
-                body: 'Your Hypixel game has started!'
-            }).show();
-        } else if (msg.indexOf('The game starts in 0 second!') != -1 && msg.indexOf(':') == -1)
-            resize(false);
+            if (config.get('notification'))
+                new Notification({
+                    title: 'Game Started!',
+                    body: 'Your Hypixel game has started!'
+                }).show();
+        } else if (msg.indexOf('The game starts in 0 second!') != -1 && msg.indexOf(':') == -1) resize(false);
         else if (msg.indexOf('new API key') != -1 && msg.indexOf(':') == -1) {
             hypixel.apiKey = msg.substring(msg.indexOf('is ') + 3);
-            hypixel.owner = null;
-            hypixel.verified = false;
             hypixel.verifyKey();
             config.set('apiKey', hypixel.apiKey);
-            config.save();
         }
         if (changed) {
             console.log(players);
@@ -137,18 +129,13 @@ window.onload = async () => {
 }
 
 const updateHTML = () => {
-    if (config.get('logPath') == '') {
-        document.getElementById('Players').innerHTML = `${formatColor('§cLog Path Not Found')}<br>${formatColor('§cSet Log Path In Settings')}`;
-        return;
-    }
-    if (config.get('apiKey') == '') {
-        document.getElementById('Players').innerHTML = `${formatColor('§cAPI Key Not Found')}<br>${formatColor('§cType /api new To Get')}`;
-        return;
-    }
-    if (!hypixel.verified && !hypixel.verifying) {
-        document.getElementById('Players').innerHTML = `${formatColor('§cInvalid API Key')}`;
-        return;
-    }
+    if (config.get('logPath') == '')
+        return document.getElementById('Players').innerHTML = `${formatColor('§cLog Path Not Found')}<br>${formatColor('§cSet Log Path In Settings')}`;
+    if (config.get('apiKey') == '')
+        return document.getElementById('Players').innerHTML = `${formatColor('§cAPI Key Not Found')}<br>${formatColor('§cType /api new To Get')}`;
+    if (!hypixel.verified && !hypixel.verifying)
+        return document.getElementById('Players').innerHTML = `${formatColor('§cInvalid API Key')}<br>${formatColor('§cType /api new To Get')}`;
+
     let title = hypixel.getTitle(nowType);
     document.getElementById('Levels').innerHTML = '';
     document.getElementById('Avatars').innerHTML = '';
@@ -157,10 +144,7 @@ const updateHTML = () => {
     for (let j = 0; j < title.length; j++)
         document.getElementById(title[j]).innerHTML = '';
     for (let i = 0; i < players.length; i++) {
-        if (hypixel.data[players[i]] == null) {
-            console.log('The data is null!');
-            continue;
-        }
+        if (hypixel.data[players[i]] == null) continue;
         if (hypixel.data[players[i]].success == false) continue;// wait for download
         let data = hypixel.getMiniData(players[i], nowType);
         if (hypixel.data[players[i]].nick == true) {
@@ -174,7 +158,7 @@ const updateHTML = () => {
         }
         document.getElementById('Levels').innerHTML += `<div>${data[0]}</div>`;
         document.getElementById('Avatars').innerHTML += `<img src="https://crafatar.com/avatars/${hypixel.getUuid(players[i])}?overlay" style="width:15px;height:15px"><br>`;
-        document.getElementById('Players').innerHTML += `<div onclick="clickPlayerName('${players[i]}')">${data[1]}</div>`
+        document.getElementById('Players').innerHTML += `<div onclick="search('${players[i]}')">${data[1]}</div>`
         document.getElementById('Tags').innerHTML += `<div style="width:${width / 2}px">${formatColor(hypixel.getTag(players[i]))}</div>`;
         for (let j = 0; j < title.length; j++)
             document.getElementById(title[j]).innerHTML += `<div>${data[j + 2]}</div>`
@@ -199,17 +183,6 @@ const changeCategory = () => {
     config.set('lastType', nowType);
 }
 
-const closeWindow = () => currentWindow.close();
-
-const minimize = () => currentWindow.minimize();
-
-const openUrl = (url) => shell.openExternal(url);
-
-const showSearchPage = () => {
-    if (document.getElementById('main').hidden) switchPage('main');
-    else switchPage('searchPage');
-}
-
 let lastPage = 'main';
 const switchPage = (page) => {
     if (document.getElementById('main').hidden && lastPage == page) page = 'main';
@@ -222,18 +195,12 @@ const switchPage = (page) => {
     document.getElementById('settings').className = 'settings';
     document.getElementById('info').className = 'info';
     document.getElementById(page).hidden = false;
-    if (page == 'searchPage')
-        document.getElementById('search').className = 'search_stay';
-    if (page == 'settingPage')
-        document.getElementById('settings').className = 'settings_stay';
-    if (page == 'infoPage')
-        document.getElementById('info').className = 'info_stay';
+    if (page == 'searchPage') document.getElementById('search').className = 'search_stay';
+    if (page == 'settingPage') document.getElementById('settings').className = 'settings_stay';
+    if (page == 'infoPage') document.getElementById('info').className = 'info_stay';
 }
 
 let nowShow = true;
-const showClick = () => {
-    resize(null, true);
-}
 const resize = (show, force) => {
     if (!force && !config.get('autoShrink')) return;
     if (show != null) nowShow = show;
@@ -244,32 +211,21 @@ const resize = (show, force) => {
     currentWindow.setSize(1090, height, true);
     currentWindow.setResizable(false);
 }
-const clickPlayerName = (name) => {
-    switchPage('searchPage');
-    search(name);
-}
 
 const changeDiv = () => {
     nowType = document.getElementById('infotype').value;
     changeCategory();
-    config.save();
-    updateHTML();
-}
-
-const test = async (name) => {
-    await hypixel.download(name);
-    players.push(name);
     updateHTML();
 }
 
 let searchPlayerName = null;
 const search = async (name) => {
+    if (document.getElementById('searchPage').hidden) switchPage('searchPage');
     if (name == null) name = document.getElementById('playername').value;
     searchPlayerName = name;
     let i = await hypixel.download(name);
-    console.log(i);
-    if (i == null) return alert('API Error');
-    if (i == false) return alert('Player Not Found!');
+    if (i == null) return document.getElementById('playerName').innerText = 'API Error';
+    if (i == false) return document.getElementById('playerName').innerText = 'Player Not Found!';
 
     let data = hypixel.data[name];
     if (data.success == false) return console.log(data);
@@ -286,7 +242,7 @@ const search = async (name) => {
             let icon = document.createElement('img');
             icon.src = 'img/icons/' + cur.toLowerCase() + '.png';
             icon.style = 'width:70px;height:70px;';
-            icon.addEventListener('click', (e) => openUrl(link));
+            icon.addEventListener('click', () => shell.openExternal(link));
             prev.appendChild(icon);
         }
         return prev;
@@ -327,18 +283,7 @@ const selectLogFile = () => {
     });
     if (temppath == null) return;
     config.set('logPath', temppath[0].split('\\').join('/'));
-    config.save();
     app.relaunch();
     app.exit(0);
     app.quit();
-}
-
-const setAutoShrink = () => {
-    config.set('autoShrink', document.getElementById('autoShrink').checked);
-    config.save();
-}
-
-const setNotification = () => {
-    config.set('notification', document.getElementById('notification').checked);
-    config.save();
 }

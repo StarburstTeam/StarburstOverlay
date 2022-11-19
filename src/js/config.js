@@ -15,6 +15,8 @@ class Config {
             } else return null;
         } else return this.config[name];
     }
-    set = (name, val) => this.config[name] = val;
-    save = () => this.fs.writeFileSync(this.path, JSON.stringify(this.config));
+    set = (name, val) => {
+        this.config[name] = val;
+        this.fs.writeFileSync(this.path, JSON.stringify(this.config));
+    }
 }

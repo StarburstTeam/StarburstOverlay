@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <title>Starburst Overlay</title>
   <script src="js/betterPrototype.js"></script>
+  <script src="js/util.js"></script>
   <script src="js/config.js"></script>
   <script src="js/hypixel.js"></script>
-  <script src="js/search.js"></script>
   <script src="js/index.js"></script>
+  <script src="js/debug.js"></script>
   <link rel="styleSheet" href="scrollbar.css">
   <link rel="styleSheet" href="switch.css">
   <link rel="styleSheet" href="index.css">
@@ -21,9 +22,9 @@
       <button id="search" class="search" onclick="switchPage('searchPage')"></button>
       <button id="settings" class="settings" onclick="switchPage('settingPage')"></button>
       <button id="info" class="info" onclick="switchPage('infoPage')"></button>></button>
-      <button id="show" onclick="showClick()"></button>
-      <button id="minimize" onclick="minimize()"></button>
-      <button id="quit" onclick="closeWindow()"></button>
+      <button id="show" onclick="resize(null, true)"></button>
+      <button id="minimize" onclick="currentWindow.minimize()"></button>
+      <button id="quit" onclick="currentWindow.close()"></button>
     </div>
   </div>
   <div id="main" class="main" style="width:auto;height:90%;overflow-y:scroll;">
@@ -71,14 +72,14 @@
     <div>
       <div class="setting_subtitle">Auto Shrink :</div>
       <label class="switch">
-        <input id="autoShrink" type="checkbox" onchange="setAutoShrink()">
+        <input id="autoShrink" type="checkbox" onchange="config.set('autoShrink', document.getElementById('autoShrink').checked)">
         <div class="slider round"></div>
       </label>
     </div><br>
     <div>
       <div class="setting_subtitle">Game Start Notification :</div>
       <label class="switch">
-        <input id="notification" type="checkbox" onchange="setNotification()">
+        <input id="notification" type="checkbox" onchange="config.set('notification', document.getElementById('notification').checked)">
         <div class="slider round"></div>
       </label>
     </div><br>
