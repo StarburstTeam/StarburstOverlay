@@ -1,5 +1,22 @@
 {
     "id": "en",
     "display": "English",
-    "value": {}
+    "value": {
+        "chat.online": "ONLINE: ",
+        "chat.game.join": "has joined",
+        "chat.game.quit": "has quit",
+        "chat.server.change": "Sending you",
+        "chat.server.join_lobby": "joined the lobby!",
+        "chat.game.final_kill": "FINAL KILL",
+        "chat.game.disconnect": "disconnected",
+        "chat.game.reconnect": "reconnected",
+        "chat.game.start.1": "The game starts in 1 second!",
+        "chat.game.start.0": "The game starts in 0 second!",
+        "chat.game.start.notification.title": "Game Started!",
+        "chat.game.start.notification.body": "Your Hypixel game has started!",
+        "chat.api.new_api_key": "new API key",
+        "chat.api.new_api_key.split": "is ",
+        "(": "(",
+        "/": "/"
+    }
 }

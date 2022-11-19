@@ -6,7 +6,8 @@ const currentWindow = remote.getCurrentWindow();
 let config = new Config('./config.json', {
     logPath: '',
     apiKey: '',
-    lastType: 'bw'
+    lastType: 'bw',
+    autoShrink: true
 });
 
 let inLobby = true, players = [], hypixel = null, i18n = null, numplayers = 0;
@@ -19,6 +20,7 @@ window.onload = async () => {
 
     nowType = config.get('lastType');
     document.getElementById('infotype').value = nowType;
+    document.getElementById('autoShrink').checked = config.get('autoShrink');
     changeCategory();
     updateHTML();
 
@@ -46,17 +48,17 @@ window.onload = async () => {
             document.getElementById('hyplang').innerHTML += `<option value="${i18n.langs[i].id}">${i18n.langs[i].display}</option>`;
 
     if (config.get('logPath') == '') return;
-    const tail = new Tail(config.get('logPath'), {useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
+    const tail = new Tail(config.get('logPath'), { useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
     tail.on('line', data => {
         let s = data.indexOf('[CHAT]');
         if (s == -1) return;//not a chat log
         let changed = false;
         let msg = data.substring(s + 7).replace(' [C]', '');
         console.log(msg);
-        if (msg.indexOf('ONLINE:') != -1 && msg.indexOf(',') != -1) {//the result of /who command
-            resize(true);
+        if (msg.indexOf(i18n.translate('chat.online')) != -1 && msg.indexOf(',') != -1) {//ONLINE: 
             if (inLobby) return;
-            let who = msg.substring(8).split(', ');
+            resize(true, false);
+            let who = msg.replace(i18n.translate('chat.online'),'').split(', ');
             players = [];
             for (let i = 0; i < who.length; i++) {
                 players.push(who[i]);
@@ -64,33 +66,33 @@ window.onload = async () => {
             }
             missingPlayer = players.length < numplayers;
             changed = true;
-        } else if (msg.indexOf('has joined') != -1 && msg.indexOf(':') == -1) {
-            resize(true);
+        } else if (msg.indexOf(i18n.translate('chat.game.join')) != -1 && msg.indexOf(':') == -1) {//has joined
+            resize(true, false);
             inLobby = false;
-            let join = msg.split(' ')[0];
+            let join = msg.split(' ')[0].split(i18n.translate('chat.game.join'))[0];
             if (players.find(x => x == join) == null) {
                 players.push(join);
                 hypixel.download(join, updateHTML);
                 changed = true;
             }
             if (msg.indexOf('/') != -1) {
-                numplayers = Number(msg.substring(msg.indexOf('(') + 1, msg.indexOf('/')));
+                numplayers = Number(msg.substring(msg.indexOf(i18n.translate('(')) + 1, msg.indexOf(i18n.translate('/'))));//( & /
                 missingPlayer = players.length < numplayers;
             }
-        } else if (msg.indexOf('has quit') != -1 && msg.indexOf(':') == -1) {
+        } else if (msg.indexOf(i18n.translate('chat.game.quit')) != -1 && msg.indexOf(':') == -1) {//has quit
             inLobby = false;
-            let left = msg.split(' ')[0];
+            let left = msg.split(' ')[0].split(i18n.translate('chat.game.quit'))[0];
             if (players.find(x => x == left) != null) {
                 players.remove(left);
                 changed = true;
             }
-        } else if (msg.indexOf('Sending you') != -1 && msg.indexOf(':') == -1) {
-            resize(false);
+        } else if (msg.indexOf(i18n.translate('chat.server.change')) != -1 && msg.indexOf(':') == -1) {//Sending you
+            resize(false, false);
             inLobby = false;
             players = [];
             changed = true;
-        } else if ((msg.indexOf('joined the lobby!') != -1 || msg.indexOf('rewards!') != -1) && msg.indexOf(':') == -1) {
-            resize(false);
+        } else if ((msg.indexOf(i18n.translate('chat.server.join_lobby')) != -1) && msg.indexOf(':') == -1) {//joined the lobby!
+            resize(false, false);
             inLobby = true;
             players = [];
             changed = true;
@@ -99,13 +101,13 @@ window.onload = async () => {
             // } else if (msg.indexOf('You left the party') !== -1 && msg.indexOf(':') === -1 && inlobby) {
             // } else if (msg.indexOf('left the party') !== -1 && msg.indexOf(':') === -1 && inlobby) {
             // } else if (inlobby && (msg.indexOf('Party Leader:') === 0 || msg.indexOf('Party Moderators:') === 0 || msg.indexOf('Party Members:') === 0)) {
-        } else if ((msg.indexOf('FINAL KILL') != -1 || msg.indexOf('disconnected') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf(i18n.translate('chat.game.final_kill')) != -1 || msg.indexOf(i18n.translate('chat.game.disconnect')) != -1) && msg.indexOf(':') == -1) {//FINAL KILL & disconnected
             let left = msg.split(' ')[0];
             if (players.find(x => x == left) != null) {
                 players.remove(left);
                 changed = true;
             }
-        } else if ((msg.indexOf('reconnected') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf(i18n.translate('chat.game.reconnect')) != -1) && msg.indexOf(':') == -1) {//reconnected
             let join = msg.split(' ')[0];
             if (players.find(x => x == join) == null) {
                 players.push(join);
@@ -114,16 +116,16 @@ window.onload = async () => {
             // don't know how to use
             // } else if (msg.indexOf('Can\'t find a') !== -1 && msg.indexOf('\'!') !== -1 && msg.indexOf(':') === -1) {
             // } else if (msg.indexOf('Can\'t find a') !== -1 && msg.indexOf('\'') !== -1 && msg.indexOf(':') === -1) {
-        } else if (msg.indexOf('The game starts in 1 second!') != -1 && msg.indexOf(':') == -1) {
-            resize(false);
+        } else if (msg.indexOf(i18n.translate('chat.game.start.1')) != -1 && msg.indexOf(':') == -1) {//The game starts in 1 second!
+            resize(false, false);
             new Notification({
-                title: 'Game Started!',
-                body: 'Your Hypixel game has started!'
+                title: i18n.translate('chat.game.start.notification.title'),
+                body: i18n.translate('chat.game.start.notification.body')
             }).show();
-        } else if (msg.indexOf('The game starts in 0 second!') != -1 && msg.indexOf(':') == -1)
-            resize(false);
-        else if (msg.indexOf('new API key') != -1 && msg.indexOf(':') == -1) {
-            hypixel.apiKey = msg.substring(msg.indexOf('is ') + 3);
+        } else if (msg.indexOf(i18n.translate('chat.game.start.0')) != -1 && msg.indexOf(':') == -1)//The game starts in 0 second!
+            resize(false, false);
+        else if (msg.indexOf(i18n.translate('chat.api.new_api_key')) != -1 && msg.indexOf(':') == -1) {//new API key
+            hypixel.apiKey = msg.split(i18n.translate('chat.api.new_api_key.split'))[1];//is 
             hypixel.owner = null;
             hypixel.verified = false;
             hypixel.verifyKey();
@@ -230,9 +232,10 @@ const switchPage = (page) => {
 
 let nowShow = true;
 const showClick = () => {
-    resize(null);
+    resize(null, true);
 }
-const resize = (show) => {
+const resize = (show, force) => {
+    if (!force && !config.get('autoShrink')) return;
     if (show != null) nowShow = show;
     else nowShow ^= true;
     document.getElementById('show').style.transform = `rotate(${nowShow ? 0 : 90}deg)`;
@@ -331,5 +334,10 @@ const selectLogFile = () => {
 }
 
 const changeLang = () => {
-    this.i18n.current = document.getElementById('hyplang').value;
+    i18n.current = document.getElementById('hyplang').value;
+}
+
+const setAutoShrink = () => {
+    config.set('autoShrink', document.getElementById('autoShrink').checked);
+    config.save();
 }

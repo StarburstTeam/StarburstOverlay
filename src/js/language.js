@@ -25,7 +25,10 @@ class I18n {
     translate = (text) => {
         if (this.current == 'en') return text;
         let res = this.langs[this.current]?.value[text] ?? undefined;
-        if (res == null) res = text;
+        if (res == null || res == '') {
+            res = this.langs['en']?.value[text] ?? undefined;
+            if (res == null || res == '') res = text;
+        }
         return res;
     }
 }
