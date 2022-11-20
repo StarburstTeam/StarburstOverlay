@@ -1,2 +1,0 @@
-electron-packager . "Starburst Overlay" --platform=win32 --arch=x64 --icon=logo.ico --out=./out --asar --app-version=1.0.0 --electronVersion=13.0.0 --overwrite --download.mirrorOptions.mirror=https://npm.taobao.org/mirrors/electron/
-pause

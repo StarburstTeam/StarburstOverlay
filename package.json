@@ -1,10 +1,38 @@
 {
   "name": "starburst-overlay",
+  "productName": "Starburst Overlay",
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "package": "electron-packager . \"Starburst Overlay\" --platform=win32 --arch=x64 --icon=logo.ico --out=./out --asar --app-version=1.0.0 --electronVersion=13.0.0 --overwrite"
+  },
+  "build": {
+    "appId": "starburst-overlay",
+    "artifactName": "${productName} Setup v${version} ${arch}.${ext}",
+    "productName": "Starburst Overlay",
+    "directories": {
+      "output": "out"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "./logo.ico",
+      "uninstallerIcon": "./logo.ico",
+      "installerHeaderIcon": "./logo.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Starburst Overlay"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "logo.ico"
+    }
   },
   "keywords": [],
   "author": "IAFEnvoy",
@@ -12,7 +40,10 @@
   "description": "",
   "dependencies": {
     "auto-git-update": "^1.1.1",
-    "electron": "^13.0.0",
     "tail": "^2.2.4"
+  },
+  "devDependencies": {
+    "electron": "^13.0.0",
+    "electron-builder": "^23.6.0"
   }
 }
