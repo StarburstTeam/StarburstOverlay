@@ -126,6 +126,17 @@ window.onload = async () => {
         }
     });
     tail.on('error', (err) => console.log(err));
+    runUpdate();
+}
+
+const runUpdate = async () => {
+    if (await findUpdate()) {
+        new Notification({
+            title: 'Update Available!',
+            body: 'Click the update button to get.'
+        }).show();
+        document.getElementById('update').hidden = false;
+    }
 }
 
 const updateHTML = () => {
@@ -222,6 +233,7 @@ let searchPlayerName = null;
 const search = async (name) => {
     if (document.getElementById('searchPage').hidden) switchPage('searchPage');
     if (name == null) name = document.getElementById('playername').value;
+    else document.getElementById('playername').value = name;
     searchPlayerName = name;
     let i = await hypixel.download(name);
     if (i == null) return document.getElementById('playerName').innerText = 'API Error';

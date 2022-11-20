@@ -170,6 +170,31 @@ body {
     transition: all 0.2s ease-out;
 }
 
+.update {
+    background: transparent;
+    background-image: url("../src/img/update1.png");
+    background-size: cover;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
+    -webkit-app-region: no-drag;
+    transition: all 0.2s ease-out;
+}
+
+.update:hover {
+    background: transparent;
+    background-image: url("../src/img/update2.png");
+    background-size: cover;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
+    transition: all 0.2s ease-out;
+}
+
 .main {
     font-family: Minecraftia;
     color: white;
