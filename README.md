@@ -1,14 +1,16 @@
 # <img src="logo.ico" style="width:50px"> Starburst Overlay
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/IAFEnvoy/StarburstOverlay) ![GitHub all releases](https://img.shields.io/github/downloads/IAFEnvoy/StarburstOverlay/total)
 
-The Starburst Overlay is a high performance and multifunctional hypixel stats overlay.
+**English** | [中文](https://github.com/IAFEnvoy/StarburstOverlay/blob/master/README_CN.md)
+
+The Starburst Overlay is a high performance and multifunctional Hypixel stats overlay.
 
 ## Content
 - [Features](#Features)
 - [Usage](#Usage)
 - [Preview](#Preview)
-- [Future-Plan](#Future-Plan)
 - [Bug-Report](#Bug-Report)
+- [Future-Plan](#Future-Plan)
 - [Download](https://github.com/IAFEnvoy/StarburstOverlay/releases)
 
 ## Features
@@ -30,7 +32,7 @@ The Starburst Overlay is a high performance and multifunctional hypixel stats ov
 
 3.Show the skin (can download), and social media linked in the server.
 
-**Tips:This feature is merged from the [Hypixel Overlay](https://github.com/IAFEnvoy/HypixelOverlay). And that one will no longer update.**
+**This feature is merged from the [Hypixel Overlay](https://github.com/IAFEnvoy/HypixelOverlay). And that one will no longer update.**
 
 ### Other feature
 1.Safe and stable
@@ -44,9 +46,9 @@ The Starburst Overlay is a high performance and multifunctional hypixel stats ov
 
 2.Open the Starburst Overlay
 
-3.Set log path in settings page. (Open settings page by clicking the <img src="./src/img/settings1.png" style="width:20px"> button)
+3.Set latest.log path in settings page. (Open settings page by clicking the <img src="./src/img/settings1.png" style="width:20px"> button)
 
-4.Set api key by run /api new in server or just edit the `config.json` in the software folder.
+4.Set API key by run `/api new` in server or just edit the `config.json` in the software folder.
 
 5.Open your game and run `/who`. (The software will tell you to run `/who` when necessary.)
 
@@ -57,6 +59,9 @@ The Starburst Overlay is a high performance and multifunctional hypixel stats ov
 <img src="./img/3.png">
 <img src="./img/2.jpg">
 
+### Bug-Report
+If you find a bug or have an idea, tell me in the issue of this repository.
+
 ### Future-Plan
 1.More game type
 
@@ -66,5 +71,4 @@ The Starburst Overlay is a high performance and multifunctional hypixel stats ov
 
 4.Sort the stats
 
-### Bug-Report
-If you find a bug or have an idea, tell me in the issue of this repository.
+5.More Hypixel language suppport
