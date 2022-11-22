@@ -65,7 +65,7 @@ If you find a bug or have an idea, tell me in the issue of this repository.
 ### Future-Plan
 1.More game type
 
-2.Auto update
+2.Update notification (✔)
 
 3.Support MacOS and Linux
 

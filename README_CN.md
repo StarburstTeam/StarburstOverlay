@@ -65,7 +65,7 @@ Starburst Overlay是一个高速并且多功能的Hypixel数据查询软件
 ### 未来计划
 1.更多游戏模式
 
-2.自动更新
+2.更新提示 (✔)
 
 3.支持MacOS和Linux
 
