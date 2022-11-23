@@ -5,6 +5,9 @@
 
 Starburst Overlay是一个高速并且多功能的Hypixel数据查询软件
 
+-> 最新介绍视频
+[![](https://res.cloudinary.com/marcomontalbano/image/upload/v1669205207/video_to_markdown/images/youtube--HjdXrt8l2_M-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/HjdXrt8l2_M "")
+
 ## 目录
 - [特性](#特性)
 - [使用方法](#使用方法)

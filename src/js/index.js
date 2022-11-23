@@ -1,8 +1,10 @@
 const { remote, shell } = require('electron');
 const { Notification, dialog, app } = remote;
 const { Tail } = require('tail');
+const AutoGitUpdate = require('auto-git-update/index');
 
 const currentWindow = remote.getCurrentWindow();
+const updater = new AutoGitUpdate({ repository: 'https://github.com/IAFEnvoy/StarburstOverlay', tempLocation: './temp/update' });
 let config = new Config('./config.json', {
     logPath: '',
     apiKey: '',
@@ -126,16 +128,22 @@ window.onload = async () => {
         }
     });
     tail.on('error', (err) => console.log(err));
-    runUpdate();
+    findUpdate();
 }
 
-const runUpdate = async () => {
-    if (await findUpdate()) {
-        new Notification({
-            title: 'Update Available!',
-            body: 'Click the update button to get.'
-        }).show();
-        document.getElementById('update').hidden = false;
+const findUpdate = async () => {
+    try {
+        const versions = await updater.compareVersions();
+        if(!versions.upToDate){
+            new Notification({
+                title: 'Update Available!',
+                body: 'Click the update button to get.'
+            }).show();
+            document.getElementById('update').hidden = false;
+        }
+    }
+    catch(err) {
+        console.log(err);
     }
 }
 
