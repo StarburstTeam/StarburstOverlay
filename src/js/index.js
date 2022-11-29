@@ -134,7 +134,8 @@ window.onload = async () => {
 const findUpdate = async () => {
     try {
         const versions = await updater.compareVersions();
-        if(!versions.upToDate){
+        console.log(versions);
+        if (versions.remoteVersion != 'Error' && !versions.upToDate) {
             new Notification({
                 title: 'Update Available!',
                 body: 'Click the update button to get.'
@@ -142,7 +143,7 @@ const findUpdate = async () => {
             document.getElementById('update').hidden = false;
         }
     }
-    catch(err) {
+    catch (err) {
         console.log(err);
     }
 }

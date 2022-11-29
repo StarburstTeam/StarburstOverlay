@@ -59,6 +59,10 @@ class Hypixel {
         let playerData = await this.getPlayerData(uuid);
         let guildData = await this.getGuildData(uuid);
         if (!playerData.success || !guildData.success) return null;
+        if (playerData.player == null) {
+            this.data[name] = { success: true, time: new Date().getTime(), nick: true };
+            return false;
+        }
         this.data[name] = { success: true, time: new Date().getTime(), nick: false, player: playerData.player, guild: guildData.guild };
         if (callback != null) callback();
         return true;
@@ -156,15 +160,6 @@ class Hypixel {
             buildSpan(probabilityList.murderer_chance, (api.stats?.MurderMystery?.murderer_chance ?? 0), '', '%'),
             buildSpan(probabilityList.detective_chance, (api.stats?.MurderMystery?.detective_chance ?? 0), '', '%'),
             buildSpan(probabilityList.alpha_chance, (api.stats?.MurderMystery?.alpha_chance ?? 0), '', '%')];
-            if (type == 'uhc')
-                return [`${basic.lvl}`, `${basic.name}`,
-                buildSpan(undefined, api.stats?.UHC?.score ?? 0),
-                buildSpan(undefined, (api.stats?.UHC?.kills ?? 0) / (api.stats?.UHC?.deaths ?? 0).toFixed(1)),
-                buildSpan(undefined, (api.stats?.UHC?.wins ?? 0) / (api.stats?.UHC?.deaths ?? 0).toFixed(1)),
-                buildSpan(undefined, (api.stats?.UHC?.murderer_chance ?? 0)),
-                buildSpan(undefined, (api.stats?.UHC?.detective_chance ?? 0)),
-                buildSpan(undefined, (api.stats?.UHC?.alpha_chance ?? 0))];
-            
         if (type == 'mw')
             return [`${basic.lvl}`, `${basic.name}`,
             buildSpan(kdrColorList.mw, ((api.stats?.Walls3?.final_kills ?? 0) / (api.stats?.Walls3?.final_deaths ?? 0)).toFixed(2)),
@@ -179,6 +174,10 @@ class Hypixel {
             buildSpan(finalsColorList.ww, api.stats?.WoolGames?.wool_wars?.stats?.kills ?? 0),
             buildSpan(winsColorList.ww, api.stats?.WoolGames?.wool_wars?.stats?.wins ?? 0),
             buildSpan(specialList.ww_wool_placed, api.stats?.WoolGames?.wool_wars?.stats?.wool_placed ?? 0)];
+    }
+    getColorLists = (type) => {
+        if (type == 'bw') return [wsColorList.bw, kdrColorList.bw, wlrColorList.bw, finalsColorList.bw, winsColorList.bw];
+        if (type == 'sw') return [wsColorList.sw, kdrColorList.sw, wlrColorList.sw, finalsColorList.sw, winsColorList.sw];
     }
     getGuildLevel = (exp) => {
         let guildLevelTables = [100000, 150000, 250000, 500000, 750000, 1000000, 1250000, 1500000, 2000000, 2500000, 2500000, 2500000, 2500000, 2500000, 3000000];
@@ -262,7 +261,7 @@ const lvlList = {
     mw_wither_damage: [1000, 2000, 4000, 8000, 16000]
 }
 const pickColor = (list, value) => colorList[toDefault(list.indexOf(list.find(v => v >= value)), -1, 5)];
-const buildSpan = (list, value, prefix, suffix) => list == null ? `${prefix??''}${value}${suffix??''}` : formatColor(`§${pickColor(list, value)}${prefix ?? ''}${value}${suffix ?? ''}`);
+const buildSpan = (list, value, prefix, suffix) => list == null ? `${prefix ?? ''}${value}${suffix ?? ''}` : formatColor(`§${pickColor(list, value)}${prefix ?? ''}${value}${suffix ?? ''}`);
 
 const duelLvlList = [
     { lvl: 100, txt: '' },
