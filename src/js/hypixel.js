@@ -261,7 +261,7 @@ const lvlList = {
     mw_wither_damage: [1000, 2000, 4000, 8000, 16000]
 }
 const pickColor = (list, value) => colorList[toDefault(list.indexOf(list.find(v => v >= value)), -1, 5)];
-const buildSpan = (list, value, prefix, suffix) => list == null ? `${prefix ?? ''}${value}${suffix ?? ''}` : formatColor(`§${pickColor(list, value)}${prefix ?? ''}${value}${suffix ?? ''}`);
+const buildSpan = (list, value, prefix, suffix) => formatColor((list == null || value == NaN) ? `${prefix ?? ''}§7${value}${suffix ?? ''}` : `§${pickColor(list, value)}${prefix ?? ''}${value}${suffix ?? ''}`);
 
 const duelLvlList = [
     { lvl: 100, txt: '' },

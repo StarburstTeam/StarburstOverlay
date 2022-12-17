@@ -84,7 +84,7 @@ window.onload = async () => {
             inLobby = false;
             players = [];
             changed = true;
-        } else if ((msg.indexOf('joined the lobby!') != -1 || msg.indexOf('rewards!') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf('joined the lobby!') != -1 || msg.indexOf('into the lobby!') != -1) && msg.indexOf(':') == -1) {
             resize(false);
             inLobby = true;
             players = [];

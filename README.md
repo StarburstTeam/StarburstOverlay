@@ -1,6 +1,8 @@
 # <img src="logo.ico" style="width:50px"> Starburst Overlay
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/IAFEnvoy/StarburstOverlay) ![GitHub all releases](https://img.shields.io/github/downloads/IAFEnvoy/StarburstOverlay/total)
 
+*This software is named by my guild and used to memorialize it.*
+
 **English** | [中文](https://github.com/IAFEnvoy/StarburstOverlay/blob/master/README_CN.md)
 
 The Starburst Overlay is a high performance and multifunctional Hypixel stats overlay.

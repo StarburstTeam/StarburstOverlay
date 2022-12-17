@@ -1,6 +1,8 @@
 # <img src="logo.ico" style="width:50px"> Starburst Overlay
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/IAFEnvoy/StarburstOverlay) ![GitHub all releases](https://img.shields.io/github/downloads/IAFEnvoy/StarburstOverlay/total)
 
+*这个软件是用我工会的名字命名的，也是用来纪念它的*
+
 [English](https://github.com/IAFEnvoy/StarburstOverlay/blob/master/README.md) | **中文**
 
 Starburst Overlay是一个高速并且多功能的Hypixel数据查询软件
@@ -35,7 +37,7 @@ Starburst Overlay是一个高速并且多功能的Hypixel数据查询软件
 
 3.显示玩家皮肤（可以下载）和在服务器内绑定的社交账号。
 
-**这个功能源自[Hypixel Overlay](https://github.com/IAFEnvoy/HypixelOverlay)，并且那个将不再维护**
+**这个功能源自[Hypixel Overlay](https://github.com/IAFEnvoy/HypixelOverlay)，那个将不再维护**
 
 ### 其他特性
 1.安全并且非常稳定
