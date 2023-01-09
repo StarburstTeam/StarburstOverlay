@@ -59,6 +59,17 @@ window.onload = async () => {
             }
             missingPlayer = players.length < numplayers;
             changed = true;
+        }else if (msg.indexOf('在线：  ') != -1 && msg.indexOf(', ') != -1) {//the result of /who command for zh_cn
+            if (inLobby) return;
+            resize(true);
+            let who = msg.replace('在线：  ','').split(', ')
+            players = [];
+            for (let i = 0; i < who.length; i++) {
+                players.push(who[i]);
+                hypixel.download(who[i], updateHTML);
+            }
+            missingPlayer = players.length < numplayers;
+            changed = true;
         } else if (msg.indexOf('has joined') != -1 && msg.indexOf(':') == -1) {
             resize(true);
             inLobby = false;
@@ -72,6 +83,19 @@ window.onload = async () => {
                 numplayers = Number(msg.substring(msg.indexOf('(') + 1, msg.indexOf('/')));
                 missingPlayer = players.length < numplayers;
             }
+        }else if (msg.indexOf('加入了游戏') != -1 && msg.indexOf(':') == -1) {
+            resize(true);
+            inLobby = false;
+            let join = msg.split('加入了游戏')[0];
+            if (players.find(x => x == join) == null) {
+                players.push(join);
+                hypixel.download(join, updateHTML);
+                changed = true;
+            }
+            if (msg.indexOf('/') != -1) {
+                numplayers = Number(msg.substring(msg.indexOf('（') + 1, msg.indexOf('/')));
+                missingPlayer = players.length < numplayers;
+            }
         } else if (msg.indexOf('has quit') != -1 && msg.indexOf(':') == -1) {
             inLobby = false;
             let left = msg.split(' ')[0];
@@ -79,12 +103,19 @@ window.onload = async () => {
                 players.remove(left);
                 changed = true;
             }
-        } else if (msg.indexOf('Sending you') != -1 && msg.indexOf(':') == -1) {
+        } else if (msg.indexOf('已退出') != -1 && msg.indexOf(':') == -1) {
+            inLobby = false;
+            let left = msg.split('已退出')[0];
+            if (players.find(x => x == left) != null) {
+                players.remove(left);
+                changed = true;
+            }
+        }else if ((msg.indexOf('Sending you') != -1||msg.indexOf('正在前往') != -1) && msg.indexOf(':') == -1) {
             resize(false);
             inLobby = false;
             players = [];
             changed = true;
-        } else if ((msg.indexOf('joined the lobby!') != -1 || msg.indexOf('into the lobby!') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf('joined the lobby!') != -1 || msg.indexOf('into the lobby!') != -1||msg.indexOf('入了大厅') != -1 ) && msg.indexOf(':') == -1) {
             resize(false);
             inLobby = true;
             players = [];
@@ -94,13 +125,13 @@ window.onload = async () => {
             // } else if (msg.indexOf('You left the party') !== -1 && msg.indexOf(':') === -1 && inlobby) {
             // } else if (msg.indexOf('left the party') !== -1 && msg.indexOf(':') === -1 && inlobby) {
             // } else if (inlobby && (msg.indexOf('Party Leader:') === 0 || msg.indexOf('Party Moderators:') === 0 || msg.indexOf('Party Members:') === 0)) {
-        } else if ((msg.indexOf('FINAL KILL') != -1 || msg.indexOf('disconnected') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf('FINAL KILL') != -1 || msg.indexOf('disconnected') != -1||msg.indexOf('最终击杀') != -1 || msg.indexOf('断开连接') != -1) && msg.indexOf(':') == -1) {
             let left = msg.split(' ')[0];
             if (players.find(x => x == left) != null) {
                 players.remove(left);
                 changed = true;
             }
-        } else if ((msg.indexOf('reconnected') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf('reconnected') != -1||msg.indexOf('重新连接') != -1) && msg.indexOf(':') == -1) {
             let join = msg.split(' ')[0];
             if (players.find(x => x == join) == null) {
                 players.push(join);
@@ -109,14 +140,14 @@ window.onload = async () => {
             // don't know how to use
             // } else if (msg.indexOf('Can\'t find a') !== -1 && msg.indexOf('\'!') !== -1 && msg.indexOf(':') === -1) {
             // } else if (msg.indexOf('Can\'t find a') !== -1 && msg.indexOf('\'') !== -1 && msg.indexOf(':') === -1) {
-        } else if (msg.indexOf('The game starts in 1 second!') != -1 && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf('The game starts in 1 second!') != -1||msg.indexOf('游戏将在1秒后开始') != -1) && msg.indexOf(':') == -1) {
             resize(false);
             if (config.get('notification'))
                 new Notification({
                     title: 'Game Started!',
                     body: 'Your Hypixel game has started!'
                 }).show();
-        } else if (msg.indexOf('The game starts in 0 second!') != -1 && msg.indexOf(':') == -1) resize(false);
+        } else if ((msg.indexOf('The game starts in 0 second!') != -1||msg.indexOf('游戏将在0秒后开始') != -1) && msg.indexOf(':') == -1) resize(false);
         else if (msg.indexOf('new API key') != -1 && msg.indexOf(':') == -1) {
             hypixel.apiKey = msg.substring(msg.indexOf('is ') + 3);
             hypixel.verifyKey();
