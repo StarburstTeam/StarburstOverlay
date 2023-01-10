@@ -1,7 +1,7 @@
 const { app, BrowserWindow } = require('electron');
 const windowConfig = {
-  width: 1090,
-  height: 600,
+  width: 950,
+  height: 550,
   frame: false,
   transparent: true,
   useContentSize: true,
@@ -10,7 +10,6 @@ const windowConfig = {
   resizable: false,
   x: 40,
   y: 20,
-  minWidth: 400,
   icon: __dirname + '/logo.ico',
   alwaysOnTop: true,
   webPreferences: { nodeIntegration: true, enableRemoteModule: true, contextIsolation: false }

@@ -59,10 +59,10 @@ window.onload = async () => {
             }
             missingPlayer = players.length < numplayers;
             changed = true;
-        }else if (msg.indexOf('在线：  ') != -1 && msg.indexOf(', ') != -1) {//the result of /who command for zh_cn
+        } else if (msg.indexOf('在线：  ') != -1 && msg.indexOf(', ') != -1) {//the result of /who command for zh_cn
             if (inLobby) return;
             resize(true);
-            let who = msg.replace('在线：  ','').split(', ')
+            let who = msg.replace('在线：  ', '').split(', ')
             players = [];
             for (let i = 0; i < who.length; i++) {
                 players.push(who[i]);
@@ -83,7 +83,7 @@ window.onload = async () => {
                 numplayers = Number(msg.substring(msg.indexOf('(') + 1, msg.indexOf('/')));
                 missingPlayer = players.length < numplayers;
             }
-        }else if (msg.indexOf('加入了游戏') != -1 && msg.indexOf(':') == -1) {
+        } else if (msg.indexOf('加入了游戏') != -1 && msg.indexOf(':') == -1) {
             resize(true);
             inLobby = false;
             let join = msg.split('加入了游戏')[0];
@@ -110,12 +110,12 @@ window.onload = async () => {
                 players.remove(left);
                 changed = true;
             }
-        }else if ((msg.indexOf('Sending you') != -1||msg.indexOf('正在前往') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf('Sending you') != -1 || msg.indexOf('正在前往') != -1) && msg.indexOf(':') == -1) {
             resize(false);
             inLobby = false;
             players = [];
             changed = true;
-        } else if ((msg.indexOf('joined the lobby!') != -1 || msg.indexOf('into the lobby!') != -1||msg.indexOf('入了大厅') != -1 ) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf('joined the lobby!') != -1 || msg.indexOf('into the lobby!') != -1 || msg.indexOf('入了大厅') != -1) && msg.indexOf(':') == -1) {
             resize(false);
             inLobby = true;
             players = [];
@@ -125,29 +125,26 @@ window.onload = async () => {
             // } else if (msg.indexOf('You left the party') !== -1 && msg.indexOf(':') === -1 && inlobby) {
             // } else if (msg.indexOf('left the party') !== -1 && msg.indexOf(':') === -1 && inlobby) {
             // } else if (inlobby && (msg.indexOf('Party Leader:') === 0 || msg.indexOf('Party Moderators:') === 0 || msg.indexOf('Party Members:') === 0)) {
-        } else if ((msg.indexOf('FINAL KILL') != -1 || msg.indexOf('disconnected') != -1||msg.indexOf('最终击杀') != -1 || msg.indexOf('断开连接') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf('FINAL KILL') != -1 || msg.indexOf('disconnected') != -1 || msg.indexOf('最终击杀') != -1 || msg.indexOf('断开连接') != -1) && msg.indexOf(':') == -1) {
             let left = msg.split(' ')[0];
             if (players.find(x => x == left) != null) {
                 players.remove(left);
                 changed = true;
             }
-        } else if ((msg.indexOf('reconnected') != -1||msg.indexOf('重新连接') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf('reconnected') != -1 || msg.indexOf('重新连接') != -1) && msg.indexOf(':') == -1) {
             let join = msg.split(' ')[0];
             if (players.find(x => x == join) == null) {
                 players.push(join);
                 changed = true;
             }
-            // don't know how to use
-            // } else if (msg.indexOf('Can\'t find a') !== -1 && msg.indexOf('\'!') !== -1 && msg.indexOf(':') === -1) {
-            // } else if (msg.indexOf('Can\'t find a') !== -1 && msg.indexOf('\'') !== -1 && msg.indexOf(':') === -1) {
-        } else if ((msg.indexOf('The game starts in 1 second!') != -1||msg.indexOf('游戏将在1秒后开始') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf('The game starts in 1 second!') != -1 || msg.indexOf('游戏将在1秒后开始') != -1) && msg.indexOf(':') == -1) {
             resize(false);
             if (config.get('notification'))
                 new Notification({
                     title: 'Game Started!',
                     body: 'Your Hypixel game has started!'
                 }).show();
-        } else if ((msg.indexOf('The game starts in 0 second!') != -1||msg.indexOf('游戏将在0秒后开始') != -1) && msg.indexOf(':') == -1) resize(false);
+        } else if ((msg.indexOf('The game starts in 0 second!') != -1 || msg.indexOf('游戏将在0秒后开始') != -1) && msg.indexOf(':') == -1) resize(false);
         else if (msg.indexOf('new API key') != -1 && msg.indexOf(':') == -1) {
             hypixel.apiKey = msg.substring(msg.indexOf('is ') + 3);
             hypixel.verifyKey();
@@ -180,58 +177,47 @@ const findUpdate = async () => {
 }
 
 const updateHTML = () => {
-    if (config.get('logPath') == '')
-        return document.getElementById('Players').innerHTML = `${formatColor('§cLog Path Not Found')}<br>${formatColor('§cSet Log Path In Settings')}`;
-    if (config.get('apiKey') == '')
-        return document.getElementById('Players').innerHTML = `${formatColor('§cAPI Key Not Found')}<br>${formatColor('§cType /api new To Get')}`;
-    if (!hypixel.verified && !hypixel.verifying)
-        return document.getElementById('Players').innerHTML = `${formatColor('§cInvalid API Key')}<br>${formatColor('§cType /api new To Get')}`;
+    clearMainPanel();
+    let main = document.getElementById('main');
 
-    let title = hypixel.getTitle(nowType);
-    document.getElementById('Levels').innerHTML = '';
-    document.getElementById('Avatars').innerHTML = '';
-    document.getElementById('Players').innerHTML = '';
-    document.getElementById('Tags').innerHTML = '';
-    for (let j = 0; j < title.length; j++)
-        document.getElementById(title[j]).innerHTML = '';
+    if (config.get('logPath') == '')
+        return main.innerHTML = `${formatColor('§cLog Path Not Found')}<br>${formatColor('§cSet Log Path In Settings')}`;
+    if (config.get('apiKey') == '')
+        return main.innerHTML = `${formatColor('§cAPI Key Not Found')}<br>${formatColor('§cType /api new To Get')}`;
+    if (!hypixel.verified && !hypixel.verifying)
+        return main.innerHTML = `${formatColor('§cInvalid API Key')}<br>${formatColor('§cType /api new To Get')}`;
+    
     for (let i = 0; i < players.length; i++) {
         if (hypixel.data[players[i]] == null) continue;
         if (hypixel.data[players[i]].success == false) continue;// wait for download
         let data = hypixel.getMiniData(players[i], nowType);
         if (hypixel.data[players[i]].nick == true) {
-            document.getElementById('Levels').innerHTML += `<div>[ ? ]</div>`;
-            document.getElementById('Avatars').innerHTML += `<div></div><br>`;
-            document.getElementById('Players').innerHTML += `<div>${data[0]}</div>`;
-            document.getElementById('Tags').innerHTML += `<div style="width:${width / 2}px">${formatColor('§eNICK')}</div>`;
-            for (let j = 0; j < title.length; j++)
-                document.getElementById(title[j]).innerHTML += '<div></div><br>';
+            main.innerHTML += `<tr><th style="text-align:right">[ ? ]</th><th></th><td>${data[0]}</td><th>${formatColor('§eNICK')}</th></tr>`;
             continue;
         }
-        document.getElementById('Levels').innerHTML += `<div>${data[0]}</div>`;
-        document.getElementById('Avatars').innerHTML += `<img src="https://crafatar.com/avatars/${hypixel.getUuid(players[i])}?overlay" style="width:15px;height:15px"><br>`;
-        document.getElementById('Players').innerHTML += `<div onclick="search('${players[i]}')">${data[1]}</div>`
-        document.getElementById('Tags').innerHTML += `<div style="width:${width / 2}px">${formatColor(hypixel.getTag(players[i]))}</div>`;
-        for (let j = 0; j < title.length; j++)
-            document.getElementById(title[j]).innerHTML += `<div>${data[j + 2]}</div>`
+
+        main.innerHTML += `<tr><th style="text-align:right">${data[0]}</th>
+        <th><img src="https://crafatar.com/avatars/${hypixel.getUuid(players[i])}?overlay" style="position:relative;width:20px;height:20px;top:4px"></th>
+        <td onclick="search('${players[i]}')">${data[1]}</td>
+        <th>${formatColor(hypixel.getTag(players[i]))}</th>
+        ${Array.from({ length: data.length - 2 }, (_, x) => x + 2).reduce((p, c) => p + `<th>${data[c]}</th>`, '')}</tr>`;
     }
     if (missingPlayer)
-        document.getElementById('Players').innerHTML += `<div>${formatColor('§cMissing players')}</div><div>${formatColor('§cPlease type /who')}</div>`;
+        main += `<div>${formatColor('§cMissing players')}</div><div>${formatColor('§cPlease type /who')}</div>`;
 }
 
-const width = 100;
 const changeCategory = () => {
-    let main = document.getElementById('main'), category = hypixel.getTitle(nowType);
-    main.innerHTML = '<ul class="subtitle" style="width:450px">Players</ul>';
-    main.innerHTML += '<ul id="Levels" class="data" style="left:0px;text-align:right"></ul>';
-    main.innerHTML += '<ul id="Avatars" class="data" style="left:75px"></ul>';
-    main.innerHTML += '<ul id="Players" class="data" style="left:100px;text-align:left"></ul>';
-    main.innerHTML += '<ul class="subtitle" style="left:450px">Tag</ul>';
-    main.innerHTML += '<ul id="Tags" class="data" style="left:450px"></ul>';
-    for (let i = 0; i < category.length; i++) {
-        main.innerHTML += `<ul class="subtitle" style="left:${500 + width * i}px;width:${width}px">${category[i]}</ul>`;
-        main.innerHTML += `<ul id="${category[i]}" class="data" style="left:${500 + width * i}px;width:${width}px"></ul>`;
-    }
+    clearMainPanel();
     config.set('lastType', nowType);
+}
+
+const clearMainPanel = () => {
+    let main = document.getElementById('main'), category = hypixel.getTitle(nowType);
+    main.innerHTML = `<tr><th style="width:8%">Lvl</th>
+    <th style="width:3%"></th>
+    <th style="width:40%">Players</th>
+    <th style="width:5%">Tag</th>
+    ${category.reduce((p, c) => p + `<th style="width:8%">${c}</th>`, '')}</tr>`;
 }
 
 let lastPage = 'main';
@@ -257,9 +243,8 @@ const resize = (show, force) => {
     if (show != null) nowShow = show;
     else nowShow ^= true;
     document.getElementById('show').style.transform = `rotate(${nowShow ? 0 : 90}deg)`;
-    let height = nowShow ? 600 : 40;
     currentWindow.setResizable(true);
-    currentWindow.setSize(1090, height, true);
+    currentWindow.setSize(950, nowShow ? 550 : 40, true);
     currentWindow.setResizable(false);
 }
 

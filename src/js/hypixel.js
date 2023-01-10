@@ -328,8 +328,8 @@ const getData = {
       Complete Challenge : ${achievements.general_challenger ?? 0}<br>
       Language : ${formatNameString(api.userLanguage ?? 'ENGLISH')}<br>
       First Login : ${formatDateTime(api.firstLogin)}<br>
-      Last Login : ${formatDateTime(api.lastLogin)}<br>
-      Last Logout : ${formatDateTime(api.lastLogout)}`;
+      Last Login &nbsp: ${formatDateTime(api.lastLogin)}<br>
+      Last Logout : ${formatDateTime(api.lastLogout)}`;//&nbsp is space in html
     },
     "bw": (api) => {
         achievements = api.achievements ?? {};
@@ -339,7 +339,8 @@ const getData = {
       Bed Destroy : ${bedwar.beds_broken_bedwars ?? 0} | Bed Lost : ${bedwar.beds_lost_bedwars ?? 0}<br>
       Win : ${bedwar.wins_bedwars ?? 0} | Loss : ${bedwar.losses_bedwars ?? 0} | W/L : ${((bedwar.wins_bedwars ?? 0) / (bedwar.losses_bedwars ?? 0)).toFixed(2)}<br>
       Kill : ${bedwar.kills_bedwars ?? 0} | Death : ${bedwar.deaths_bedwars ?? 0} | K/D : ${((bedwar.kills_bedwars ?? 0) / (bedwar.deaths_bedwars ?? 0)).toFixed(2)}<br>
-      Final Kill : ${bedwar.final_kills_bedwars ?? 0} | Final Death : ${bedwar.final_deaths_bedwars ?? 0} | FKDR : ${((bedwar.final_kills_bedwars ?? 0) / (bedwar.final_deaths_bedwars ?? 0)).toFixed(2)}<br>
+      Final Kill : ${bedwar.final_kills_bedwars ?? 0} | Final Death : ${bedwar.final_deaths_bedwars ?? 0}<br>
+      FKDR : ${((bedwar.final_kills_bedwars ?? 0) / (bedwar.final_deaths_bedwars ?? 0)).toFixed(2)}<br>
       Iron : ${bedwar.iron_resources_collected_bedwars ?? 0} | Gold : ${bedwar.gold_resources_collected_bedwars ?? 0}<br>
       Diamond : ${bedwar.diamond_resources_collected_bedwars ?? 0} | Emerald : ${bedwar.emerald_resources_collected_bedwars ?? 0}`;
     },
@@ -353,12 +354,14 @@ const getData = {
     "mm": (api) => {
         mm = api.stats?.MurderMystery ?? {};
         return `Coins : ${mm.coins ?? 0} | Gold Collected : ${mm.coins_pickedup ?? 0}<br>
-      Murder Chance : ${mm.murderer_chance ?? 0}% | Detective Chance : ${mm.detective_chance ?? 0}%<br>
+      Murder Chance : ${mm.murderer_chance ?? 0}%<br>
+      Detective Chance : ${mm.detective_chance ?? 0}%<br>
       Wins : ${mm.wins ?? 0} | Win Rate : ${(100 * (mm.wins ?? 0) / (mm.games ?? 0)).toFixed(2)}%<br>
       Kills : ${mm.kills ?? 0} | Deaths : ${mm.deaths ?? 0}<br>
       Knife Kills : ${mm.knife_kills ?? 0} | Bow Kills : ${mm.bow_kills ?? 0}<br>
       Kills As Murderer : ${mm.kills_as_murderer ?? 0} | Heroes : ${mm.was_hero ?? 0}<br>
-      Kills As Infected : ${mm.kills_as_infected ?? 0} | Kills As Survivor : ${mm.kills_as_survivor ?? 0}<br>
+      Kills As Infected : ${mm.kills_as_infected ?? 0}<br>
+      Kills As Survivor : ${mm.kills_as_survivor ?? 0}<br>
       Longest Time Survive : ${mm.longest_time_as_survivor_seconds ?? 0}s<br>
       Alpha Chance : ${mm.alpha_chance ?? 0}%`
     },
