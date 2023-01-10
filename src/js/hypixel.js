@@ -97,29 +97,22 @@ class Hypixel {
     formatName = (name) => `${this.getRank(name)}${this.data[name].player.displayname}${this.getGuildTag(name)}`;
     getLevel = (exp) => exp < 0 ? 1 : (1 - 3.5 + Math.sqrt(12.25 + 0.0008 * (exp ?? 0))).toFixed(1);
     getTitle = (type) => {
-        if (type == 'bw')
-            return ['WS', 'FKDR', 'WLR', 'Finals', 'Wins'];
-        if (type == 'sw')
-            return ['WS', 'KDR', 'WLR', 'Kills', 'Wins'];
-        if (type == 'duel')
-            return ['WS', 'KDR', 'WLR', 'Kills', 'Wins'];
-        if (type == 'mm')// mc=murderer_chance dc=detective_chance ac=alpha_chance
-            return ['WR', 'Kills', 'MC', 'DC', 'AC'];
-        if (type == 'uhc')
-            return ['Score', 'KDR', 'WLR', 'Kills', 'Wins'];
-        if (type == 'mw')
-            return ['FKDR', 'WLR', 'Finals', 'Wins', 'WDamage'];
-        if (type == 'ww')
-            return ['KDR', 'WR', 'Kills', 'Wins', 'WPlaced'];
+        let title = gameTitle[type];
+        if (title != null) return title;
+        return [];
     }
     getTag = (name) => {
         let api = this.data[name].player;
         if (name == 'IAFEnvoy') return '§6DEV';
-        else if ((api.achievements.bedwars_level < 15 && api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars > 5) || (api.achievements.bedwars_level > 15 && api.achievements.bedwars_level < 100 && api.achievements.bedwars_level / (api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars) <= 5))
-            return '§cALT';
-        else if (api.achievements.bedwars_level < 150 && api.stats.Bedwars.final_deaths_bedwars / api.stats.Bedwars.losses_bedwars < 0.75 && api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars < 1.5)
-            return '§aSNPR';
-        else if (api.channel == 'PARTY') return '§9PRTY';
+        try {
+            if ((api.achievements.bedwars_level < 15 && api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars > 5) || (api.achievements.bedwars_level > 15 && api.achievements.bedwars_level < 100 && api.achievements.bedwars_level / (api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars) <= 5))
+                return '§cALT';
+            if (api.achievements.bedwars_level < 150 && api.stats.Bedwars.final_deaths_bedwars / api.stats.Bedwars.losses_bedwars < 0.75 && api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars < 1.5)
+                return '§aSNPR';
+        } catch (err) {
+            console.log(err);
+        }
+        if (api.channel == 'PARTY') return '§9PRTY';
         return '§7-'
     }
     getMiniData = (name, type) => {
@@ -175,7 +168,7 @@ class Hypixel {
             buildSpan(winsColorList.ww, api.stats?.WoolGames?.wool_wars?.stats?.wins ?? 0),
             buildSpan(specialList.ww_wool_placed, api.stats?.WoolGames?.wool_wars?.stats?.wool_placed ?? 0)];
     }
-    getGuild = (name) => getGuild(this.data[name].guild,this.uuids[name]);
+    getGuild = (name) => getGuild(this.data[name].guild, this.uuids[name]);
     getStatus = async (name) => {
         const b = await fetch(`https://api.hypixel.net/status?key=${this.apiKey}&uuid=${this.getUuid(name)}`)
             .catch(reason => console.log(reason))

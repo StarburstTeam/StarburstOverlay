@@ -127,3 +127,13 @@ const getStatus = (statusJson) => {
             return `Status : Online<br>Game Type : ${formatNameString(statusJson.gameType)}<br>Mode : ${formatNameString(statusJson.mode)}`;
     else return `Status : Offline`;
 }
+
+const gameTitle = {
+    'bw': ['WS', 'FKDR', 'WLR', 'Finals', 'Wins'],
+    'sw': ['WS', 'KDR', 'WLR', 'Kills', 'Wins'],
+    'duel': ['WS', 'KDR', 'WLR', 'Kills', 'Wins'],
+    'mm': ['WR', 'Kills', 'MC', 'DC', 'AC'],// mc=murderer_chance dc=detective_chance ac=alpha_chance
+    'uhc': ['Score', 'KDR', 'WLR', 'Kills', 'Wins'],
+    'mw': ['FKDR', 'WLR', 'Finals', 'Wins', 'WDamage'],
+    'ww': ['KDR', 'WR', 'Kills', 'Wins', 'WPlaced'],
+}

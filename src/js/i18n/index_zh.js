@@ -44,9 +44,9 @@ const clearMainPanel = () => {
     let main = document.getElementById('main'), category = hypixel.getTitle(nowType);
     main.innerHTML = `<tr><th style="width:8%">等级</th>
     <th style="width:3%"></th>
-    <th style="width:40%">玩家</th>
+    <th style="width:35%">玩家</th>
     <th style="width:5%">标签</th>
-    ${category.reduce((p, c) => p + `<th style="width:8%">${c}</th>`, '')}</tr>`;
+    ${category.reduce((p, c) => p + `<th style="width:9%">${c}</th>`, '')}</tr>`;
 }
 
 const selectLogFile = () => {
