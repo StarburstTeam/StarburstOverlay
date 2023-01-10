@@ -20,6 +20,7 @@ const updateHTML = () => {
 
     clearMainPanel();
 
+    let rendered = 0;
     for (let i = 0; i < players.length; i++) {
         if (hypixel.data[players[i]] == null) continue;
         if (hypixel.data[players[i]].success == false) continue;// wait for download
@@ -34,19 +35,21 @@ const updateHTML = () => {
         <td onclick="search('${players[i]}')">${data[1]}</td>
         <th>${formatColor(hypixel.getTag(players[i]))}</th>
         ${Array.from({ length: data.length - 2 }, (_, x) => x + 2).reduce((p, c) => p + `<th>${data[c]}</th>`, '')}</tr>`;
+        rendered++;
     }
     if (missingPlayer)
         main.innerHTML += `<tr><td></td><td></td><td>${formatColor('§c缺少玩家')}</td></tr>
         <tr><td></td><td></td><td>${formatColor('§c请在游戏内输入/who')}</td></tr>`;
+    main.style.height = `${Math.min(rendered * 29.6 + 31.2, 500)}px`
 }
 
 const clearMainPanel = () => {
     let main = document.getElementById('main'), category = hypixel.getTitle(nowType);
-    main.innerHTML = `<tr><th style="width:8%">等级</th>
-    <th style="width:3%"></th>
-    <th style="width:35%">玩家</th>
-    <th style="width:5%">标签</th>
-    ${category.reduce((p, c) => p + `<th style="width:9%">${c}</th>`, '')}</tr>`;
+    main.innerHTML = `<tr><th style="width:80px">等级</th>
+    <th style="width:20px"></th>
+    <th style="width:400px">玩家</th>
+    <th style="width:60px">标签</th>
+    ${category.reduce((p, c) => p + `<th style="width:85px">${c}</th>`, '')}</tr>`;
 }
 
 const selectLogFile = () => {

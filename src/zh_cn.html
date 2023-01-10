@@ -30,7 +30,7 @@
       <button id="quit" onclick="currentWindow.close()"></button>
     </div>
   </div>
-  <table id="main" class="main" style="width:950px;height:auto;overflow-y:scroll;font-size:20px;position:relative">
+  <table id="main" class="main" style="display:inline-block;width:100%;height:31.2px;overflow-y:scroll;font-size:20px;position:relative">
   </table>
   <div id="searchPage" style="width:100%;height:560px" hidden>
     <div id="playerinput">
@@ -40,15 +40,15 @@
         onclick="search()">Go!</button>
     </div>
     <div id="searchResult" style="height:auto">
-      <div style="margin-top:10px;position:absolute;top:85px;left:10px;width:330px;height:80%;overflow-y:scroll">
-        <div id="playerName" class="dataStyle" style="font-size: 16px"></div>
+      <div style="margin-top:10px;position:absolute;top:85px;left:10px;width:380px;height:80%;overflow-y:scroll">
+        <div id="playerName" class="dataStyle" style="font-size: 20px"></div>
         <div id="networkinfo" class="dataStyle"></div>
         <div id="guild" class="dataStyle"></div>
         <div id="status" class="dataStyle"></div>
       </div>
       <div id="details"
-        style="margin-top:10px;position:absolute;top:85px;left:350px;width:420px;height:80%;overflow-y:scroll"> </div>
-      <div style="position: absolute;top:50px;left:800px;width:120px;height:270px">
+        style="margin-top:10px;position:absolute;top:85px;left:400px;width:420px;height:80%;overflow-y:scroll"> </div>
+      <div style="position: absolute;top:50px;left:850px;width:120px;height:270px">
         <img id="skin">
         <button class="download" style="position:absolute;top:280px;left:-20px;width:160px;height:30px"
           onclick="downloadSkin()">下载皮肤</button>

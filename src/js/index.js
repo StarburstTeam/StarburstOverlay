@@ -180,6 +180,7 @@ let lastPage = 'main';
 const switchPage = (page) => {
     if (document.getElementById('main').hidden && lastPage == page) page = 'main';
     lastPage = page;
+    document.getElementById('main').style.display = '';
     document.getElementById('main').hidden = true;
     document.getElementById('searchPage').hidden = true;
     document.getElementById('settingPage').hidden = true;
@@ -188,6 +189,7 @@ const switchPage = (page) => {
     document.getElementById('settings').className = 'settings';
     document.getElementById('info').className = 'info';
     document.getElementById(page).hidden = false;
+    if (page == 'main') document.getElementById('main').style.display = 'inline-block';
     if (page == 'searchPage') document.getElementById('search').className = 'search_stay';
     if (page == 'settingPage') document.getElementById('settings').className = 'settings_stay';
     if (page == 'infoPage') document.getElementById('info').className = 'info_stay';

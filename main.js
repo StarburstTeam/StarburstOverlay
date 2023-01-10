@@ -1,6 +1,6 @@
 const { app, BrowserWindow } = require('electron');
 const windowConfig = {
-  width: 950,
+  width: 1000,
   height: 550,
   frame: false,
   transparent: true,

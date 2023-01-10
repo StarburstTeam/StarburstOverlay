@@ -124,7 +124,7 @@ class Hypixel {
             nick: false
         };
         if (type == 'bw')
-            return [`${basic.lvl}`, `${formatBwLevel(api.achievements?.bedwars_level ?? 1)} ${basic.name}`,
+            return [`${basic.lvl}`, `${formatBwLevel(api.achievements?.bedwars_level ?? 1)}${basic.name}`,
             buildSpan(wsColorList.bw, api.stats?.Bedwars?.winstreak ?? 0),
             buildSpan(kdrColorList.bw, ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.bw, ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2)),
