@@ -6,6 +6,7 @@ const AutoGitUpdate = require('auto-git-update/index');
 const currentWindow = remote.getCurrentWindow();
 const updater = new AutoGitUpdate({ repository: 'https://github.com/IAFEnvoy/StarburstOverlay', tempLocation: './temp/update' });
 let config = new Config('./config.json', {
+    lang: 'en_us',
     logPath: '',
     apiKey: '',
     lastType: 'bw',
@@ -23,7 +24,7 @@ window.onload = async () => {
     updateHTML();
 
     //init search page
-    let games = await fetch('json/games.json').then(res => res.json());
+    let games = await fetch(`json/games_${config.get('lang')}.json`).then(res => res.json());
     modeList.reduce((p, c) => {
         let root = document.createElement('div');
         root.className = 'dataStyle';
@@ -140,10 +141,7 @@ window.onload = async () => {
         } else if ((msg.indexOf('The game starts in 1 second!') != -1 || msg.indexOf('游戏将在1秒后开始') != -1) && msg.indexOf(':') == -1) {
             resize(false);
             if (config.get('notification'))
-                new Notification({
-                    title: 'Game Started!',
-                    body: 'Your Hypixel game has started!'
-                }).show();
+                showNotification();
         } else if ((msg.indexOf('The game starts in 0 second!') != -1 || msg.indexOf('游戏将在0秒后开始') != -1) && msg.indexOf(':') == -1) resize(false);
         else if (msg.indexOf('new API key') != -1 && msg.indexOf(':') == -1) {
             hypixel.apiKey = msg.substring(msg.indexOf('is ') + 3);
@@ -164,10 +162,7 @@ const findUpdate = async () => {
         const versions = await updater.compareVersions();
         console.log(versions);
         if (versions.remoteVersion != 'Error' && !versions.upToDate) {
-            new Notification({
-                title: 'Update Available!',
-                body: 'Click the update button to get.'
-            }).show();
+            showUpdateMessage();
             document.getElementById('update').hidden = false;
         }
     }
@@ -176,48 +171,9 @@ const findUpdate = async () => {
     }
 }
 
-const updateHTML = () => {
-    clearMainPanel();
-    let main = document.getElementById('main');
-
-    if (config.get('logPath') == '')
-        return main.innerHTML = `${formatColor('§cLog Path Not Found')}<br>${formatColor('§cSet Log Path In Settings')}`;
-    if (config.get('apiKey') == '')
-        return main.innerHTML = `${formatColor('§cAPI Key Not Found')}<br>${formatColor('§cType /api new To Get')}`;
-    if (!hypixel.verified && !hypixel.verifying)
-        return main.innerHTML = `${formatColor('§cInvalid API Key')}<br>${formatColor('§cType /api new To Get')}`;
-    
-    for (let i = 0; i < players.length; i++) {
-        if (hypixel.data[players[i]] == null) continue;
-        if (hypixel.data[players[i]].success == false) continue;// wait for download
-        let data = hypixel.getMiniData(players[i], nowType);
-        if (hypixel.data[players[i]].nick == true) {
-            main.innerHTML += `<tr><th style="text-align:right">[ ? ]</th><th></th><td>${data[0]}</td><th>${formatColor('§eNICK')}</th></tr>`;
-            continue;
-        }
-
-        main.innerHTML += `<tr><th style="text-align:right">${data[0]}</th>
-        <th><img src="https://crafatar.com/avatars/${hypixel.getUuid(players[i])}?overlay" style="position:relative;width:20px;height:20px;top:4px"></th>
-        <td onclick="search('${players[i]}')">${data[1]}</td>
-        <th>${formatColor(hypixel.getTag(players[i]))}</th>
-        ${Array.from({ length: data.length - 2 }, (_, x) => x + 2).reduce((p, c) => p + `<th>${data[c]}</th>`, '')}</tr>`;
-    }
-    if (missingPlayer)
-        main += `<div>${formatColor('§cMissing players')}</div><div>${formatColor('§cPlease type /who')}</div>`;
-}
-
 const changeCategory = () => {
     clearMainPanel();
     config.set('lastType', nowType);
-}
-
-const clearMainPanel = () => {
-    let main = document.getElementById('main'), category = hypixel.getTitle(nowType);
-    main.innerHTML = `<tr><th style="width:8%">Lvl</th>
-    <th style="width:3%"></th>
-    <th style="width:40%">Players</th>
-    <th style="width:5%">Tag</th>
-    ${category.reduce((p, c) => p + `<th style="width:8%">${c}</th>`, '')}</tr>`;
 }
 
 let lastPage = 'main';
@@ -306,21 +262,4 @@ const downloadSkin = () => {
     a.href = `https://crafatar.com/skins/${hypixel.getUuid(searchPlayerName)}`;
     a.download = `${hypixel.getUuid(searchPlayerName)}.png`;
     a.click();
-}
-
-const selectLogFile = () => {
-    let temppath = dialog.showOpenDialogSync(currentWindow, {
-        title: 'Select latest.log file',
-        defaultPath: app.getPath('home').split('\\').join('/'),
-        buttonLabel: 'Select log file',
-        filters: [{
-            name: 'Latest log',
-            extensions: ['log']
-        }]
-    });
-    if (temppath == null) return;
-    config.set('logPath', temppath[0].split('\\').join('/'));
-    app.relaunch();
-    app.exit(0);
-    app.quit();
 }
