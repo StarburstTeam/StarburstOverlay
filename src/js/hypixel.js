@@ -25,6 +25,7 @@ class Hypixel {
         if (callback != null) callback();
     }
     getPlayerUuid = async (name) => {//null when the player not found
+        if (this.uuids[name] != null) return this.uuids[name];
         try {
             let a = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`)
                 .catch(err => { throw err })
@@ -46,7 +47,6 @@ class Hypixel {
             .catch(err => { throw err })
             .then(res => res.json());
     }
-    getUuid = (name) => this.uuids[name];
     download = async (name, callback) => {//true if success, false if player not found, null if api error
         if (this.data[name] != null && this.data[name].success == true && this.data[name].time + 120 * 1000 > new Date().getTime())
             return true;
@@ -103,28 +103,32 @@ class Hypixel {
     }
     getTag = (name) => {
         let api = this.data[name].player;
-        if (name == 'IAFEnvoy') return '§6DEV';
+        let uuid = this.uuids[name];
+        console.log(uuid, name);
+        if (uuid == '40dff9cbb87b473f946b4dc9776949cc' || uuid == 'f1f464287e894024a5554610d635fa55') return { format: '§6DEV', value: 100 };
+        if (uuid == 'd2b1d916f6de41238e79d359bcc697a1' || uuid == '5282140e4ad4418b9b809f376daa433a') return { format: '§bPR', value: 90 };
         try {
             if ((api.achievements.bedwars_level < 15 && api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars > 5) || (api.achievements.bedwars_level > 15 && api.achievements.bedwars_level < 100 && api.achievements.bedwars_level / (api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars) <= 5))
-                return '§cALT';
+                return { format: '§cALT', value: 50 };
             if (api.achievements.bedwars_level < 150 && api.stats.Bedwars.final_deaths_bedwars / api.stats.Bedwars.losses_bedwars < 0.75 && api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars < 1.5)
-                return '§aSNPR';
+                return { format: '§aSNPR', value: 30 };
         } catch (err) {
             console.log(err);
         }
-        if (api.channel == 'PARTY') return '§9PRTY';
-        return '§7-'
+        if (api.channel == 'PARTY') return { format: '§9PRTY', value: 10 };
+        return { format: '§7-', value: 0 };
     }
     getMiniData = (name, type) => {
+        if (this.data[name].nick) return [{ format: name, value: name }, 'NICK'];
         let api = this.data[name].player;
-        if (this.data[name].nick) return [name, 'NICK'];
+        let lvl = this.getLevel(api?.networkExp ?? 0);
         let basic = {
             name: formatColor(this.formatName(name)),
-            lvl: buildSpan(lvlList.lvl, this.getLevel(api?.networkExp ?? 0), '[', ']'),
+            lvl: buildSpan(lvlList.lvl, lvl, '[', ']'),
             nick: false
         };
         if (type == 'bw')
-            return [`${basic.lvl}`, `${formatBwLevel(api.achievements?.bedwars_level ?? 1)}${basic.name}`,
+            return [basic.lvl, { format: `${formatBwLevel(api.achievements?.bedwars_level ?? 1)}${basic.name}`, value: api.displayname },
             buildSpan(wsColorList.bw, api.stats?.Bedwars?.winstreak ?? 0),
             buildSpan(kdrColorList.bw, ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.bw, ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2)),
@@ -132,7 +136,7 @@ class Hypixel {
             buildSpan(winsColorList.bw, api.stats?.Bedwars?.wins_bedwars ?? 0)];
         if (type == 'sw') {
             let level = api.stats?.SkyWars?.levelFormatted ?? '§71⋆';
-            return [`${basic.lvl}`, `${formatColor(`${level.substring(0, 2)}[${level.substring(2)}]`)} ${basic.name}`,
+            return [basic.lvl, { format: `${formatColor(`${level.substring(0, 2)}[${level.substring(2)}]`)}${basic.name}`, value: api.displayname },
             buildSpan(wsColorList.sw, api.stats?.SkyWars?.win_streak ?? 0),
             buildSpan(kdrColorList.sw, ((api.stats?.SkyWars?.kills ?? 0) / (api.stats?.SkyWars?.deaths ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.sw, ((api.stats?.SkyWars?.wins ?? 0) / (api.stats?.SkyWars?.losses ?? 0)).toFixed(2)),
@@ -140,28 +144,28 @@ class Hypixel {
             buildSpan(winsColorList.sw, api.stats?.SkyWars?.wins ?? 0)];
         }
         if (type == 'duel')
-            return [`${basic.lvl}`, `${pickDuelLvl(api.stats?.Duels?.wins ?? 0)} ${basic.name}`,
+            return [basic.lvl, { format: `${pickDuelLvl(api.stats?.Duels?.wins ?? 0)}${basic.name}`, value: api.displayname },
             buildSpan(wsColorList.duel, api.stats?.Duels?.current_winstreak ?? 0),
             buildSpan(kdrColorList.duel, ((api.stats?.Duels?.kills ?? 0) / (api.stats?.Duels?.deaths ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.duel, ((api.stats?.Duels?.wins ?? 0) / (api.stats?.Duels?.losses ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.duel, api.stats?.Duels?.kills ?? 0),
             buildSpan(winsColorList.duel, api.stats?.Duels?.wins ?? 0)];
         if (type == 'mm')
-            return [`${basic.lvl}`, `${basic.name}`,
+            return [basic.lvl, { format: basic.name, value: api.displayname },
             buildSpan(wlrColorList.mm, (100 * (api.stats?.MurderMystery?.wins ?? 0) / (api.stats?.MurderMystery?.games ?? 0)).toFixed(1), '', '%'),
             buildSpan(finalsColorList.mm, api.stats?.MurderMystery?.kills ?? 0),
             buildSpan(probabilityList.murderer_chance, (api.stats?.MurderMystery?.murderer_chance ?? 0), '', '%'),
             buildSpan(probabilityList.detective_chance, (api.stats?.MurderMystery?.detective_chance ?? 0), '', '%'),
             buildSpan(probabilityList.alpha_chance, (api.stats?.MurderMystery?.alpha_chance ?? 0), '', '%')];
         if (type == 'mw')
-            return [`${basic.lvl}`, `${basic.name}`,
+            return [basic.lvl, { format: basic.name, value: api.displayname },
             buildSpan(kdrColorList.mw, ((api.stats?.Walls3?.final_kills ?? 0) / (api.stats?.Walls3?.final_deaths ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.mw, ((api.stats?.Walls3?.wins ?? 0) / (api.stats?.Walls3?.losses ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.mw, api.stats?.Walls3?.final_kills ?? 0),
             buildSpan(winsColorList.mw, api.stats?.Walls3?.wins ?? 0),
             buildSpan(specialList.mw_wither_damage, api.stats?.Walls3?.wither_damage ?? 0)];
         if (type == 'ww')
-            return [`${basic.lvl}`, `${basic.name}`,
+            return [basic.lvl, { format: basic.name, value: api.displayname },
             buildSpan(kdrColorList.ww, ((api.stats?.WoolGames?.wool_wars?.stats?.kills ?? 0) / (api.stats?.WoolGames?.wool_wars?.stats?.deaths ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.ww, ((api.stats?.WoolGames?.wool_wars?.stats?.wins ?? 0) / (api.stats?.WoolGames?.wool_wars?.stats?.games_played ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.ww, api.stats?.WoolGames?.wool_wars?.stats?.kills ?? 0),
@@ -170,7 +174,7 @@ class Hypixel {
     }
     getGuild = (name) => getGuild(this.data[name].guild, this.uuids[name]);
     getStatus = async (name) => {
-        const b = await fetch(`https://api.hypixel.net/status?key=${this.apiKey}&uuid=${this.getUuid(name)}`)
+        const b = await fetch(`https://api.hypixel.net/status?key=${this.apiKey}&uuid=${await this.getPlayerUuid(name)}`)
             .catch(reason => console.log(reason))
             .then(res => res.json());
         if (!b.success)
@@ -234,7 +238,9 @@ const lvlList = {
     mw_wither_damage: [1000, 2000, 4000, 8000, 16000]
 }
 const pickColor = (list, value) => colorList[toDefault(list.indexOf(list.find(v => v >= value)), -1, 5)];
-const buildSpan = (list, value, prefix, suffix) => formatColor((list == null || value == NaN) ? `${prefix ?? ''}§7${value}${suffix ?? ''}` : `§${pickColor(list, value)}${prefix ?? ''}${value}${suffix ?? ''}`);
+const buildSpan = (list, value, prefix, suffix) => {
+    return { format: formatColor(`§${pickColor(list, value)}${prefix ?? ''}${value}${suffix ?? ''}`), value: value }
+};
 
 const duelLvlList = [
     { lvl: 100, txt: '' },

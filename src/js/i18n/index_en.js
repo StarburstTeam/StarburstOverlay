@@ -10,8 +10,9 @@ const showUpdateMessage = () =>
     }).show();
 
 
-const updateHTML = () => {
+const updateHTML = async() => {
     let main = document.getElementById('main');
+    main.style.height = `300px`
 
     if (config.get('logPath') == '')
         return main.innerHTML = `${formatColor(' §cLog Path Not Found')}<br>${formatColor(' §cSet Log Path In Settings')}`;
@@ -23,35 +24,37 @@ const updateHTML = () => {
     clearMainPanel();
 
     let rendered = 0;
-    for (let i = 0; i < players.length; i++) {
-        if (hypixel.data[players[i]] == null) continue;
-        if (hypixel.data[players[i]].success == false) continue;// wait for download
-        let data = hypixel.getMiniData(players[i], nowType);
-        if (hypixel.data[players[i]].nick == true) {
-            main.innerHTML += `<tr><th style="text-align:right">[ ? ]</th><th></th><td>${data[0]}</td><th>${formatColor('§eNICK')}</th></tr>`;
+    let dataList = pickDataAndSort();
+    for (let i = 0; i < dataList.length; i++) {
+        if (dataList[i].nick == true) {
+            main.innerHTML += `<tr><th style="text-align:right">[ ? ]</th><th></th><td>${formatColor('§f' + dataList[i].name)}</td><th>${formatColor('§eNICK')}</th></tr>`;
+            rendered++;
             continue;
         }
-
-        main.innerHTML += `<tr><th style="text-align:right">${data[0]}</th>
-        <th><img src="https://crafatar.com/avatars/${hypixel.getUuid(players[i])}?overlay" style="position:relative;width:20px;height:20px;top:4px"></th>
-        <td onclick="search('${players[i]}')">${data[1]}</td>
-        <th>${formatColor(hypixel.getTag(players[i]))}</th>
-        ${Array.from({ length: data.length - 2 }, (_, x) => x + 2).reduce((p, c) => p + `<th>${data[c]}</th>`, '')}</tr>`;
+        main.innerHTML += `<tr><th style="text-align:right;width:70px">${dataList[i].data[0].format}</th>
+        <th><img src="https://crafatar.com/avatars/${await hypixel.getPlayerUuid(dataList[i].data[1].value)}?overlay" style="position:relative;width:20px;height:20px;top:4px"></th>
+        <td onclick="search('${dataList[i].data[1].value}')">${dataList[i].data[1].format}</td>
+        <th>${formatColor(dataList[i].data[dataList[i].data.length - 1].format)}</th>
+        ${Array.from({ length: dataList[i].data.length - 3 }, (_, x) => x + 2).reduce((p, c) => p + `<th>${dataList[i].data[c].format}</th>`, '')}</tr>`;
         rendered++;
     }
-    if (missingPlayer)
+    if (missingPlayer) {
         main.innerHTML += `<tr><td></td><td></td><td>${formatColor('§cMissing players')}</td></tr>
         <tr><td></td><td></td><td>${formatColor('§cPlease type /who')}</td></tr>`;
-    main.style.height = `${Math.min(rendered * 29.6 + 31.2, 500)}px`
+        rendered += 2;
+    }
+    main.style.height = `${Math.min(rendered * 29.6 + 31.2, 500)}px`;
+    if (column >= 1 && column <= 8)
+        document.getElementById(`sort_${column}`).innerHTML += isUp ? '↑' : '↓';
 }
 
 const clearMainPanel = () => {
     let main = document.getElementById('main'), category = hypixel.getTitle(nowType);
-    main.innerHTML = `<tr><th style="width:80px">Lvl</th>
-    <th style="width:20px"></th>
-    <th style="width:400px">Players</th>
-    <th style="width:60px">Tag</th>
-    ${category.reduce((p, c) => p + `<th style="width:85px">${c}</th>`, '')}</tr>`;
+    main.innerHTML = `<tr><th id="sort_1" style="width:80px" onclick="setSortContext(1)">Lvl</th>
+    <th style="width:25px"></th>
+    <th id="sort_2" style="width:350px" onclick="setSortContext(2)">Players</th>
+    <th id="sort_8" style="width:60px" onclick="setSortContext(8)">Tag</th>
+    ${category.reduce((p, c, i) => p + `<th id="sort_${i + 3}" style="width:100px" onclick="setSortContext(${i + 3})">${c}</th>`, '')}</tr>`;
 }
 
 const selectLogFile = () => {

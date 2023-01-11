@@ -13,7 +13,7 @@ let config = new Config('./config.json', {
     autoShrink: true,
     notification: true
 });
-let players = [], hypixel = null, nowType = null, inLobby = true, missingPlayer = false, numplayers = 0;
+let players = [], hypixel = null, nowType = null, inLobby = false, missingPlayer = false, numplayers = 0;
 
 window.onload = async () => {
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
@@ -117,6 +117,7 @@ window.onload = async () => {
             players = [];
             changed = true;
         } else if ((msg.indexOf('joined the lobby!') != -1 || msg.indexOf('into the lobby!') != -1 || msg.indexOf('入了大厅') != -1) && msg.indexOf(':') == -1) {
+            if (inLobby) return;
             resize(false);
             inLobby = true;
             players = [];
@@ -202,7 +203,7 @@ const resize = (show, force) => {
     else nowShow ^= true;
     document.getElementById('show').style.transform = `rotate(${nowShow ? 0 : 90}deg)`;
     currentWindow.setResizable(true);
-    currentWindow.setSize(950, nowShow ? 550 : 40, true);
+    currentWindow.setSize(1080, nowShow ? 550 : 40, true);
     currentWindow.setResizable(false);
 }
 
@@ -226,7 +227,7 @@ const search = async (name) => {
     if (data.success == false) return console.log(data);
 
     document.getElementById('playerName').innerHTML = formatColor(hypixel.formatName(name));
-    document.getElementById('skin').src = `https://crafatar.com/renders/body/${hypixel.getUuid(name)}?overlay`;
+    document.getElementById('skin').src = `https://crafatar.com/renders/body/${await hypixel.getPlayerUuid(name)}?overlay`;
     document.getElementById('networkinfo').innerHTML = getData['ov'](data.player);
     document.getElementById('guild').innerHTML = hypixel.getGuild(name);
     document.getElementById('status').innerHTML = await hypixel.getStatus(name);
@@ -258,10 +259,46 @@ const showDetail = (mode) => {
     }
 }
 
-const downloadSkin = () => {
+const downloadSkin = async () => {
     if (searchPlayerName == null || searchPlayerName == '') return;
     let a = document.createElement('a');
-    a.href = `https://crafatar.com/skins/${hypixel.getUuid(searchPlayerName)}`;
-    a.download = `${hypixel.getUuid(searchPlayerName)}.png`;
+    a.href = `https://crafatar.com/skins/${await hypixel.getPlayerUuid(searchPlayerName)}`;
+    a.download = `${hypixel.getPlayerUuid(searchPlayerName)}.png`;
     a.click();
+}
+
+let column = 0, isUp = false;//column: 0 none, 1 lvl, 2 name, 8 tag, 3-7 stats
+const setSortContext = (c) => {
+    if (c == column) isUp = !isUp;
+    else if (c >= 0 && c <= 8) {
+        column = c;
+        isUp = true;
+    } else {
+        column = 0;
+        isUp = false;
+    }
+    updateHTML();
+}
+
+const pickDataAndSort = () => {
+    let dataList = [];
+    for (let i = 0; i < players.length; i++) {
+        if (hypixel.data[players[i]] == null) continue;
+        if (hypixel.data[players[i]].success == false) continue;// wait for download
+        console.log(players[i]);
+        if (hypixel.data[players[i]].nick == true) {
+            dataList.push({ name: players[i], nick: true });
+            continue;
+        }
+        let d = hypixel.getMiniData(players[i], nowType);
+        d.push(hypixel.getTag(players[i]));
+        dataList.push({ name: players[i], nick: false, data: d });
+    }
+    if (column != 0)
+        dataList = dataList.sort((a, b) => {
+            if (a.nick) return -1;
+            if (b.nick) return 1;
+            return (a.data[column - 1].value - b.data[column - 1].value) * (isUp ? -1 : 1)
+        });
+    return dataList;
 }
