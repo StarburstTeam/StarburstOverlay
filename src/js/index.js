@@ -106,6 +106,7 @@ window.onload = async () => {
                 players.remove(left);
                 numplayers -= 1;
                 if (numplayers < 0) numplayers = 0;
+                missingPlayer = players.length < numplayers;
                 changed = true;
             }
         } else if (msg.indexOf('已退出') != -1 && msg.indexOf(':') == -1) {
@@ -113,6 +114,9 @@ window.onload = async () => {
             let left = msg.split('已退出')[0];
             if (players.find(x => x == left) != null) {
                 players.remove(left);
+                numplayers -= 1;
+                if (numplayers < 0) numplayers = 0;
+                missingPlayer = players.length < numplayers;
                 changed = true;
             }
         } else if ((msg.indexOf('Sending you') != -1 || msg.indexOf('正在前往') != -1) && msg.indexOf(':') == -1) {

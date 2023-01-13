@@ -110,7 +110,7 @@ const getGuild = (guildJson, uuid) => {
     let rankJson = guildJson.ranks.find(rank => rank.name == playerGuildJson.rank);
     if (playerGuildJson == null || rankJson == null) return data;
     return data + `加入时间：${formatDateTime(playerGuildJson.joined)}<br>
-    地位：${playerGuildJson.rank} (${formatColor(formatColorFromString(guildJson.tagColor) + '[' + rankJson.tag + ']')})`;
+    地位：${playerGuildJson.rank} (${formatColor(formatColorFromString(guildJson.tagColor ?? '§7') + '[' + rankJson.tag + ']')})`;
 }
 const getStatus = (statusJson) => {
     if (statusJson.online)

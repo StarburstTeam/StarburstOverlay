@@ -51,18 +51,16 @@ The Starburst Overlay is a high performance and multifunctional Hypixel stats ov
 
 2.Open the Starburst Overlay
 
-3.Set latest.log path in settings page. (Open settings page by clicking the <img src="./src/img/settings1.png" style="width:20px"> button)
+3.Follow the software to set up
 
-4.Set API key by run `/api new` in server or just edit the `config.json` in the software folder.
+4.Open your game and run `/who`. (The software will tell you to run `/who` when necessary.)
 
-5.Open your game and run `/who`. (The software will tell you to run `/who` when necessary.)
-
-6.Enjoy it.**ヾ(≧▽≦\*)o**
+5.Enjoy it.**ヾ(≧▽≦\*)o**
 
 ### Preview
-<img src="./img/1.jpg">
-<img src="./img/3.png">
-<img src="./img/2.jpg">
+<img src="./img/en/1.png">
+<img src="./img/en/2.png">
+<img src="./img/en/3.png">
 
 ### Bug-Report
 If you find a bug or have an idea, tell me in the issue of this repository.
@@ -74,6 +72,6 @@ If you find a bug or have an idea, tell me in the issue of this repository.
 
 3.Support MacOS and Linux
 
-4.Sort the stats
+4.Sort the stats (✔)
 
-5.More Hypixel language suppport
+5.More Hypixel language suppport (✔)

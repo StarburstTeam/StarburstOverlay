@@ -52,18 +52,16 @@ Starburst Overlay是一个高速并且多功能的Hypixel数据查询软件
 
 2.打开Starburst Overlay
 
-3.在设置界面中设置latest.log路径（按<img src="./src/img/settings1.png" style="width:20px">以打开设置界面）
+3.按照软件上面的步骤完成设置
 
-4.通过在服务器中运行`/api new`或者直接修改软件目录中的`config.json`来设置API key
+4.打开你的游戏并且运行`/who`（软件将会在需要运行`/who`的时候告诉你）
 
-5.打开你的游戏并且运行`/who`（软件将会在需要运行`/who`的时候告诉你）
-
-6.尽情享用吧**ヾ(≧▽≦\*)o**
+5.尽情享用吧**ヾ(≧▽≦\*)o**
 
 ### 预览
-<img src="./img/1.jpg">
-<img src="./img/3.png">
-<img src="./img/2.jpg">
+<img src="./img/zh/1.png">
+<img src="./img/zh/2.png">
+<img src="./img/zh/3.png">
 
 ### Bug汇报
 如果你发现任何bug或者有好的想法，请在这个仓库中提交issue。
@@ -75,6 +73,6 @@ Starburst Overlay是一个高速并且多功能的Hypixel数据查询软件
 
 3.支持MacOS和Linux
 
-4.对数据进行排序
+4.对数据进行排序 (✔)
 
-5.更多游戏语言支持
+5.更多游戏语言支持 (✔)
