@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Starburst Overlay</title>
+    <script src="js/config.js"></script>
+    <script src="js/setup.js"></script>
+    <link rel="styleSheet" href="index.css">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+</head>
+
+<body>
+    <script>
+        const selectLogFile = () => {
+            let temppath = dialog.showOpenDialogSync(currentWindow, {
+                title: '选择latest.log文件',
+                defaultPath: app.getPath('home').split('\\').join('/'),
+                buttonLabel: '选择log文件',
+                filters: [{
+                    name: 'Latest log',
+                    extensions: ['log']
+                }]
+            });
+            if (temppath == null) return;
+            config.set('logPath', temppath[0].split('\\').join('/'));
+            document.getElementById('logpath').value = temppath[0].split('\\').join('/');
+        }
+    </script>
+    <div id="menu" class="menu">
+        <div class="title" style="position:absolute;left:5px;top:-5px">Starburst</div>
+        <div id="buttons" style="float:right;margin-right:5px;margin-top:2px;">
+            <button id="minimize" onclick="currentWindow.minimize()"></button>
+            <button id="quit" onclick="currentWindow.close()"></button>
+        </div>
+    </div>
+    <div id="setup" style="color:aqua;font-family:consolas;">
+        <h2>&nbsp在使用之前，请完成以下设置</h2>
+        <h3>&nbsp 1.设置log路径</h3>
+        <input id="logpath" style="position:relative;left:20px;width:80%">
+        <button class="setting_button" style="position:relative;left:20px" onclick="selectLogFile()">选择log路径</button>
+        <h4>&nbsp 或者直接选择以下客户端</h4>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('badlion')">BadLion</button>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('feather')">Feather</button>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('pvplounge')">PvPLounge</button>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('labymod')">LabyMod</button>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('lunar')">Lunar</button>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('vanilla')">官方启动器</button>
+        <h3>&nbsp 2.设置Hypixel API Key</h3>
+        <h4>&nbsp 可以通过在游戏内运行/api new获取</h4>
+        <input id="apikey" style="position:relative;left:20px;width:80%"
+            oninput="config.set('apiKey',document.getElementById('apikey').value)">
+        <br><br><br>
+        <button class="setting_button" style="position:relative;left:20px"
+            onclick="window.location.href='./zh_cn.html'">完成设置</button>
+    </div>
+</body>

@@ -1,3 +1,5 @@
+const { Notification, dialog, app } = remote;
+
 const showNotification = () => new Notification({
     title: 'Game Started!',
     body: 'Your Hypixel game has started!'
@@ -10,16 +12,18 @@ const showUpdateMessage = () =>
     }).show();
 
 
-const updateHTML = async() => {
+const updateHTML = async () => {
     let main = document.getElementById('main');
     main.style.height = `300px`
 
     if (config.get('logPath') == '')
-        return main.innerHTML = `${formatColor(' §cLog Path Not Found')}<br>${formatColor(' §cSet Log Path In Settings')}`;
+        return main.innerHTML = `${formatColor('&nbsp §cLog Path Not Found')}<br>${formatColor('&nbsp §cSet Log Path In Settings')}`;
+    if (!hasLog)
+        return main.innerHTML = `${formatColor('&nbsp §cLog File Not Found')}<br>${formatColor('&nbsp §cSet Log Path In Settings')}`;
     if (config.get('apiKey') == '')
-        return main.innerHTML = `${formatColor(' §cAPI Key Not Found')}<br>${formatColor(' §cType /api new To Get')}`;
+        return main.innerHTML = `${formatColor('&nbsp §cAPI Key Not Found')}<br>${formatColor('&nbsp §cType /api new To Get')}`;
     if (!hypixel.verified && !hypixel.verifying)
-        return main.innerHTML = `${formatColor(' §cInvalid API Key')}<br>${formatColor(' §cType /api new To Get')}`;
+        return main.innerHTML = `${formatColor('&nbsp §cInvalid API Key')}<br>${formatColor('&nbsp §cType /api new To Get')}`;
 
     clearMainPanel();
 
@@ -32,8 +36,8 @@ const updateHTML = async() => {
             continue;
         }
         main.innerHTML += `<tr><th style="text-align:right;width:70px">${dataList[i].data[0].format}</th>
-        <th><img src="https://crafatar.com/avatars/${await hypixel.getPlayerUuid(dataList[i].data[1].value)}?overlay" style="position:relative;width:20px;height:20px;top:4px"></th>
-        <td onclick="search('${dataList[i].data[1].value}')">${dataList[i].data[1].format}</td>
+        <th><img src="https://crafatar.com/avatars/${await hypixel.getPlayerUuid(dataList[i].name)}?overlay" style="position:relative;width:20px;height:20px;top:4px"></th>
+        <td style="word-break:keep-all" onclick="search('${dataList[i].name}')">${dataList[i].data[1].format}</td>
         <th>${formatColor(dataList[i].data[dataList[i].data.length - 1].format)}</th>
         ${Array.from({ length: dataList[i].data.length - 3 }, (_, x) => x + 2).reduce((p, c) => p + `<th>${dataList[i].data[c].format}</th>`, '')}</tr>`;
         rendered++;
@@ -69,7 +73,5 @@ const selectLogFile = () => {
     });
     if (temppath == null) return;
     config.set('logPath', temppath[0].split('\\').join('/'));
-    app.relaunch();
-    app.exit(0);
-    app.quit();
+    window.location.href = './index.html';
 }

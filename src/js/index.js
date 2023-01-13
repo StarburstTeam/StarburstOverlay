@@ -1,6 +1,6 @@
 const { remote, shell } = require('electron');
-const { Notification, dialog, app } = remote;
 const { Tail } = require('tail');
+const fs = require('fs');
 const AutoGitUpdate = require('auto-git-update/index');
 
 const currentWindow = remote.getCurrentWindow();
@@ -13,7 +13,7 @@ let config = new Config('./config.json', {
     autoShrink: true,
     notification: true
 });
-let players = [], hypixel = null, nowType = null, inLobby = false, missingPlayer = false, numplayers = 0;
+let players = [], hypixel = null, nowType = null, inLobby = false, missingPlayer = false, numplayers = 0, hasLog = false;
 
 window.onload = async () => {
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
@@ -22,6 +22,7 @@ window.onload = async () => {
     document.getElementById('notification').checked = config.get('notification');
     changeCategory();
     updateHTML();
+    findUpdate();
 
     //init search page
     let games = await fetch(`json/games_${config.get('lang')}.json`).then(res => res.json());
@@ -42,6 +43,7 @@ window.onload = async () => {
     }, document.getElementById('details'));
 
     if (config.get('logPath') == '') return;
+    hasLog = fs.existsSync(config.get('logPath'));
     const tail = new Tail(config.get('logPath'), { useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
     tail.on('line', data => {
         let s = data.indexOf('[CHAT]');
@@ -102,6 +104,8 @@ window.onload = async () => {
             let left = msg.split(' ')[0];
             if (players.find(x => x == left) != null) {
                 players.remove(left);
+                numplayers -= 1;
+                if (numplayers < 0) numplayers = 0;
                 changed = true;
             }
         } else if (msg.indexOf('已退出') != -1 && msg.indexOf(':') == -1) {
@@ -144,18 +148,13 @@ window.onload = async () => {
             if (config.get('notification'))
                 showNotification();
         } else if ((msg.indexOf('The game starts in 0 second!') != -1 || msg.indexOf('游戏将在0秒后开始') != -1) && msg.indexOf(':') == -1) resize(false);
-        else if (msg.indexOf('new API key') != -1 && msg.indexOf(':') == -1) {
-            hypixel.apiKey = msg.substring(msg.indexOf('is ') + 3);
-            hypixel.verifyKey();
-            config.set('apiKey', hypixel.apiKey);
-        }
         if (changed) {
             console.log(players);
             updateHTML();
         }
     });
     tail.on('error', (err) => console.log(err));
-    findUpdate();
+    updateHTML();
 }
 
 const findUpdate = async () => {
@@ -285,7 +284,6 @@ const pickDataAndSort = () => {
     for (let i = 0; i < players.length; i++) {
         if (hypixel.data[players[i]] == null) continue;
         if (hypixel.data[players[i]].success == false) continue;// wait for download
-        console.log(players[i]);
         if (hypixel.data[players[i]].nick == true) {
             dataList.push({ name: players[i], nick: true });
             continue;

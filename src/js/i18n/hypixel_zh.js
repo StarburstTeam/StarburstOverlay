@@ -41,7 +41,7 @@ const getData = {
     },
     "duel": (api) => {
         duel = api.stats?.Duels ?? {};
-        return `硬币：${duel.coins ?? 0} | Ping偏好：${duel.pingPreference ?? 0}ms<br>
+        return `硬币：${duel.coins ?? 0} | Ping偏好：${duel.pingPreference ?? 200}ms<br>
         胜场：${duel.wins ?? 0} | 败场：${duel.losses} | W/L：${((duel.wins ?? 0) / (duel.losses ?? 0)).toFixed(2)}<br>
         最佳连胜：${duel.best_all_modes_winstreak ?? '?'} | 目前连胜：${duel.current_winstreak ?? '?'}<br>
         击杀：${duel.kills ?? 0} | 死亡：${duel.deaths ?? 0} | K/D：${((duel.kills ?? 0) / (duel.deaths ?? 0)).toFixed(2)}`

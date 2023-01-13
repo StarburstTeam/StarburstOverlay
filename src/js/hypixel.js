@@ -104,7 +104,6 @@ class Hypixel {
     getTag = (name) => {
         let api = this.data[name].player;
         let uuid = this.uuids[name];
-        console.log(uuid, name);
         if (uuid == '40dff9cbb87b473f946b4dc9776949cc' || uuid == 'f1f464287e894024a5554610d635fa55') return { format: '§6DEV', value: 100 };
         if (uuid == 'd2b1d916f6de41238e79d359bcc697a1' || uuid == '5282140e4ad4418b9b809f376daa433a') return { format: '§bPR', value: 90 };
         try {
@@ -128,7 +127,7 @@ class Hypixel {
             nick: false
         };
         if (type == 'bw')
-            return [basic.lvl, { format: `${formatBwLevel(api.achievements?.bedwars_level ?? 1)}${basic.name}`, value: api.displayname },
+            return [basic.lvl, { format: `${formatBwLevel(api.achievements?.bedwars_level ?? 1)}${basic.name}`, value: api.achievements?.bedwars_level ?? 1 },
             buildSpan(wsColorList.bw, api.stats?.Bedwars?.winstreak ?? 0),
             buildSpan(kdrColorList.bw, ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.bw, ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2)),
@@ -136,7 +135,7 @@ class Hypixel {
             buildSpan(winsColorList.bw, api.stats?.Bedwars?.wins_bedwars ?? 0)];
         if (type == 'sw') {
             let level = api.stats?.SkyWars?.levelFormatted ?? '§71⋆';
-            return [basic.lvl, { format: `${formatColor(`${level.substring(0, 2)}[${level.substring(2)}]`)}${basic.name}`, value: api.displayname },
+            return [basic.lvl, { format: `${formatColor(`${level.substring(0, 2)}[${level.substring(2)}]`)}${basic.name}`, value: new Number(level.substring(2)) },
             buildSpan(wsColorList.sw, api.stats?.SkyWars?.win_streak ?? 0),
             buildSpan(kdrColorList.sw, ((api.stats?.SkyWars?.kills ?? 0) / (api.stats?.SkyWars?.deaths ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.sw, ((api.stats?.SkyWars?.wins ?? 0) / (api.stats?.SkyWars?.losses ?? 0)).toFixed(2)),
@@ -144,7 +143,7 @@ class Hypixel {
             buildSpan(winsColorList.sw, api.stats?.SkyWars?.wins ?? 0)];
         }
         if (type == 'duel')
-            return [basic.lvl, { format: `${pickDuelLvl(api.stats?.Duels?.wins ?? 0)}${basic.name}`, value: api.displayname },
+            return [basic.lvl, { format: `${pickDuelLvl(api.stats?.Duels?.wins ?? 0)}${basic.name}`, value: api.stats?.Duels?.wins ?? 0 },
             buildSpan(wsColorList.duel, api.stats?.Duels?.current_winstreak ?? 0),
             buildSpan(kdrColorList.duel, ((api.stats?.Duels?.kills ?? 0) / (api.stats?.Duels?.deaths ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.duel, ((api.stats?.Duels?.wins ?? 0) / (api.stats?.Duels?.losses ?? 0)).toFixed(2)),

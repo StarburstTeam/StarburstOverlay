@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Starburst Overlay</title>
+    <script src="js/config.js"></script>
+    <script src="js/setup.js"></script>
+    <link rel="styleSheet" href="index.css">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+</head>
+
+<body>
+    <script>
+        const selectLogFile = () => {
+            let temppath = dialog.showOpenDialogSync(currentWindow, {
+                title: 'Select latest.log file',
+                defaultPath: app.getPath('home').split('\\').join('/'),
+                buttonLabel: 'Select log file',
+                filters: [{
+                    name: 'Latest log',
+                    extensions: ['log']
+                }]
+            });
+            if (temppath == null) return;
+            config.set('logPath', temppath[0].split('\\').join('/'));
+            document.getElementById('logpath').value = temppath[0].split('\\').join('/');
+        }
+    </script>
+    <div id="menu" class="menu">
+        <div class="title" style="position:absolute;left:5px;top:-5px">Starburst</div>
+        <div id="buttons" style="float:right;margin-right:5px;margin-top:2px;">
+            <button id="minimize" onclick="currentWindow.minimize()"></button>
+            <button id="quit" onclick="currentWindow.close()"></button>
+        </div>
+    </div>
+    <div id="setup" style="color:aqua;font-family:consolas;">
+        <h2>&nbspLet's set up first</h2>
+        <h3>&nbsp 1.Set Log Path</h3>
+        <input id="logpath" style="position:relative;left:20px;width:74%">
+        <button class="setting_button" style="position:relative;left:20px" onclick="selectLogFile()">Select
+            Latest.log</button>
+        <h4>&nbsp Or select the client you are using</h4>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('badlion')">BadLion</button>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('feather')">Feather</button>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('pvplounge')">PvPLounge</button>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('labymod')">LabyMod</button>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('lunar')">Lunar</button>
+        <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
+            onclick="setPathFromClient('vanilla')">Vanilla</button>
+        <h3>&nbsp 2.Set the Hypixel API Key</h3>
+        <h4>&nbsp Run <b>/api new</b> in game to get</h4>
+        <input id="apikey" style="position:relative;left:20px;width:80%"
+            oninput="config.set('apiKey',document.getElementById('apikey').value)">
+        <br><br><br>
+        <button class="setting_button" style="position:relative;left:20px"
+            onclick="window.location.href='./en_us.html'">Done</button>
+    </div>
+</body>

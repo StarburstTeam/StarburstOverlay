@@ -1,10 +1,10 @@
 class Config {
     constructor(path, defaultValue) {
         this.path = path;
-        this.defaultValue = defaultValue;
+        this.defaultValue = defaultValue == null ? {} : defaultValue;
         this.fs = require('fs');
         if (!this.fs.existsSync(path))
-            this.fs.writeFileSync(path, JSON.stringify(defaultValue));
+            this.fs.writeFileSync(path, JSON.stringify(this.defaultValue));
         this.config = JSON.parse(this.fs.readFileSync(path));
     }
     get = (name) => {
