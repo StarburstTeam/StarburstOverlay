@@ -26,9 +26,11 @@ The Starburst Overlay is a high performance and multifunctional Hypixel stats ov
 
 3.Support Bedwars, Skywar, Murder Mystery, Duels, Mega Wall and Wool War. (More games will add soon.)
 
-4.Show a notification when game starts.
+4.Sort any stats by clicking the table headers.
 
-5.With top most and can automaticall shrink when unnecessary.
+5.Show a notification when game starts.
+
+6.With top most and can automaticall shrink when unnecessary.
 
 ### Overall stats searcher
 1.Open it by clicking the <img src="./src/img/search1.png" style="width:20px"> button or just click the player name in in-game stats searcher.
@@ -40,9 +42,11 @@ The Starburst Overlay is a high performance and multifunctional Hypixel stats ov
 **This feature is merged from the [Hypixel Overlay](https://github.com/IAFEnvoy/HypixelOverlay). And that one will no longer update.**
 
 ### Other feature
-1.Safe and stable
+1.Support CPS test.(Click <img src="./src/img/cps1.png" style="width:20px"> to open)
 
-2.Open source!
+2.Safe and stable
+
+3.Open source!
 
 #### More features coming soon. (You can tell me what you want in issue)
 
