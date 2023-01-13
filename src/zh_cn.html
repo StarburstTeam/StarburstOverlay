@@ -1,116 +1,135 @@
 <!DOCTYPE html>
 
 <head>
-  <meta charset="utf-8">
-  <title>Starburst Overlay</title>
-  <script src="js/util.js"></script>
-  <script src="js/config.js"></script>
-  <script src="js/hypixel.js"></script>
-  <script src="js/index.js"></script>
-  <script src="js/i18n/hypixel_zh.js"></script>
-  <script src="js/i18n/index_zh.js"></script>
-  <script src="js/debug.js"></script>
-  <link rel="styleSheet" href="scrollbar.css">
-  <link rel="styleSheet" href="switch.css">
-  <link rel="styleSheet" href="index.css">
-  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <meta charset="utf-8">
+    <title>Starburst Overlay</title>
+    <script src="js/util.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/hypixel.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/i18n/hypixel_zh.js"></script>
+    <script src="js/i18n/cps_zh.js"></script>
+    <script src="js/i18n/index_zh.js"></script>
+    <script src="js/debug.js"></script>
+    <link rel="styleSheet" href="scrollbar.css">
+    <link rel="styleSheet" href="switch.css">
+    <link rel="styleSheet" href="index.css">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
 </head>
 
 <body>
-  <div id="menu" class="menu">
-    <div class="title" style="position:absolute;left:5px;top:-5px">Starburst</div>
-    <div id="buttons" style="float:right;margin-right:5px;margin-top:2px;">
-      <button id="update" class="update"
-        onclick="shell.openExternal('https://github.com/IAFEnvoy/StarburstOverlay/releases')" hidden></button>
-      <button id="search" class="search" onclick="switchPage('searchPage')"></button>
-      <button id="settings" class="settings" onclick="switchPage('settingPage')"></button>
-      <button id="info" class="info" onclick="switchPage('infoPage')"></button>
-      <button id="show" onclick="resize(null, true)"></button>
-      <button id="minimize" onclick="currentWindow.minimize()"></button>
-      <button id="quit" onclick="currentWindow.close()"></button>
+    <div id="menu" class="menu">
+        <div class="title" style="position:absolute;left:5px;top:-5px">Starburst</div>
+        <div id="buttons" style="float:right;margin-right:5px;margin-top:2px;">
+            <button id="update" class="update"
+                onclick="shell.openExternal('https://github.com/IAFEnvoy/StarburstOverlay/releases')" hidden></button>
+            <button id="cps" class="cps" onclick="switchPage('cpsPage')"></button>
+            <button id="search" class="search" onclick="switchPage('searchPage')"></button>
+            <button id="settings" class="settings" onclick="switchPage('settingPage')"></button>
+            <button id="info" class="info" onclick="switchPage('infoPage')"></button>
+            <button id="show" onclick="resize(null, true)"></button>
+            <button id="minimize" onclick="currentWindow.minimize()"></button>
+            <button id="quit" onclick="currentWindow.close()"></button>
+        </div>
     </div>
-  </div>
-  <table id="main" class="main" style="display:inline-block;width:100%;height:31.2px;overflow-y:scroll;font-size:20px;position:relative">
-  </table>
-  <div id="searchPage" style="width:100%;height:560px" hidden>
-    <div id="playerinput">
-      <div class="infoFont" style="position:absolute;top:55px;left:30px">玩家名：</div>
-      <input id="playername" type="text" style="position: absolute;top:55px;left:230px;width:350px;height:25px;">
-      <button class="searchButton" id="search" style="position: absolute;top:55px;left:600px;width:80px;height:32px"
-        onclick="search()">Go!</button>
+    <table id="main" class="main"
+        style="display:inline-block;width:100%;height:31.2px;overflow-y:scroll;font-size:20px;position:relative">
+    </table>
+    <div id="searchPage" style="width:100%;height:560px" hidden>
+        <div id="playerinput">
+            <div class="infoFont" style="position:absolute;top:55px;left:30px">玩家名：</div>
+            <input id="playername" type="text" style="position: absolute;top:55px;left:230px;width:350px;height:25px;">
+            <button class="searchButton" id="search"
+                style="position: absolute;top:55px;left:600px;width:80px;height:32px" onclick="search()">Go!</button>
+        </div>
+        <div id="searchResult" style="height:auto">
+            <div style="margin-top:10px;position:absolute;top:85px;left:10px;width:380px;height:80%;overflow-y:scroll">
+                <div id="playerName" class="dataStyle" style="font-size: 20px"></div>
+                <div id="networkinfo" class="dataStyle"></div>
+                <div id="guild" class="dataStyle"></div>
+                <div id="status" class="dataStyle"></div>
+            </div>
+            <div id="details"
+                style="margin-top:10px;position:absolute;top:85px;left:400px;width:420px;height:80%;overflow-y:scroll">
+            </div>
+            <div style="position: absolute;top:50px;left:850px;width:120px;height:270px">
+                <img id="skin">
+                <button class="download" style="position:absolute;top:280px;left:-20px;width:160px;height:30px"
+                    onclick="downloadSkin()">下载皮肤</button>
+                <div id="socialMedia" style="position:absolute;top:320px;left:-20px;width:auto"></div>
+            </div>
+        </div>
     </div>
-    <div id="searchResult" style="height:auto">
-      <div style="margin-top:10px;position:absolute;top:85px;left:10px;width:380px;height:80%;overflow-y:scroll">
-        <div id="playerName" class="dataStyle" style="font-size: 20px"></div>
-        <div id="networkinfo" class="dataStyle"></div>
-        <div id="guild" class="dataStyle"></div>
-        <div id="status" class="dataStyle"></div>
-      </div>
-      <div id="details"
-        style="margin-top:10px;position:absolute;top:85px;left:400px;width:420px;height:80%;overflow-y:scroll"> </div>
-      <div style="position: absolute;top:50px;left:850px;width:120px;height:270px">
-        <img id="skin">
-        <button class="download" style="position:absolute;top:280px;left:-20px;width:160px;height:30px"
-          onclick="downloadSkin()">下载皮肤</button>
-        <div id="socialMedia" style="position:absolute;top:320px;left:-20px;width:auto"></div>
-      </div>
+    <div id="settingPage" hidden>
+        <div>
+            <div class="setting_subtitle">游戏类型：</div>
+            <select id="infotype" style="height:auto" onchange="changeDiv()">
+                <option value="bw">起床战争</option>
+                <option value="sw">空岛战争</option>
+                <option value="mm">密室杀手</option>
+                <option value="duel">决斗游戏</option>
+                <option value="mw">超级战墙</option>
+                <option value="ww">羊毛战争</option>
+            </select>
+        </div><br>
+        <div>
+            <div class="setting_subtitle" style="float:left">log路径（设置后会重启）：</div>
+            <button class="setting_button" onclick="selectLogFile()">设置log路径</button>
+        </div><br>
+        <div>
+            <div class="setting_subtitle">自动折叠：</div>
+            <label class="switch" style="top:10px;">
+                <input id="autoShrink" type="checkbox"
+                    onchange="config.set('autoShrink', document.getElementById('autoShrink').checked)">
+                <div class="slider round"></div>
+            </label>
+        </div><br>
+        <div>
+            <div class="setting_subtitle">游戏开始提示：</div>
+            <label class="switch" style="top:10px;">
+                <input id="notification" type="checkbox"
+                    onchange="config.set('notification', document.getElementById('notification').checked)">
+                <div class="slider round"></div>
+            </label>
+        </div><br>
+        <div>
+            <div class="setting_subtitle">语言：</div>
+            <select id="lang" style="height:auto"
+                onchange="config.set('lang', document.getElementById('lang').value);window.location.href='./index.html'">
+                <option value="zh_cn">简体中文</option>
+                <option value="en_us">English</option>
+            </select>
+        </div><br>
     </div>
-  </div>
-  <div id="settingPage" hidden>
-    <div>
-      <div class="setting_subtitle">游戏类型：</div>
-      <select id="infotype" style="height:auto" onchange="changeDiv()">
-        <option value="bw">起床战争</option>
-        <option value="sw">空岛战争</option>
-        <option value="mm">密室杀手</option>
-        <option value="duel">决斗游戏</option>
-        <option value="mw">超级战墙</option>
-        <option value="ww">羊毛战争</option>
-      </select>
-    </div><br>
-    <div>
-      <div class="setting_subtitle" style="float:left">log路径（设置后会重启）：</div>
-      <button class="setting_button" onclick="selectLogFile()">设置log路径</button>
-    </div><br>
-    <div>
-      <div class="setting_subtitle">自动折叠：</div>
-      <label class="switch" style="top:10px;">
-        <input id="autoShrink" type="checkbox"
-          onchange="config.set('autoShrink', document.getElementById('autoShrink').checked)">
-        <div class="slider round"></div>
-      </label>
-    </div><br>
-    <div>
-      <div class="setting_subtitle">游戏开始提示：</div>
-      <label class="switch" style="top:10px;">
-        <input id="notification" type="checkbox"
-          onchange="config.set('notification', document.getElementById('notification').checked)">
-        <div class="slider round"></div>
-      </label>
-    </div><br>
-    <div>
-      <div class="setting_subtitle">语言：</div>
-      <select id="lang" style="height:auto"
-        onchange="config.set('lang', document.getElementById('lang').value);window.location.href='./index.html'">
-        <option value="zh_cn">简体中文</option>
-        <option value="en_us">English</option>
-      </select>
-    </div><br>
-  </div>
-  <div id="infoPage" hidden>
-    <div>
-      <div class="infopage" style="margin-left:15px;width:100%;margin-left:2px;text-align:left;color:aqua">&nbsp 颜色注释：
-      </div>
-      <div class="infopage" style="background:#AAAAAA;color:#000000;width:16%;margin-left:5px">菜！</div>
-      <div class="infopage" style="background:#FFFFFF;color:#AAAAAA;width:16%">OK</div>
-      <div class="infopage" style="background:#55FF55;color:#c3ffc3;width:16%">还行</div>
-      <div class="infopage" style="background:#55FFFF;color:#0000ff;width:16%">大佬</div>
-      <div class="infopage" style="background:#FF5555;color:#f990ff;width:16%">犇</div>
-      <div class="infopage" style="background:#FFAA00;color:#ffff00;width:16%">神</div>
+    <div id="cpsPage" style="text-align:center" hidden>
+        <br>
+        <div>
+            <button class="setting_button" onclick="setTestTime(1)">1秒</button>
+            <button class="setting_button" onclick="setTestTime(5)">5秒</button>
+            <button class="setting_button" onclick="setTestTime(10)">10秒</button>
+            <button class="setting_button" onclick="setTestTime(20)">20秒</button>
+        </div>
+        <h3 id="cpsTestTime" style="color:aqua">当前测试时长：10秒</h3>
+        <button id="testCpsButton" class="setting_button" style="margin:20px;width:50%;height:200px"
+            onmousedown="onTestClick(event.button)">点此开始测试</button>
+        <h3 id="cpsTestResult" style="color:aqua"></h3>
+        <button class="setting_button" onclick="resetTest()">重置</button>
     </div>
-    <p class="infopage" style="color:aqua"
-      onclick="shell.openExternal('https://github.com/IAFEnvoy/StarburstOverlay/issues')">&nbsp
-      如果遇到任何问题，可以在Github上发起Issue（点此打开）</p>
-    <!--TODO-->
-  </div>
+    <div id="infoPage" hidden>
+        <div>
+            <div class="infopage" style="margin-left:15px;width:100%;margin-left:2px;text-align:left;color:aqua">&nbsp
+                颜色注释：
+            </div>
+            <div class="infopage" style="background:#AAAAAA;color:#000000;width:16%;margin-left:5px">菜！</div>
+            <div class="infopage" style="background:#FFFFFF;color:#AAAAAA;width:16%">OK</div>
+            <div class="infopage" style="background:#55FF55;color:#c3ffc3;width:16%">还行</div>
+            <div class="infopage" style="background:#55FFFF;color:#0000ff;width:16%">大佬</div>
+            <div class="infopage" style="background:#FF5555;color:#f990ff;width:16%">犇</div>
+            <div class="infopage" style="background:#FFAA00;color:#ffff00;width:16%">神</div>
+        </div>
+        <p class="infopage" style="color:aqua"
+            onclick="shell.openExternal('https://github.com/IAFEnvoy/StarburstOverlay/issues')">&nbsp
+            如果遇到任何问题，可以在Github上发起Issue（点此打开）</p>
+        <!--TODO-->
+    </div>
 </body>

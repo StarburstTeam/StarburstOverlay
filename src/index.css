@@ -112,6 +112,32 @@ body {
     transition: all 0.2s ease-out;
 }
 
+.cps {
+    background: transparent;
+    background-image: url("../src/img/cps1.png");
+    background-size: cover;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
+    -webkit-app-region: no-drag;
+    transition: all 0.2s ease-out;
+}
+
+.cps_stay,
+.cps:hover {
+    background: transparent;
+    background-image: url("../src/img/cps2.png");
+    background-size: cover;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+    height: 35px;
+    width: 35px;
+    border: none;
+    outline: none;
+    transition: all 0.2s ease-out;
+}
+
 .search {
     background: transparent;
     background-image: url("../src/img/search1.png");

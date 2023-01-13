@@ -189,14 +189,17 @@ const switchPage = (page) => {
     document.getElementById('searchPage').hidden = true;
     document.getElementById('settingPage').hidden = true;
     document.getElementById('infoPage').hidden = true;
+    document.getElementById('cpsPage').hidden = true;
     document.getElementById('search').className = 'search';
     document.getElementById('settings').className = 'settings';
     document.getElementById('info').className = 'info';
+    document.getElementById('cps').className = 'cps';
     document.getElementById(page).hidden = false;
     if (page == 'main') document.getElementById('main').style.display = 'inline-block';
     if (page == 'searchPage') document.getElementById('search').className = 'search_stay';
     if (page == 'settingPage') document.getElementById('settings').className = 'settings_stay';
     if (page == 'infoPage') document.getElementById('info').className = 'info_stay';
+    if (page == 'cpsPage') document.getElementById('cps').className = 'cps_stay';
 }
 
 let nowShow = true;
