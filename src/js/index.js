@@ -1,4 +1,4 @@
-const { remote, shell } = require('electron');
+const { remote, shell, TouchBarScrubber } = require('electron');
 const { Tail } = require('tail');
 const fs = require('fs');
 const AutoGitUpdate = require('auto-git-update/index');
@@ -10,17 +10,20 @@ let config = new Config('./config.json', {
     logPath: '',
     apiKey: '',
     lastType: 'bw',
+    lastSub: '',
     autoShrink: true,
     notification: true
 });
-let players = [], hypixel = null, nowType = null, inLobby = false, missingPlayer = false, numplayers = 0, hasLog = false;
+let players = [], hypixel = null, nowType = null, nowSub = null, inLobby = false, missingPlayer = false, numplayers = 0, hasLog = false;
 
 window.onload = async () => {
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
     document.getElementById('infotype').value = nowType = config.get('lastType');
+    document.getElementById('subGame').value = nowSub = config.get('lastSub');
     document.getElementById('autoShrink').checked = config.get('autoShrink');
     document.getElementById('notification').checked = config.get('notification');
     changeCategory();
+    loadSubGame();
     updateHTML();
     findUpdate();
 
@@ -216,6 +219,18 @@ const resize = (show, force) => {
 const changeDiv = () => {
     nowType = document.getElementById('infotype').value;
     changeCategory();
+    loadSubGame();
+    updateHTML();
+}
+
+const loadSubGame = () => {
+    document.getElementById('subGame').innerHTML = subGame[nowType] != null ? subGame[nowType].reduce((p, c) => p + `<option value="${c.id}">${c.name}</option>`, '') : '';
+    setSubGame();
+}
+
+const setSubGame = () => {
+    nowSub = document.getElementById('subGame').value;
+    config.set('lastSub', nowSub);
     updateHTML();
 }
 
@@ -295,7 +310,7 @@ const pickDataAndSort = () => {
             dataList.push({ name: players[i], nick: true });
             continue;
         }
-        let d = hypixel.getMiniData(players[i], nowType);
+        let d = hypixel.getMiniData(players[i], nowType, document.getElementById('subGame').value);
         d.push(hypixel.getTag(players[i]));
         dataList.push({ name: players[i], nick: false, data: d });
     }

@@ -117,7 +117,7 @@ class Hypixel {
         if (api.channel == 'PARTY') return { format: '§9PRTY', value: 10 };
         return { format: '§7-', value: 0 };
     }
-    getMiniData = (name, type) => {
+    getMiniData = (name, type, sub) => {
         if (this.data[name].nick) return [{ format: name, value: name }, 'NICK'];
         let api = this.data[name].player;
         let lvl = this.getLevel(api?.networkExp ?? 0);
@@ -129,19 +129,26 @@ class Hypixel {
         if (type == 'bw')
             return [basic.lvl, { format: `${formatBwLevel(api.achievements?.bedwars_level ?? 1)}${basic.name}`, value: api.achievements?.bedwars_level ?? 1 },
             buildSpan(wsColorList.bw, api.stats?.Bedwars?.winstreak ?? 0),
-            buildSpan(kdrColorList.bw, ((api.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api.stats?.Bedwars?.final_deaths_bedwars ?? 0)).toFixed(2)),
-            buildSpan(wlrColorList.bw, ((api.stats?.Bedwars?.wins_bedwars ?? 0) / (api.stats?.Bedwars?.losses_bedwars ?? 0)).toFixed(2)),
-            buildSpan(finalsColorList.bw, api.stats?.Bedwars?.final_kills_bedwars ?? 0),
-            buildSpan(winsColorList.bw, api.stats?.Bedwars?.wins_bedwars ?? 0)];
+            buildSpan(kdrColorList.bw, ((api.stats?.Bedwars?.[`${sub}final_kills_bedwars`] ?? 0) / (api.stats?.Bedwars?.[`${sub}final_deaths_bedwars`] ?? 0)).toFixed(2)),
+            buildSpan(wlrColorList.bw, ((api.stats?.Bedwars?.[`${sub}wins_bedwars`] ?? 0) / (api.stats?.Bedwars?.[`${sub}losses_bedwars`] ?? 0)).toFixed(2)),
+            buildSpan(finalsColorList.bw, api.stats?.Bedwars?.[`${sub}final_kills_bedwars`] ?? 0),
+            buildSpan(winsColorList.bw, api.stats?.Bedwars?.[`${sub}wins_bedwars`] ?? 0)];
         if (type == 'sw') {
             let level = api.stats?.SkyWars?.levelFormatted ?? '§71⋆';
             return [basic.lvl, { format: `${formatColor(`${level.substring(0, 2)}[${level.substring(2)}]`)}${basic.name}`, value: new Number(level.substring(2)) },
             buildSpan(wsColorList.sw, api.stats?.SkyWars?.win_streak ?? 0),
-            buildSpan(kdrColorList.sw, ((api.stats?.SkyWars?.kills ?? 0) / (api.stats?.SkyWars?.deaths ?? 0)).toFixed(2)),
-            buildSpan(wlrColorList.sw, ((api.stats?.SkyWars?.wins ?? 0) / (api.stats?.SkyWars?.losses ?? 0)).toFixed(2)),
-            buildSpan(finalsColorList.sw, api.stats?.SkyWars?.kills ?? 0),
-            buildSpan(winsColorList.sw, api.stats?.SkyWars?.wins ?? 0)];
+            buildSpan(kdrColorList.sw, ((api.stats?.SkyWars?.[`kills${sub}`] ?? 0) / (api.stats?.SkyWars?.[`deaths${sub}`] ?? 0)).toFixed(2)),
+            buildSpan(wlrColorList.sw, ((api.stats?.SkyWars?.[`wins${sub}`] ?? 0) / (api.stats?.SkyWars?.[`losses${sub}`] ?? 0)).toFixed(2)),
+            buildSpan(finalsColorList.sw, api.stats?.SkyWars?.[`kills${sub}`] ?? 0),
+            buildSpan(winsColorList.sw, api.stats?.SkyWars?.[`wins${sub}`] ?? 0)];
         }
+        if (type == 'mm')
+            return [basic.lvl, { format: basic.name, value: api.displayname },
+            buildSpan(wlrColorList.mm, (100 * (api.stats?.MurderMystery?.[`wins${sub}`] ?? 0) / (api.stats?.MurderMystery?.[`games${sub}`] ?? 0)).toFixed(1), '', '%'),
+            buildSpan(finalsColorList.mm, api.stats?.MurderMystery?.[`kills${sub}`] ?? 0),
+            buildSpan(probabilityList.murderer_chance, (api.stats?.MurderMystery?.murderer_chance ?? 0), '', '%'),
+            buildSpan(probabilityList.detective_chance, (api.stats?.MurderMystery?.detective_chance ?? 0), '', '%'),
+            buildSpan(probabilityList.alpha_chance, (api.stats?.MurderMystery?.alpha_chance ?? 0), '', '%')];
         if (type == 'duel')
             return [basic.lvl, { format: `${pickDuelLvl(api.stats?.Duels?.wins ?? 0)}${basic.name}`, value: api.stats?.Duels?.wins ?? 0 },
             buildSpan(wsColorList.duel, api.stats?.Duels?.current_winstreak ?? 0),
@@ -149,13 +156,6 @@ class Hypixel {
             buildSpan(wlrColorList.duel, ((api.stats?.Duels?.wins ?? 0) / (api.stats?.Duels?.losses ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.duel, api.stats?.Duels?.kills ?? 0),
             buildSpan(winsColorList.duel, api.stats?.Duels?.wins ?? 0)];
-        if (type == 'mm')
-            return [basic.lvl, { format: basic.name, value: api.displayname },
-            buildSpan(wlrColorList.mm, (100 * (api.stats?.MurderMystery?.wins ?? 0) / (api.stats?.MurderMystery?.games ?? 0)).toFixed(1), '', '%'),
-            buildSpan(finalsColorList.mm, api.stats?.MurderMystery?.kills ?? 0),
-            buildSpan(probabilityList.murderer_chance, (api.stats?.MurderMystery?.murderer_chance ?? 0), '', '%'),
-            buildSpan(probabilityList.detective_chance, (api.stats?.MurderMystery?.detective_chance ?? 0), '', '%'),
-            buildSpan(probabilityList.alpha_chance, (api.stats?.MurderMystery?.alpha_chance ?? 0), '', '%')];
         if (type == 'mw')
             return [basic.lvl, { format: basic.name, value: api.displayname },
             buildSpan(kdrColorList.mw, ((api.stats?.Walls3?.final_kills ?? 0) / (api.stats?.Walls3?.final_deaths ?? 0)).toFixed(2)),

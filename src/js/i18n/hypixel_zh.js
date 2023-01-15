@@ -131,3 +131,12 @@ const gameTitle = {
     'mw': ['FKDR', 'WLR', '最终击杀', '胜场', '凋零伤害'],
     'ww': ['KDR', '胜率', '击杀', '胜场', '羊毛放置'],
 }
+
+const subGame = {
+    'bw': [{ id: '', name: '全局' }, { id: 'eight_one_', name: '单挑' }, { id: 'eight_two_', name: '双人' }, { id: 'four_three_', name: '3v3v3v3' }, { id: 'four_four_', name: '4v4v4v4' }, { id: 'two_four_', name: '4v4' }],
+    'sw': [{ id: '', name: '全局' }, { id: '_solo', name: '单人' }, { id: '_solo_normal', name: '单人普通' }, { id: '_solo_insane', name: '单人疯狂' }, { id: '_team', name: '团队' }, { id: '_team_normal', name: '团队普通' }, { id: '_team_insane', name: '团队疯狂' }, { id: '_lab', name: '实验室' }],
+    'mm': [{ id: '', name: '全局' }, { id: '_MURDER_CLASSIC', name: '经典' }, { id: '_MURDER_DOUBLE_UP', name: '双倍' }, { id: '_MURDER_ASSASSINS', name: '刺客' }, { id: '_MURDER_INFECTION', name: '感染' }],
+    'duel': [{ id: '', name: '全局' }],
+    'mw': [{ id: '', name: '全局' }],
+    'ww': [{ id: '', name: '全局' }]
+}

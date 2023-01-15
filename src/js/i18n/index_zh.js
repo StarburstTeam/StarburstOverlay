@@ -11,6 +11,9 @@ const showUpdateMessage = () => new Notification({
 }).show();
 
 const updateHTML = async () => {
+    let type = document.getElementById('infotype'), sub = document.getElementById('subGame');
+    document.getElementById('current').innerText = `当前模式：${type.options[type.selectedIndex].childNodes[0].data} - ${sub.options[sub.selectedIndex].childNodes[0].data}`;
+
     let main = document.getElementById('main');
     main.style.height = `300px`
 

@@ -17,7 +17,7 @@ const windowConfig = {
 const createWindow = () => {
   let win = new BrowserWindow(windowConfig);
   win.loadFile('src/index.html');
-//   win.webContents.openDevTools({ mode: "detach", activate: true });
+  win.webContents.openDevTools({ mode: "detach", activate: true });
   win.on('close', () => win = null);
 }
 app.on('ready', createWindow);
