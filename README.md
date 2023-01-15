@@ -24,7 +24,7 @@ The Starburst Overlay is a high performance and multifunctional Hypixel stats ov
 
 2.Colorful numbers for the data at different level.
 
-3.Support Bedwars, Skywar, Murder Mystery, Duels, Mega Wall and Wool War. (More games will add soon.)
+3.Support Bedwars, Skywar, Murder Mystery, Duels, UHC, Mega Wall, Wool War and all their sub-modes. (More games will add soon.)
 
 4.Sort any stats by clicking the table headers.
 

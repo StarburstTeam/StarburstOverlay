@@ -125,8 +125,8 @@ const getStatus = (statusJson) => {
 const gameTitle = {
     'bw': ['连胜', 'FKDR', 'WLR', '最终击杀', '胜场'],
     'sw': ['连胜', 'KDR', 'WLR', '击杀', '胜场'],
-    'duel': ['连胜', 'KDR', 'WLR', '击杀', '胜场'],
     'mm': ['胜率', '击杀', '杀手概率', '侦探概率', '母体概率'],
+    'duel': ['连胜', 'KDR', 'WLR', '击杀', '胜场'],
     'uhc': ['分数', 'KDR', 'WLR', '击杀', '胜场'],
     'mw': ['FKDR', 'WLR', '最终击杀', '胜场', '凋零伤害'],
     'ww': ['KDR', '胜率', '击杀', '胜场', '羊毛放置'],
@@ -137,6 +137,7 @@ const subGame = {
     'sw': [{ id: '', name: '全局' }, { id: '_solo', name: '单人' }, { id: '_solo_normal', name: '单人普通' }, { id: '_solo_insane', name: '单人疯狂' }, { id: '_team', name: '团队' }, { id: '_team_normal', name: '团队普通' }, { id: '_team_insane', name: '团队疯狂' }, { id: '_lab', name: '实验室' }],
     'mm': [{ id: '', name: '全局' }, { id: '_MURDER_CLASSIC', name: '经典' }, { id: '_MURDER_DOUBLE_UP', name: '双倍' }, { id: '_MURDER_ASSASSINS', name: '刺客' }, { id: '_MURDER_INFECTION', name: '感染' }],
     'duel': [{ id: '', name: '全局' }],
+    'uhc': [{ id: '', name: '全局' }, { id: '_solo_brawl', name: '单挑' }, { id: '_duo_brawl', name: '团队' }, { id: '_red_vs_blue', name: '决斗' }],
     'mw': [{ id: '', name: '全局' }],
     'ww': [{ id: '', name: '全局' }]
 }

@@ -156,6 +156,13 @@ class Hypixel {
             buildSpan(wlrColorList.duel, ((api.stats?.Duels?.wins ?? 0) / (api.stats?.Duels?.losses ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.duel, api.stats?.Duels?.kills ?? 0),
             buildSpan(winsColorList.duel, api.stats?.Duels?.wins ?? 0)];
+        if (type == 'uhc')
+            return [basic.lvl, { format: basic.name, value: api.displayname },
+            buildSpan(specialList.uhc_score, api.stats?.UHC?.score ?? 0),
+            buildSpan(kdrColorList.uhc, ((api.stats?.UHC?.[`kills${sub}`] ?? 0) / (api.stats?.UHC?.[`deaths${sub}`] ?? 0)).toFixed(2)),
+            buildSpan(wlrColorList.uhc, ((api.stats?.UHC?.[`wins${sub}`] ?? 0) / (api.stats?.UHC?.[`deaths${sub}`] ?? 0)).toFixed(2)),
+            buildSpan(finalsColorList.uhc, api.stats?.UHC?.[`kills${sub}`] ?? 0),
+            buildSpan(winsColorList.uhc, api.stats?.UHC?.[`wins${sub}`] ?? 0)];
         if (type == 'mw')
             return [basic.lvl, { format: basic.name, value: api.displayname },
             buildSpan(kdrColorList.mw, ((api.stats?.Walls3?.final_kills ?? 0) / (api.stats?.Walls3?.final_deaths ?? 0)).toFixed(2)),
@@ -204,6 +211,7 @@ const lvlList = {
     bw: [1, 3, 5, 10, 25],
     sw: [1, 2, 3, 4, 5],
     duel: [1, 2, 3, 5, 7.5],
+    uhc: [1, 2, 3, 5, 7.5],
     mw: [1, 2, 3, 5, 7.5],
     ww: [1, 2, 3, 5, 7.5]
 }, wlrColorList = {
@@ -211,6 +219,7 @@ const lvlList = {
     sw: [0.1, 0.25, 0.5, 0.75, 1],
     mm: [70, 80, 85, 90, 95, 100],
     duel: [1, 2, 3, 5, 7.5],
+    uhc: [1, 2, 3, 5, 7.5],
     mw: [1, 2, 3, 5, 7.5],
     ww: [1, 2, 3, 5, 7.5]
 }, bblrColorList = {
@@ -220,12 +229,14 @@ const lvlList = {
     sw: [1000, 5000, 15000, 30000, 75000],
     mm: [500, 1000, 4000, 10000, 20000],
     duel: [500, 1500, 4000, 10000, 17500],
+    uhc: [100, 200, 400, 800, 1600],
     mw: [100, 200, 400, 800, 1600],
     ww: [100, 200, 400, 800, 1600]
 }, winsColorList = {
     bw: [500, 1000, 3000, 5000, 10000],
     sw: [100, 750, 4000, 10000, 25000],
     duel: [500, 1500, 4000, 10000, 17500],
+    uhc: [100, 200, 400, 800, 1600],
     mw: [100, 200, 400, 800, 1600],
     ww: [100, 200, 400, 800, 1600]
 }, probabilityList = {
@@ -234,7 +245,8 @@ const lvlList = {
     alpha_chance: [1, 3, 5, 10, 15],
 }, specialList = {
     ww_wool_placed: [100, 200, 400, 800, 1600],
-    mw_wither_damage: [1000, 2000, 4000, 8000, 16000]
+    mw_wither_damage: [1000, 2000, 4000, 8000, 16000],
+    uhc_score: [100, 200, 400, 800, 1600]
 }
 const pickColor = (list, value) => colorList[toDefault(list.indexOf(list.find(v => v >= value)), -1, 5)];
 const buildSpan = (list, value, prefix, suffix) => {
