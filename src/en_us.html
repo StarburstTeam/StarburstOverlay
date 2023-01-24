@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8">
     <title>Starburst Overlay</title>
+    <script src="js/i18n.js"></script>
     <script src="js/util.js"></script>
     <script src="js/config.js"></script>
     <script src="js/hypixel.js"></script>
     <script src="js/index.js"></script>
     <script src="js/i18n/hypixel_en.js"></script>
-    <script src="js/i18n/cps_en.js"></script>
-    <script src="js/i18n/index_en.js"></script>
+    <script src="js/cps.js"></script>
     <script src="js/debug.js"></script>
     <link rel="styleSheet" href="scrollbar.css">
     <link rel="styleSheet" href="switch.css">
@@ -20,7 +20,7 @@
 <body>
     <div id="menu" class="menu">
         <div class="title" style="position:absolute;left:5px;top:-5px">Starburst</div>
-        <div class="title" id="current" style="position:absolute;left:220px;top:15px;font-size:20px;">Current Mode : None</div>
+        <div class="title" id="current" style="position:absolute;left:220px;top:15px;font-size:20px;"></div>
         <div id="buttons" style="float:right;margin-right:5px;margin-top:2px;">
             <button id="update" class="update"
                 onclick="shell.openExternal('https://github.com/IAFEnvoy/StarburstOverlay/releases')" hidden></button>

@@ -327,3 +327,11 @@ const getThePitLevel = (pitProfile) => {
 
 const socialMediaList = ['DISCORD', 'HYPIXEL', 'TWITCH', 'TWITTER', 'YOUTUBE'];
 const getSocialMedia = (platform, api) => api?.socialMedia?.links[platform] ?? null;
+
+let gameTitle, subGame;
+
+const readDisplayData = async () => {
+    let title_mode = await fetch(`./json/title_mode_${config.get('lang')}.json`).then(res => res.json());
+    gameTitle = title_mode.title;
+    subGame = title_mode.mode;
+}

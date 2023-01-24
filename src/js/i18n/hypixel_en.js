@@ -117,7 +117,7 @@ const getGuild = (guildJson, uuid) => {
     let rankJson = guildJson.ranks.find(rank => rank.name == playerGuildJson.rank);
     if (playerGuildJson == null || rankJson == null) return data;
     return data + `Join Time : ${formatDateTime(playerGuildJson.joined)}<br>
-    Rank : ${playerGuildJson.rank} (${formatColor(formatColorFromString(guildJson.tagColor ?? '§7') + '[' + rankJson.tag + ']')})`;
+    Rank : ${playerGuildJson.rank} (${formatColor(formatColorFromString(guildJson.tagColor ?? 'gray') + '[' + rankJson.tag + ']')})`;
 }
 const getStatus = (statusJson) => {
     if (statusJson.online)
@@ -126,24 +126,4 @@ const getStatus = (statusJson) => {
         else
             return `Status : Online<br>Game Type : ${formatNameString(statusJson.gameType)}<br>Mode : ${formatNameString(statusJson.mode)}`;
     else return `Status : Offline`;
-}
-
-const gameTitle = {
-    'bw': ['WS', 'FKDR', 'WLR', 'Finals', 'Wins'],
-    'sw': ['WS', 'KDR', 'WLR', 'Kills', 'Wins'],
-    'mm': ['WR', 'Kills', 'MC', 'DC', 'AC'],// mc=murderer_chance dc=detective_chance ac=alpha_chance
-    'duel': ['WS', 'KDR', 'WLR', 'Kills', 'Wins'],
-    'uhc': ['Score', 'KDR', 'WLR', 'Kills', 'Wins'],
-    'mw': ['FKDR', 'WLR', 'Finals', 'Wins', 'WDamage'],
-    'ww': ['KDR', 'WR', 'Kills', 'Wins', 'WPlaced'], 
-}
-
-const subGame = {
-    'bw': [{ id: '', name: 'All' }, { id: 'eight_one_', name: 'Solo' }, { id: 'eight_two_', name: 'Double' }, { id: 'four_three_', name: '3v3v3v3' }, { id: 'four_four_', name: '4v4v4v4' }, { id: 'two_four_', name: '4v4' }],
-    'sw': [{ id: '', name: 'All' }, { id: '_solo', name: 'Solo' }, { id: '_solo_normal', name: 'Solo Normal' }, { id: '_solo_insane', name: 'Solo Insane' }, { id: '_team', name: 'Team' }, { id: '_team_normal', name: 'Team Normal' }, { id: '_team_insane', name: 'Team Insane' }, { id: '_lab', name: 'Laboratory' }],
-    'mm': [{ id: '', name: 'All' }, { id: '_MURDER_CLASSIC', name: 'Classic' }, { id: '_MURDER_DOUBLE_UP', name: 'Double Up!' }, { id: '_MURDER_ASSASSINS', name: 'Assassins' }, { id: '_MURDER_INFECTION', name: 'Infection' }],
-    'duel': [{ id: '', name: 'All' }],
-    'uhc': [{ id: '', name: 'All' }, { id: '_solo_brawl', name: 'Solo' }, { id: '_duo_brawl', name: 'Team' }, { id: '_red_vs_blue', name: 'Duel' }],
-    'mw': [{ id: '', name: 'All' }],
-    'ww': [{ id: '', name: 'All' }]
 }

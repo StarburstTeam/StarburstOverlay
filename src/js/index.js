@@ -1,11 +1,12 @@
-const { remote, shell, TouchBarScrubber } = require('electron');
+const { remote, shell } = require('electron');
+const { Notification, dialog, app } = remote;
 const { Tail } = require('tail');
 const fs = require('fs');
 const AutoGitUpdate = require('auto-git-update/index');
 
 const currentWindow = remote.getCurrentWindow();
 const updater = new AutoGitUpdate({ repository: 'https://github.com/IAFEnvoy/StarburstOverlay', tempLocation: './temp/update' });
-let config = new Config('./config.json', {
+const config = new Config('./config.json', {
     lang: 'en_us',
     logPath: '',
     apiKey: '',
@@ -14,6 +15,7 @@ let config = new Config('./config.json', {
     autoShrink: true,
     notification: true
 });
+const i18n = new I18n(config.get('lang'));
 let players = [], hypixel = null, nowType = null, nowSub = null, inLobby = false, missingPlayer = false, numplayers = 0, hasLog = false;
 
 window.onload = async () => {
@@ -22,6 +24,7 @@ window.onload = async () => {
     document.getElementById('subGame').value = nowSub = config.get('lastSub');
     document.getElementById('autoShrink').checked = config.get('autoShrink');
     document.getElementById('notification').checked = config.get('notification');
+    await readDisplayData();
     changeCategory();
     loadSubGame();
     updateHTML();
@@ -48,16 +51,16 @@ window.onload = async () => {
     if (config.get('logPath') == '') return;
     hasLog = fs.existsSync(config.get('logPath'));
     const tail = new Tail(config.get('logPath'), { useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
-    tail.on('line', data => {
+    tail.on('line', async (data) => {
         let s = data.indexOf('[CHAT]');
         if (s == -1) return;//not a chat log
         let changed = false;
         let msg = data.substring(s + 7).replace(' [C]', '');
         console.log(msg);
-        if (msg.indexOf('ONLINE:') != -1 && msg.indexOf(',') != -1) {//the result of /who command
+        if (msg.indexOf(i18n.now().chat_online) != -1 && msg.indexOf(',') != -1) {//the result of /who command
             if (inLobby) return;
             resize(true);
-            let who = msg.substring(8).split(', ');
+            let who = msg.replace(i18n.now().chat_online, '').split(', ');
             players = [];
             for (let i = 0; i < who.length; i++) {
                 players.push(who[i]);
@@ -65,21 +68,10 @@ window.onload = async () => {
             }
             missingPlayer = players.length < numplayers;
             changed = true;
-        } else if (msg.indexOf('在线：  ') != -1 && msg.indexOf(', ') != -1) {//the result of /who command for zh_cn
-            if (inLobby) return;
-            resize(true);
-            let who = msg.replace('在线：  ', '').split(', ')
-            players = [];
-            for (let i = 0; i < who.length; i++) {
-                players.push(who[i]);
-                hypixel.download(who[i], updateHTML);
-            }
-            missingPlayer = players.length < numplayers;
-            changed = true;
-        } else if (msg.indexOf('has joined') != -1 && msg.indexOf(':') == -1) {
+        } else if (msg.indexOf(i18n.now().chat_player_join) != -1 && msg.indexOf(':') == -1) {
             resize(true);
             inLobby = false;
-            let join = msg.split(' ')[0];
+            let join = msg.split(i18n.now().chat_player_join)[0];
             if (players.find(x => x == join) == null) {
                 players.push(join);
                 hypixel.download(join, updateHTML);
@@ -89,22 +81,9 @@ window.onload = async () => {
                 numplayers = Number(msg.substring(msg.indexOf('(') + 1, msg.indexOf('/')));
                 missingPlayer = players.length < numplayers;
             }
-        } else if (msg.indexOf('加入了游戏') != -1 && msg.indexOf(':') == -1) {
-            resize(true);
+        } else if (msg.indexOf(i18n.now().chat_player_quit) != -1 && msg.indexOf(':') == -1) {
             inLobby = false;
-            let join = msg.split('加入了游戏')[0];
-            if (players.find(x => x == join) == null) {
-                players.push(join);
-                hypixel.download(join, updateHTML);
-                changed = true;
-            }
-            if (msg.indexOf('/') != -1) {
-                numplayers = Number(msg.substring(msg.indexOf('（') + 1, msg.indexOf('/')));
-                missingPlayer = players.length < numplayers;
-            }
-        } else if (msg.indexOf('has quit') != -1 && msg.indexOf(':') == -1) {
-            inLobby = false;
-            let left = msg.split(' ')[0];
+            let left = msg.split(i18n.now().chat_player_quit)[0];
             if (players.find(x => x == left) != null) {
                 players.remove(left);
                 numplayers -= 1;
@@ -112,22 +91,12 @@ window.onload = async () => {
                 missingPlayer = players.length < numplayers;
                 changed = true;
             }
-        } else if (msg.indexOf('已退出') != -1 && msg.indexOf(':') == -1) {
-            inLobby = false;
-            let left = msg.split('已退出')[0];
-            if (players.find(x => x == left) != null) {
-                players.remove(left);
-                numplayers -= 1;
-                if (numplayers < 0) numplayers = 0;
-                missingPlayer = players.length < numplayers;
-                changed = true;
-            }
-        } else if ((msg.indexOf('Sending you') != -1 || msg.indexOf('正在前往') != -1) && msg.indexOf(':') == -1) {
+        } else if (msg.indexOf(i18n.now().chat_sending) != -1 && msg.indexOf(':') == -1) {
             resize(false);
             inLobby = false;
             players = [];
             changed = true;
-        } else if ((msg.indexOf('joined the lobby!') != -1 || msg.indexOf('into the lobby!') != -1 || msg.indexOf('入了大厅') != -1) && msg.indexOf(':') == -1) {
+        } else if (msg.indexOf(i18n.now().chat_join_lobby) != -1 && msg.indexOf(':') == -1) {
             if (inLobby) return;
             resize(false);
             inLobby = true;
@@ -138,23 +107,26 @@ window.onload = async () => {
             // } else if (msg.indexOf('You left the party') !== -1 && msg.indexOf(':') === -1 && inlobby) {
             // } else if (msg.indexOf('left the party') !== -1 && msg.indexOf(':') === -1 && inlobby) {
             // } else if (inlobby && (msg.indexOf('Party Leader:') === 0 || msg.indexOf('Party Moderators:') === 0 || msg.indexOf('Party Members:') === 0)) {
-        } else if ((msg.indexOf('FINAL KILL') != -1 || msg.indexOf('disconnected') != -1 || msg.indexOf('最终击杀') != -1 || msg.indexOf('断开连接') != -1) && msg.indexOf(':') == -1) {
+        } else if ((msg.indexOf(i18n.now().chat_final_kill) != -1 || msg.indexOf(i18n.now().chat_disconnect) != -1) && msg.indexOf(':') == -1) {
             let left = msg.split(' ')[0];
             if (players.find(x => x == left) != null) {
                 players.remove(left);
                 changed = true;
             }
-        } else if ((msg.indexOf('reconnected') != -1 || msg.indexOf('重新连接') != -1) && msg.indexOf(':') == -1) {
+        } else if (msg.indexOf(i18n.now().chat_reconnect) != -1 && msg.indexOf(':') == -1) {
             let join = msg.split(' ')[0];
             if (players.find(x => x == join) == null) {
                 players.push(join);
                 changed = true;
             }
-        } else if ((msg.indexOf('The game starts in 1 second!') != -1 || msg.indexOf('游戏将在1秒后开始') != -1) && msg.indexOf(':') == -1) {
+        } else if (msg.indexOf(i18n.now().chat_game_start_1_second) != -1 && msg.indexOf(':') == -1) {
             resize(false);
             if (config.get('notification'))
-                showNotification();
-        } else if ((msg.indexOf('The game starts in 0 second!') != -1 || msg.indexOf('游戏将在0秒后开始') != -1) && msg.indexOf(':') == -1) resize(false);
+                new Notification({
+                    title: i18n.now().notification_start_title,
+                    body: i18n.now().notification_start_body
+                }).show();
+        } else if (msg.indexOf(i18n.now().chat_game_start_0_second) != -1 && msg.indexOf(':') == -1) resize(false);
         if (changed) {
             console.log(players);
             updateHTML();
@@ -169,7 +141,10 @@ const findUpdate = async () => {
         const versions = await updater.compareVersions();
         console.log(versions);
         if (versions.remoteVersion != 'Error' && !versions.upToDate) {
-            showUpdateMessage();
+            new Notification({
+                title: i18n.now().notification_update_available_title,
+                body: i18n.now().notification_update_available_body
+            }).show();
             document.getElementById('update').hidden = false;
         }
     }
@@ -234,6 +209,47 @@ const setSubGame = () => {
     updateHTML();
 }
 
+const updateHTML = async () => {
+    let type = document.getElementById('infotype'), sub = document.getElementById('subGame');
+    document.getElementById('current').innerText = `${i18n.now().hud_current_mode}${type.options[type.selectedIndex].childNodes[0].data} - ${sub.options[sub.selectedIndex].childNodes[0].data}`;
+
+    let main = document.getElementById('main');
+    main.style.height = `300px`
+
+    if (config.get('logPath') == '' || !hasLog)
+        return main.innerHTML = `${formatColor(`&nbsp §c${i18n.now().error_log_not_found}`)}<br>${formatColor(`&nbsp §c${i18n.now().info_set_log_path}`)}`;
+    if (config.get('apiKey') == '')
+        return main.innerHTML = `${formatColor(`&nbsp §c${i18n.now().error_api_key_not_found}`)}<br>${formatColor(`&nbsp §c${i18n.now().info_api_new}`)}`;
+    if (!hypixel.verified && !hypixel.verifying)
+        return main.innerHTML = `${formatColor(`&nbsp §c${i18n.now().error_api_key_invalid}`)}<br>${formatColor(`&nbsp §c${i18n.now().info_api_new}`)}`;
+
+    clearMainPanel();
+
+    let rendered = 0;
+    let dataList = pickDataAndSort();
+    for (let i = 0; i < dataList.length; i++) {
+        if (dataList[i].nick == true) {
+            main.innerHTML += `<tr><th style="text-align:right">[ ? ]</th><th></th><td>${formatColor('§f' + dataList[i].name)}</td><th>${formatColor('§eNICK')}</th></tr>`;
+            rendered++;
+            continue;
+        }
+        main.innerHTML += `<tr><th style="text-align:right;width:70px;display:inline-block">${dataList[i].data[0].format}</th>
+        <th><img src="https://crafatar.com/avatars/${await hypixel.getPlayerUuid(dataList[i].name)}?overlay" style="position:relative;width:20px;height:20px;top:4px"></th>
+        <td style="word-break:keep-all" onclick="search('${dataList[i].name}')">${dataList[i].data[1].format}</td>
+        <th>${formatColor(dataList[i].data[dataList[i].data.length - 1].format)}</th>
+        ${Array.from({ length: dataList[i].data.length - 3 }, (_, x) => x + 2).reduce((p, c) => p + `<th>${dataList[i].data[c].format}</th>`, '')}</tr>`;
+        rendered++;
+    }
+    if (missingPlayer) {
+        main.innerHTML += `<tr><td></td><td></td><td>${formatColor(`§c${i18n.now().error_player_missing}`)}</td></tr>
+        <tr><td></td><td></td><td>${formatColor(`§c${i18n.now().info_who}`)}</td></tr>`;
+        rendered += 2;
+    }
+    main.style.height = `${Math.min(rendered * 29.6 + 31.2, 500)}px`;
+    if (column >= 1 && column <= 8)
+        document.getElementById(`sort_${column}`).innerHTML += isUp ? '↑' : '↓';
+}
+
 let searchPlayerName = null;
 const search = async (name) => {
     if (document.getElementById('searchPage').hidden) switchPage('searchPage');
@@ -241,8 +257,8 @@ const search = async (name) => {
     else document.getElementById('playername').value = name;
     searchPlayerName = name;
     let i = await hypixel.download(name);
-    if (i == null) return document.getElementById('playerName').innerText = 'API Error';
-    if (i == false) return document.getElementById('playerName').innerText = 'Player Not Found!';
+    if (i == null) return document.getElementById('playerName').innerText = hypixel.verified ? i18n.now().error_api_error : i18n.now().error_api_key_invalid;
+    if (i == false) return document.getElementById('playerName').innerText = i18n.now().error_player_not_found;
 
     let data = hypixel.data[name];
     if (data.success == false) return console.log(data);
@@ -321,4 +337,28 @@ const pickDataAndSort = () => {
             return (a.data[column - 1].value - b.data[column - 1].value) * (isUp ? -1 : 1)
         });
     return dataList;
+}
+
+const selectLogFile = () => {
+    let temppath = dialog.showOpenDialogSync(currentWindow, {
+        title: i18n.now().hud_select_log_file_title,
+        defaultPath: app.getPath('home').split('\\').join('/'),
+        buttonLabel: i18n.now().hud_select_log_file_button_label,
+        filters: [{
+            name: 'Latest log',
+            extensions: ['log']
+        }]
+    });
+    if (temppath == null) return;
+    config.set('logPath', temppath[0].split('\\').join('/'));
+    window.location.href = './index.html';
+}
+
+const clearMainPanel = () => {
+    let main = document.getElementById('main'), category = hypixel.getTitle(nowType);
+    main.innerHTML = `<tr><th id="sort_1" style="width:80px" onclick="setSortContext(1)">${i18n.now().hud_main_level}</th>
+    <th style="width:25px"></th>
+    <th id="sort_2" style="width:350px" onclick="setSortContext(2)">${i18n.now().hud_main_players}</th>
+    <th id="sort_8" style="width:60px" onclick="setSortContext(8)">${i18n.now().hud_main_tag}</th>
+    ${category.reduce((p, c, i) => p + `<th id="sort_${i + 3}" style="width:100px" onclick="setSortContext(${i + 3})">${c}</th>`, '')}</tr>`;
 }
