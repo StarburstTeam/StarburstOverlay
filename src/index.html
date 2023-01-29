@@ -17,12 +17,12 @@
             let setup = !isNullOrEmpty(config.get('logPath')) && !isNullOrEmpty(config.get('apiKey'));
             if (config.get('lang') == 'en_us')
                 if (setup)
-                    return window.location.href = './en_us.html';
+                    return window.location.href = './main.html';
                 else
                     return window.location.href = './setup_en.html';
             if (config.get('lang') == 'zh_cn')
                 if (setup)
-                    return window.location.href = './zh_cn.html';
+                    return window.location.href = './main.html';
                 else
                     return window.location.href = './setup_zh.html';
             document.getElementById('lang').hidden = false;

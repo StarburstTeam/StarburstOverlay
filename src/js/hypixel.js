@@ -70,7 +70,9 @@ class Hypixel {
     getRank = (name) => {
         if (this.data[name] == null || this.data[name].player == null) return '§7';
         let playerDataJson = this.data[name].player;
-        let rank = playerDataJson.newPackageRank;
+        let rank = playerDataJson.packageRank;
+        if (rank == null)
+            rank = playerDataJson.newPackageRank;
         let plus = playerDataJson.rankPlusColor;
         if (plus != null) plus = formatColorFromString(plus);
         else plus = '§c';
@@ -178,14 +180,14 @@ class Hypixel {
             buildSpan(winsColorList.ww, api.stats?.WoolGames?.wool_wars?.stats?.wins ?? 0),
             buildSpan(specialList.ww_wool_placed, api.stats?.WoolGames?.wool_wars?.stats?.wool_placed ?? 0)];
     }
-    getGuild = (name) => getGuild(this.data[name].guild, this.uuids[name]);
+    getGuild = (name) => getGuild[config.get('lang')](this.data[name].guild, this.uuids[name]);
     getStatus = async (name) => {
         const b = await fetch(`https://api.hypixel.net/status?key=${this.apiKey}&uuid=${await this.getPlayerUuid(name)}`)
             .catch(reason => console.log(reason))
             .then(res => res.json());
         if (!b.success)
             return document.getElementById('status').innerHTML = b.cause;
-        return getStatus(b.session);
+        return getStatus[config.get('lang')](b.session);
     }
 }
 

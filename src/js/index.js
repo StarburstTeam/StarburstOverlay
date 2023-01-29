@@ -19,11 +19,15 @@ const i18n = new I18n(config.get('lang'));
 let players = [], hypixel = null, nowType = null, nowSub = null, inLobby = false, missingPlayer = false, numplayers = 0, hasLog = false;
 
 window.onload = async () => {
+    i18n.initPage();
+
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
     document.getElementById('infotype').value = nowType = config.get('lastType');
     document.getElementById('subGame').value = nowSub = config.get('lastSub');
     document.getElementById('autoShrink').checked = config.get('autoShrink');
     document.getElementById('notification').checked = config.get('notification');
+    document.getElementById('lang').value = config.get('lang');
+    document.getElementById('infotype').innerHTML = i18n.getMainModeHTML();
     await readDisplayData();
     changeCategory();
     loadSubGame();
@@ -265,7 +269,7 @@ const search = async (name) => {
 
     document.getElementById('playerName').innerHTML = formatColor(hypixel.formatName(name));
     document.getElementById('skin').src = `https://crafatar.com/renders/body/${await hypixel.getPlayerUuid(name)}?overlay`;
-    document.getElementById('networkinfo').innerHTML = getData['ov'](data.player);
+    document.getElementById('networkinfo').innerHTML = getData[config.get('lang')]['ov'](data.player);
     document.getElementById('guild').innerHTML = hypixel.getGuild(name);
     document.getElementById('status').innerHTML = await hypixel.getStatus(name);
     document.getElementById('socialMedia').innerHTML = '';
@@ -291,7 +295,7 @@ const showDetail = (mode) => {
     } else {
         if (latestmode != '')
             document.getElementById(latestmode + 'detail').innerHTML = '';
-        document.getElementById(mode + 'detail').innerHTML = getData[mode](hypixel.data[searchPlayerName].player);
+        document.getElementById(mode + 'detail').innerHTML = getData[config.get('lang')][mode](hypixel.data[searchPlayerName].player);
         latestmode = mode;
     }
 }

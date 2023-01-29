@@ -39,5 +39,65 @@
         "cps_result_left": "Your left button clicking speed is ",
         "cps_result_right": "Your right button clicking speed is ",
         "cps_click_to_start": "Click to Start"
-    }
+    },
+    "page": {
+        "playerNameLabel": "Player Name :",
+        "searchButton": "Go!",
+        "downloadSkin": "Download Skin",
+        "setting_game_type": "Game Type :",
+        "setting_log_path": "Log Path (Will Restart) :",
+        "setting_change_log_path": "Change Log Path",
+        "setting_auto_shrink": "Auto Shrink :",
+        "setting_notification": "Game Start Notification :",
+        "language": "Language:",
+        "cpsTestTime": "Test Time : 10s",
+        "testCpsButton": "Click to Start",
+        "cps_reset": "Reset",
+        "cps_1s": "1s",
+        "cps_5s": "5s",
+        "cps_10s": "10s",
+        "cps_20s": "20s",
+        "color_key": "&nbsp Stats Color Key :",
+        "bad": "BAD",
+        "ok": "OK",
+        "good": "GOOD",
+        "epic": "EPIC",
+        "legend": "LEGEND",
+        "god": "GOD",
+        "link_github": "&nbsp If you meet any problems or ideas, tell me on my Github! (Click here to open)"
+    },
+    "mode": [
+        {
+            "id": "bw",
+            "name": "Bed War"
+        },
+        {
+            "id": "sw",
+            "name": "Sky War"
+        },
+        {
+            "id": "mm",
+            "name": "Murder Mystery"
+        },
+        {
+            "id": "duel",
+            "name": "Duel"
+        },
+        {
+            "id": "tnt",
+            "name": "TNT Games"
+        },
+        {
+            "id": "uhc",
+            "name": "UHC Champion"
+        },
+        {
+            "id": "mw",
+            "name": "Mega Wall"
+        },
+        {
+            "id": "ww",
+            "name": "Wool War"
+        }
+    ]
 }

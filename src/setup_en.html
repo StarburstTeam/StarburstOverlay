@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Starburst Overlay</title>
     <script src="js/config.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/setup.js"></script>
     <link rel="styleSheet" href="index.css">
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
@@ -11,6 +12,7 @@
 
 <body>
     <script>
+        const i18n = new I18n(config.get('lang'));
         const selectLogFile = () => {
             let temppath = dialog.showOpenDialogSync(currentWindow, {
                 title: 'Select latest.log file',
@@ -58,6 +60,6 @@
             oninput="config.set('apiKey',document.getElementById('apikey').value)">
         <br><br><br>
         <button class="setting_button" style="position:relative;left:20px"
-            onclick="window.location.href='./en_us.html'">Done</button>
+            onclick="window.location.href='./main.html'">Done</button>
     </div>
 </body>
