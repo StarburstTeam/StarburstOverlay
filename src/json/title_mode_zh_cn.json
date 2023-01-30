@@ -139,32 +139,6 @@
                 "name": "全局"
             }
         ],
-        "tnt": [
-            {
-                "id": "",
-                "name": "全局"
-            },
-            {
-                "id": "_tntrun",
-                "name": "全局"
-            },
-            {
-                "id": "_pvprun",
-                "name": "全局"
-            },
-            {
-                "id": "_tntag",
-                "name": "全局"
-            },
-            {
-                "id": "_bowspleef",
-                "name": "全局"
-            },
-            {
-                "id": "_capture",
-                "name": "全局"
-            }
-        ],
         "uhc": [
             {
                 "id": "",

@@ -98,9 +98,9 @@ const getData = {
           Hit Rate : ${(100 * (arcade.bullets_hit_zombies ?? 0) / (arcade.bullets_shot_zombies ?? 0)).toFixed(2)}% | 
           Head Shot Rate : ${(100 * (arcade.headshots_zombies ?? 0) / (arcade.bullets_hit_zombies ?? 0)).toFixed(2)}%<br>
           Wins or Best Round : (Map : Normal/Hard/RIP)<br>
-          Dead End : ${getRoundValue(arcade, 'deadend', 'normal')} / ${getRoundValue(arcade, 'deadend', 'hard')} / ${getRoundValue(arcade, 'deadend', 'rip')}<br>
-          Bad Blood : ${getRoundValue(arcade, 'badblood', 'normal')} / ${getRoundValue(arcade, 'badblood', 'hard')} / ${getRoundValue(arcade, 'badblood', 'rip')}<br>
-          Alien Arcadium : ${getRoundValue(arcade, 'alienarcadium', 'normal')}<br>`
+          Dead End : ${getRoundValue['en_us'](arcade, 'deadend', 'normal')} / ${getRoundValue['en_us'](arcade, 'deadend', 'hard')} / ${getRoundValue['en_us'](arcade, 'deadend', 'rip')}<br>
+          Bad Blood : ${getRoundValue['en_us'](arcade, 'badblood', 'normal')} / ${getRoundValue['en_us'](arcade, 'badblood', 'hard')} / ${getRoundValue['en_us'](arcade, 'badblood', 'rip')}<br>
+          Alien Arcadium : ${getRoundValue['en_us'](arcade, 'alienarcadium', 'normal')}<br>`
         }
     },
     'zh_cn': {
@@ -195,9 +195,9 @@ const getData = {
             命中率：${(100 * (arcade.bullets_hit_zombies ?? 0) / (arcade.bullets_shot_zombies ?? 0)).toFixed(2)}% | 
             爆头率：${(100 * (arcade.headshots_zombies ?? 0) / (arcade.bullets_hit_zombies ?? 0)).toFixed(2)}%<br>
             胜场或最佳轮数：（地图：普通 / 困难 / 安息）<br>
-            穷途末路：${getRoundValue(arcade, 'deadend', 'normal')} / ${getRoundValue(arcade, 'deadend', 'hard')} / ${getRoundValue(arcade, 'deadend', 'rip')}<br>
-            坏血之宫：${getRoundValue(arcade, 'badblood', 'normal')} / ${getRoundValue(arcade, 'badblood', 'hard')} / ${getRoundValue(arcade, 'badblood', 'rip')}<br>
-            外星游乐园：${getRoundValue(arcade, 'alienarcadium', 'normal')}<br>`
+            穷途末路：${getRoundValue['en_us'](arcade, 'deadend', 'normal')} / ${getRoundValue['en_us'](arcade, 'deadend', 'hard')} / ${getRoundValue['en_us'](arcade, 'deadend', 'rip')}<br>
+            坏血之宫：${getRoundValue['en_us'](arcade, 'badblood', 'normal')} / ${getRoundValue['en_us'](arcade, 'badblood', 'hard')} / ${getRoundValue['en_us'](arcade, 'badblood', 'rip')}<br>
+            外星游乐园：${getRoundValue['en_us'](arcade, 'alienarcadium', 'normal')}<br>`
         }
     }
 }

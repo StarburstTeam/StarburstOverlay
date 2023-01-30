@@ -139,32 +139,6 @@
                 "name": "All"
             }
         ],
-        "tnt": [
-            {
-                "id": "",
-                "name": "All"
-            },
-            {
-                "id": "_tntrun",
-                "name": "TNT Run"
-            },
-            {
-                "id": "_pvprun",
-                "name": "PvP Run"
-            },
-            {
-                "id": "_tntag",
-                "name": "TNT Tag"
-            },
-            {
-                "id": "_bowspleef",
-                "name": "Bow Spleef"
-            },
-            {
-                "id": "_capture",
-                "name": "Wizards"
-            }
-        ],
         "uhc": [
             {
                 "id": "",
