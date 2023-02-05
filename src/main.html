@@ -20,7 +20,6 @@
 <body>
     <div id="menu" class="menu">
         <div class="title" style="position:absolute;left:5px;top:-5px">Starburst</div>
-        <div class="title" id="current" style="position:absolute;left:220px;top:15px;font-size:20px;"></div>
         <div id="buttons" style="float:right;margin-right:5px;margin-top:2px;">
             <button id="update" class="update"
                 onclick="shell.openExternal('https://github.com/IAFEnvoy/StarburstOverlay/releases')" hidden></button>
@@ -30,11 +29,15 @@
             <button id="info" class="info" onclick="switchPage('infoPage')"></button>
             <button id="show" onclick="resize(null, true)"></button>
             <button id="minimize" onclick="currentWindow.minimize()"></button>
-            <button id="quit" onclick="currentWindow.close()"></button>
+            <button id="quit" onclick="onClose();currentWindow.close()"></button>
         </div>
     </div>
-    <table id="main" class="main"
-        style="display:inline-block;width:100%;height:31.2px;overflow-y:scroll;font-size:20px;position:relative">
+    <div style="height:20px">
+        <div class="title" id="current" style="position:relative;font-size:20px;top:-3px"></div>
+        <div class="title" id="ping" style="position:relative;left:10px;font-size:20px;top:-3px">111</div>
+    </div>
+    <table id="main" class="main" border="1"
+        style="display:inline-block;width:100%;height:calc(100% - 60px);overflow-y:scroll;font-size:15px;position:relative">
     </table>
     <div id="searchPage" style="width:100%;height:560px" hidden>
         <div id="playerinput">

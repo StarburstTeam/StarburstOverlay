@@ -217,7 +217,7 @@ body {
 
 .main {
     font-family: consolas;
-
+    font-weight: bolder;
     color: aqua;
     overflow-y: scroll;
 }

@@ -6,6 +6,10 @@ class Hypixel {
         this.verifying = true;
         this.verifyKey(callback);
         this.uuids = [];
+        this.mention_guild = [];
+        this.download_count = 0;
+        this.mojang_ping = 0;
+        this.hypixel_ping = 0;
     }
     verifyKey = async (callback) => {
         try {
@@ -18,6 +22,8 @@ class Hypixel {
             this.owner = a.record.owner;
             this.verified = true;
             this.verifying = false;
+            let ownerGuild = await this.getGuildData(this.owner);
+            this.owner_guild_id = ownerGuild?.guild._id ?? '';
         } catch (err) {
             this.verified = false;
             this.verifying = false;
@@ -27,9 +33,11 @@ class Hypixel {
     getPlayerUuid = async (name) => {//null when the player not found
         if (this.uuids[name] != null) return this.uuids[name];
         try {
+            let start = new Date().getTime();
             let a = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`)
                 .catch(err => { throw err })
                 .then(res => res.json());
+            this.mojang_ping = new Date().getTime() - start;
             return this.uuids[name] = a.id;
         } catch (err) {
             console.log(err);
@@ -38,14 +46,20 @@ class Hypixel {
         }
     }
     getPlayerData = async (uuid) => {
-        return await fetch(`https://api.hypixel.net/player?key=${this.apiKey}&uuid=${uuid}`)
+        let start = new Date().getTime();
+        let res = await fetch(`https://api.hypixel.net/player?key=${this.apiKey}&uuid=${uuid}`)
             .catch(err => { throw err })
             .then(res => res.json());
+        this.hypixel_ping = new Date().getTime() - start;
+        return res;
     }
     getGuildData = async (uuid) => {
-        return await fetch(`https://api.hypixel.net/guild?key=${this.apiKey}&player=${uuid}`)
+        let start = new Date().getTime();
+        let res = await fetch(`https://api.hypixel.net/guild?key=${this.apiKey}&player=${uuid}`)
             .catch(err => { throw err })
             .then(res => res.json());
+        this.hypixel_ping = new Date().getTime() - start;
+        return res;
     }
     download = async (name, callback) => {//true if success, false if player not found, null if api error
         if (this.data[name] != null && this.data[name].success == true && this.data[name].time + 120 * 1000 > new Date().getTime())
@@ -105,19 +119,35 @@ class Hypixel {
     }
     getTag = (name) => {
         let api = this.data[name].player;
+        let guild_id = this.data[name]?.guild?._id ?? '';
         let uuid = this.uuids[name];
-        if (uuid == '40dff9cbb87b473f946b4dc9776949cc' || uuid == 'f1f464287e894024a5554610d635fa55') return { format: '§6DEV', value: 100 };
-        if (uuid == 'd2b1d916f6de41238e79d359bcc697a1' || uuid == '5282140e4ad4418b9b809f376daa433a') return { format: '§bPR', value: 90 };
-        try {
-            if ((api.achievements.bedwars_level < 15 && api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars > 5) || (api.achievements.bedwars_level > 15 && api.achievements.bedwars_level < 100 && api.achievements.bedwars_level / (api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars) <= 5))
-                return { format: '§cALT', value: 50 };
-            if (api.achievements.bedwars_level < 150 && api.stats.Bedwars.final_deaths_bedwars / api.stats.Bedwars.losses_bedwars < 0.75 && api.stats.Bedwars.final_kills_bedwars / api.stats.Bedwars.final_deaths_bedwars < 1.5)
-                return { format: '§aSNPR', value: 30 };
-        } catch (err) {
-            console.log(err);
+        let tags = { value: 0, data: [] };
+        if (uuid == '40dff9cbb87b473f946b4dc9776949cc' || uuid == 'f1f464287e894024a5554610d635fa55') {
+            tags.value = Math.max(tags.value, 100);
+            tags.data.push({ text: 'D', color: '#FFAA00' });//Developer
         }
-        if (api.channel == 'PARTY') return { format: '§9PRTY', value: 10 };
-        return { format: '§7-', value: 0 };
+        if (((api?.achievements?.bedwars_level ?? 0) < 15 && (api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) > 5)
+            || ((api?.achievements?.bedwars_level ?? 0) > 15 && (api?.achievements?.bedwars_level ?? 0) < 100 && (api?.achievements?.bedwars_level ?? 0) / ((api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0)) <= 5)) {
+            tags.value = Math.max(tags.value, 50);
+            tags.data.push({ text: 'A', color: '#FF5555' });//Alt
+        }
+        if ((api?.achievements?.bedwars_level ?? 0) < 150 && (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) / (api?.stats?.Bedwars?.losses_bedwars ?? 0) < 0.75 && (api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) < 1.5) {
+            tags.value = Math.max(tags.value, 30);
+            tags.data.push({ text: 'S', color: '#55FF55' });//Sniper
+        }
+        if (api.channel == 'PARTY') {
+            tags.value = Math.max(tags.value, 10);
+            tags.data.push({ text: 'P', color: '#5555FF' });//Potential Party
+        }
+        if (guild_id != '' && guild_id == this.owner_guild_id) {
+            tags.value = Math.max(tags.value, 90);
+            tags.data.push({ text: 'G', color: '#FF5555' });//Same Guild
+        }
+        if (guild_id != '' && this.mention_guild.indexOf(guild_id) != -1) {
+            tags.value = Math.max(tags.value, 60);
+            tags.data.push({ text: 'G', color: '#55FF55' });//Mention Guild
+        }
+        return tags;
     }
     getMiniData = (name, type, sub) => {
         if (this.data[name].nick) return [{ format: name, value: name }, 'NICK'];

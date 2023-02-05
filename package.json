@@ -39,7 +39,7 @@
   "license": "GPL-3.0",
   "description": "",
   "dependencies": {
-    "auto-git-update": "^2.0.1",
+    "npm ": "^2.0.1",
     "tail": "^2.2.4"
   },
   "devDependencies": {

@@ -7,7 +7,6 @@ const windowConfig = {
   useContentSize: true,
   maximizable: false,
   minimizable: true,
-  resizable: false,
   x: 40,
   y: 20,
   icon: __dirname + '/logo.ico',

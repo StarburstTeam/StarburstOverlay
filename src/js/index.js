@@ -13,26 +13,33 @@ const config = new Config('./config.json', {
     lastType: 'bw',
     lastSub: '',
     autoShrink: true,
-    notification: true
+    notification: true,
+    width: 1080,
+    height: 550,
+    x: 40,
+    y: 20
 });
 const i18n = new I18n(config.get('lang'));
 let players = [], hypixel = null, nowType = null, nowSub = null, inLobby = false, missingPlayer = false, numplayers = 0, hasLog = false;
 
 window.onload = async () => {
+    currentWindow.setPosition(config.get('x'), config.get('y'));
+    currentWindow.setSize(config.get('width'), config.get('height'));
     i18n.initPage();
 
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
-    document.getElementById('infotype').value = nowType = config.get('lastType');
-    document.getElementById('subGame').value = nowSub = config.get('lastSub');
+    nowType = config.get('lastType');
+    nowSub = config.get('lastSub');
     document.getElementById('autoShrink').checked = config.get('autoShrink');
     document.getElementById('notification').checked = config.get('notification');
     document.getElementById('lang').value = config.get('lang');
     document.getElementById('infotype').innerHTML = i18n.getMainModeHTML();
     await readDisplayData();
     changeCategory();
-    loadSubGame();
-    updateHTML();
+    loadSubGame(nowSub);
     findUpdate();
+    document.getElementById('infotype').value = nowType;
+    document.getElementById('subGame').value = nowSub;
 
     //init search page
     let games = await fetch(`json/games_${config.get('lang')}.json`).then(res => res.json());
@@ -190,9 +197,7 @@ const resize = (show, force) => {
     if (show != null) nowShow = show;
     else nowShow ^= true;
     document.getElementById('show').style.transform = `rotate(${nowShow ? 0 : 90}deg)`;
-    currentWindow.setResizable(true);
-    currentWindow.setSize(1080, nowShow ? 550 : 40, true);
-    currentWindow.setResizable(false);
+    currentWindow.setSize(config.get('width'), nowShow ? config.get('height') : 40, true);
 }
 
 const changeDiv = () => {
@@ -202,23 +207,25 @@ const changeDiv = () => {
     updateHTML();
 }
 
-const loadSubGame = () => {
+const loadSubGame = (val) => {
     document.getElementById('subGame').innerHTML = subGame[nowType] != null ? subGame[nowType].reduce((p, c) => p + `<option value="${c.id}">${c.name}</option>`, '') : '';
-    setSubGame();
+    setSubGame(val);
 }
 
-const setSubGame = () => {
-    nowSub = document.getElementById('subGame').value;
+const setSubGame = (val) => {
+    if (val == null)
+        nowSub = document.getElementById('subGame').value;
     config.set('lastSub', nowSub);
     updateHTML();
 }
 
+
 const updateHTML = async () => {
     let type = document.getElementById('infotype'), sub = document.getElementById('subGame');
-    document.getElementById('current').innerText = `${i18n.now().hud_current_mode}${type.options[type.selectedIndex].childNodes[0].data} - ${sub.options[sub.selectedIndex].childNodes[0].data}`;
+    document.getElementById('current').innerText = `${type.options[type.selectedIndex].childNodes[0].data} - ${sub.options[sub.selectedIndex].childNodes[0].data}`;
+    document.getElementById('ping').innerText = `Mojang ${hypixel.mojang_ping}ms Hypixel ${hypixel.hypixel_ping}ms`;
 
     let main = document.getElementById('main');
-    main.style.height = `300px`
 
     if (config.get('logPath') == '' || !hasLog)
         return main.innerHTML = `${formatColor(`&nbsp §c${i18n.now().error_log_not_found}`)}<br>${formatColor(`&nbsp §c${i18n.now().info_set_log_path}`)}`;
@@ -229,27 +236,20 @@ const updateHTML = async () => {
 
     clearMainPanel();
 
-    let rendered = 0;
     let dataList = pickDataAndSort();
     for (let i = 0; i < dataList.length; i++) {
         if (dataList[i].nick == true) {
-            main.innerHTML += `<tr><th style="text-align:right">[ ? ]</th><th></th><td>${formatColor('§f' + dataList[i].name)}</td><th>${formatColor('§eNICK')}</th></tr>`;
-            rendered++;
+            main.innerHTML += `<tr><th>${formatColor('§eN')}</th><th style="text-align:right">[ ? ]</th><td>&nbsp ${formatColor('§f' + dataList[i].name)}</td><td></td><td></td><td></td><td></td><td></td></tr>`;
             continue;
         }
-        main.innerHTML += `<tr><th style="text-align:right;width:70px;display:inline-block">${dataList[i].data[0].format}</th>
-        <th><img src="https://crafatar.com/avatars/${await hypixel.getPlayerUuid(dataList[i].name)}?overlay" style="position:relative;width:20px;height:20px;top:4px"></th>
-        <td style="word-break:keep-all" onclick="search('${dataList[i].name}')">${dataList[i].data[1].format}</td>
-        <th>${formatColor(dataList[i].data[dataList[i].data.length - 1].format)}</th>
+        main.innerHTML += `<tr><th>${dataList[i].data[dataList[i].data.length - 1].data.reduce((p, c) => { p.push(`<span style="color:${c.color}">${c.text}</span>`); return p; }, []).join('&nbsp')}</th>
+        <th style="text-align:right;width:80px;height:12px">${dataList[i].data[0].format}</th>
+        <td style="word-break:keep-all;height:12px"><img src="https://crafatar.com/avatars/${await hypixel.getPlayerUuid(dataList[i].name)}?overlay" style="position:relative;width:15px;height:15px;top:2px">${dataList[i].data[1].format}</td>
         ${Array.from({ length: dataList[i].data.length - 3 }, (_, x) => x + 2).reduce((p, c) => p + `<th>${dataList[i].data[c].format}</th>`, '')}</tr>`;
-        rendered++;
     }
-    if (missingPlayer) {
-        main.innerHTML += `<tr><td></td><td></td><td>${formatColor(`§c${i18n.now().error_player_missing}`)}</td></tr>
-        <tr><td></td><td></td><td>${formatColor(`§c${i18n.now().info_who}`)}</td></tr>`;
-        rendered += 2;
-    }
-    main.style.height = `${Math.min(rendered * 29.6 + 31.2, 500)}px`;
+    if (missingPlayer)
+        main.innerHTML += `<tr><td></td><td></td><td>${formatColor(`§c${i18n.now().error_player_missing}`)}</td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td>${formatColor(`§c${i18n.now().info_who}`)}</td><td></td><td></td><td></td><td></td><td></td></tr>`;
     if (column >= 1 && column <= 8)
         document.getElementById(`sort_${column}`).innerHTML += isUp ? '↑' : '↓';
 }
@@ -360,9 +360,20 @@ const selectLogFile = () => {
 
 const clearMainPanel = () => {
     let main = document.getElementById('main'), category = hypixel.getTitle(nowType);
-    main.innerHTML = `<tr><th id="sort_1" style="width:80px" onclick="setSortContext(1)">${i18n.now().hud_main_level}</th>
-    <th style="width:25px"></th>
-    <th id="sort_2" style="width:350px" onclick="setSortContext(2)">${i18n.now().hud_main_players}</th>
-    <th id="sort_8" style="width:60px" onclick="setSortContext(8)">${i18n.now().hud_main_tag}</th>
+    main.innerHTML = `<tr><th id="sort_8" style="width:60px" onclick="setSortContext(8)">${i18n.now().hud_main_tag}</th>
+    <th id="sort_1" style="width:60px" onclick="setSortContext(1)">${i18n.now().hud_main_level}</th>
+    <th id="sort_2" style="width:400px" onclick="setSortContext(2)">${i18n.now().hud_main_players}</th>
     ${category.reduce((p, c, i) => p + `<th id="sort_${i + 3}" style="width:100px" onclick="setSortContext(${i + 3})">${c}</th>`, '')}</tr>`;
+}
+
+window.onresize = () => {
+    if (nowShow) {
+        config.set('width', currentWindow.getSize()[0]);
+        config.set('height', currentWindow.getSize()[1]);
+    }
+}
+
+const onClose = () => {
+    config.set('x', currentWindow.getPosition()[0]);
+    config.set('y', currentWindow.getPosition()[1]);
 }
