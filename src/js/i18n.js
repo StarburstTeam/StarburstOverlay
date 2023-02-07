@@ -20,7 +20,7 @@ class I18n {
     set = (id) => this.current = id;
     initPage = () => Object.keys(this.data[this.current].page).forEach((i) => {
         let e = document.getElementById(i);
-        if (e != null) e.innerText = this.data[this.current].page[i];
+        if (e != null) e.innerHTML = this.data[this.current].page[i];
     });
     getMainModeHTML = () => this.data[this.current].mode.reduce((p, c) => p + `<option value="${c.id}">${c.name}</option>`, '');
 }

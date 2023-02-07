@@ -68,6 +68,8 @@ class Hypixel {
         let uuid = await this.getPlayerUuid(name);
         if (uuid == null) {
             this.data[name] = { success: true, time: new Date().getTime(), nick: true };
+            
+            if (callback != null) callback();
             return false;
         }
         let playerData = await this.getPlayerData(uuid);

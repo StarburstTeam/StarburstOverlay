@@ -222,7 +222,7 @@ const setSubGame = (val) => {
 
 const updateHTML = async () => {
     let type = document.getElementById('infotype'), sub = document.getElementById('subGame');
-    document.getElementById('current').innerText = `${type.options[type.selectedIndex].childNodes[0].data} - ${sub.options[sub.selectedIndex].childNodes[0].data}`;
+    document.getElementById('current').innerHTML = `&nbsp${type.options[type.selectedIndex].childNodes[0].data} - ${sub.options[sub.selectedIndex].childNodes[0].data}`;
     document.getElementById('ping').innerText = `Mojang ${hypixel.mojang_ping}ms Hypixel ${hypixel.hypixel_ping}ms`;
 
     let main = document.getElementById('main');
@@ -239,7 +239,7 @@ const updateHTML = async () => {
     let dataList = pickDataAndSort();
     for (let i = 0; i < dataList.length; i++) {
         if (dataList[i].nick == true) {
-            main.innerHTML += `<tr><th>${formatColor('§eN')}</th><th style="text-align:right">[ ? ]</th><td>&nbsp ${formatColor('§f' + dataList[i].name)}</td><td></td><td></td><td></td><td></td><td></td></tr>`;
+            main.innerHTML += `<tr><th>${formatColor('§eN')}</th><th style="text-align:right">[ ? ]</th><td>&nbsp ${formatColor('§f' + dataList[i].name)}</td><th>?</th><th>?</th><th>?</th><th>?</th><th>?</th></tr>`;
             continue;
         }
         main.innerHTML += `<tr><th>${dataList[i].data[dataList[i].data.length - 1].data.reduce((p, c) => { p.push(`<span style="color:${c.color}">${c.text}</span>`); return p; }, []).join('&nbsp')}</th>
@@ -310,7 +310,7 @@ const downloadSkin = async () => {
 
 let column = 0, isUp = false;//column: 0 none, 1 lvl, 2 name, 8 tag, 3-7 stats
 const setSortContext = (c) => {
-    if (c == column) isUp = !isUp;
+    if (c == column) isUp ^= true;
     else if (c >= 0 && c <= 8) {
         column = c;
         isUp = true;
