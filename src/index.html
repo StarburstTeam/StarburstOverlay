@@ -11,8 +11,9 @@
 <body>
     <script>
         const { remote, shell } = require('electron');
+        const { app } = remote;
         const currentWindow = remote.getCurrentWindow();
-        const config = new Config('./config.json');
+        const config = new Config(`${app.getPath('userData')}/config.json`);
         window.onload = () => {
             let setup = !isNullOrEmpty(config.get('logPath')) && !isNullOrEmpty(config.get('apiKey'));
             if (config.get('lang') == 'en_us')

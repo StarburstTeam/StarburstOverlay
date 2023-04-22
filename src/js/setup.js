@@ -1,7 +1,7 @@
 const { remote } = require('electron');
 const { dialog, app } = remote;
 const currentWindow = remote.getCurrentWindow();
-const config = new Config('./config.json');
+const config = new Config(`${app.getPath('userData')}/config.json`);
 const homedir = app.getPath('home').split('\\').join('/');
 const clientLogPath = {
     'badlion': `${homedir}/AppData/Roaming/.minecraft/logs/blclient/minecraft/latest.log`,

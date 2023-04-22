@@ -36,7 +36,7 @@
     <div id="setup" style="color:aqua;font-family:consolas;">
         <h2>&nbsp在使用之前，请完成以下设置</h2>
         <h3>&nbsp 1.设置log路径</h3>
-        <input id="logpath" style="position:relative;left:20px;width:80%">
+        <input id="logpath" style="position:relative;left:20px;width:80%" oninput="config.set('logPath',document.getElementById('logpath').value)">
         <button class="setting_button" style="position:relative;left:20px" onclick="selectLogFile()">选择log路径</button>
         <h4>&nbsp 或者直接选择以下客户端</h4>
         <button class="setting_button" style="position:relative;left:20px;font-size:15px;"

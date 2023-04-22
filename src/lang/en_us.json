@@ -94,6 +94,10 @@
         {
             "id": "ww",
             "name": "Wool War"
+        },
+        {
+            "id": "bsg",
+            "name": "Blitz Survive Game"
         }
     ]
 }

@@ -1,13 +1,15 @@
 class I18n {
     constructor(current) {
-        let files = fs.readdirSync('./src/lang');
+        this.fs = require('fs');
+        let path = app.isPackaged ? './resources/app.asar.unpacked/src/lang/' : './src/lang/'
+        let files = this.fs.readdirSync(path);
         let jsons = files.reduce((p, c) => {
             if (c.endsWith('.json'))
                 p.push(c);
             return p;
         }, []);
         this.data = jsons.reduce((p, c) => {
-            let d = JSON.parse(fs.readFileSync(`./src/lang/${c}`));
+            let d = JSON.parse(this.fs.readFileSync(`${path}${c}`));
             p[d.id] = { name: d.name, values: d.values, page: d.page, mode: d.mode };
             return p;
         }, {});

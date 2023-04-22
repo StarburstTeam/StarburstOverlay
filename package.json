@@ -1,7 +1,7 @@
 {
   "name": "starburst-overlay",
   "productName": "Starburst Overlay",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,6 +10,12 @@
     "package": "electron-packager . \"Starburst Overlay\" --platform=win32 --arch=x64 --icon=logo.ico --out=./out --asar --app-version=1.0.0 --electronVersion=13.0.0 --overwrite"
   },
   "build": {
+    "electronDownload": {
+      "mirror": "https://npm.taobao.org/mirrors/electron/"
+    },
+    "asarUnpack": [
+      "src/lang"
+    ],
     "appId": "starburst-overlay",
     "artifactName": "${productName} Setup v${version} ${arch}.${ext}",
     "productName": "Starburst Overlay",
@@ -39,11 +45,13 @@
   "license": "GPL-3.0",
   "description": "",
   "dependencies": {
+    "auto-git-update": "^1.1.1",
+    "fastify": "^4.15.0",
     "npm ": "^2.0.1",
     "tail": "^2.2.4"
   },
   "devDependencies": {
-    "electron": "^13.0.0",
+    "electron": "^13.3.0",
     "electron-builder": "^23.6.0"
   }
 }

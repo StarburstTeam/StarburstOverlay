@@ -48,6 +48,13 @@
             "Kills",
             "Wins",
             "WPlaced"
+        ],
+        "bsg":[
+            "WR",
+            "Wins",
+            "KDR",
+            "Kills",
+            "Times"
         ]
     },
     "mode": {
@@ -164,6 +171,12 @@
             }
         ],
         "ww": [
+            {
+                "id": "",
+                "name": "All"
+            }
+        ],
+        "bsg": [
             {
                 "id": "",
                 "name": "All"

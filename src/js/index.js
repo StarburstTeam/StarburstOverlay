@@ -1,12 +1,10 @@
-const { remote, shell } = require('electron');
+const { remote, shell,ipcRenderer } = require('electron');
 const { Notification, dialog, app } = remote;
 const { Tail } = require('tail');
 const fs = require('fs');
-const AutoGitUpdate = require('auto-git-update/index');
 
 const currentWindow = remote.getCurrentWindow();
-const updater = new AutoGitUpdate({ repository: 'https://github.com/IAFEnvoy/StarburstOverlay', tempLocation: './temp/update' });
-const config = new Config('./config.json', {
+const config = new Config(`${app.getPath('userData')}/config.json`, {
     lang: 'en_us',
     logPath: '',
     apiKey: '',
@@ -40,24 +38,6 @@ window.onload = async () => {
     findUpdate();
     document.getElementById('infotype').value = nowType;
     document.getElementById('subGame').value = nowSub;
-
-    //init search page
-    let games = await fetch(`json/games_${config.get('lang')}.json`).then(res => res.json());
-    modeList.reduce((p, c) => {
-        let root = document.createElement('div');
-        root.className = 'dataStyle';
-        root.id = c;
-        root.addEventListener('click', (e) => showDetail(e.path[1].id));
-        let name = document.createElement('div');
-        name.style.fontSize = '20px';
-        name.innerHTML = games.find(it => it.short == c).name;
-        let detail = document.createElement('div');
-        detail.id = `${c}detail`;
-        root.appendChild(name);
-        root.appendChild(detail);
-        p.appendChild(root);
-        return p;
-    }, document.getElementById('details'));
 
     if (config.get('logPath') == '') return;
     hasLog = fs.existsSync(config.get('logPath'));
@@ -138,6 +118,11 @@ window.onload = async () => {
                     body: i18n.now().notification_start_body
                 }).show();
         } else if (msg.indexOf(i18n.now().chat_game_start_0_second) != -1 && msg.indexOf(':') == -1) resize(false);
+        else if (msg.indexOf('https://rewards.hypixel.net/claim-reward/') != -1) {
+            let url = `https://rewards.hypixel.net/claim-reward/${msg.split('https://rewards.hypixel.net/claim-reward/')[1].split('\\n')[0]}`;
+            console.log(url);
+            window.open(url, 'Claim Rewards', 'width=800,height=600,frame=true,transparent=false,alwaysOnTop=true');
+        }
         if (changed) {
             console.log(players);
             updateHTML();
@@ -148,20 +133,7 @@ window.onload = async () => {
 }
 
 const findUpdate = async () => {
-    try {
-        const versions = await updater.compareVersions();
-        console.log(versions);
-        if (versions.remoteVersion != 'Error' && !versions.upToDate) {
-            new Notification({
-                title: i18n.now().notification_update_available_title,
-                body: i18n.now().notification_update_available_body
-            }).show();
-            document.getElementById('update').hidden = false;
-        }
-    }
-    catch (err) {
-        console.log(err);
-    }
+  //TODO
 }
 
 const changeCategory = () => {
@@ -175,20 +147,21 @@ const switchPage = (page) => {
     lastPage = page;
     document.getElementById('main').style.display = '';
     document.getElementById('main').hidden = true;
-    document.getElementById('searchPage').hidden = true;
     document.getElementById('settingPage').hidden = true;
     document.getElementById('infoPage').hidden = true;
     document.getElementById('cpsPage').hidden = true;
-    document.getElementById('search').className = 'search';
     document.getElementById('settings').className = 'settings';
     document.getElementById('info').className = 'info';
     document.getElementById('cps').className = 'cps';
     document.getElementById(page).hidden = false;
     if (page == 'main') document.getElementById('main').style.display = 'inline-block';
-    if (page == 'searchPage') document.getElementById('search').className = 'search_stay';
     if (page == 'settingPage') document.getElementById('settings').className = 'settings_stay';
     if (page == 'infoPage') document.getElementById('info').className = 'info_stay';
     if (page == 'cpsPage') document.getElementById('cps').className = 'cps_stay';
+}
+
+const openSearchPage=()=>{
+    ipcRenderer.send('open-search-page');
 }
 
 let nowShow = true;

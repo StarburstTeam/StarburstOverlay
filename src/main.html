@@ -24,12 +24,12 @@
             <button id="update" class="update"
                 onclick="shell.openExternal('https://github.com/IAFEnvoy/StarburstOverlay/releases')" hidden></button>
             <button id="cps" class="cps" onclick="switchPage('cpsPage')"></button>
-            <button id="search" class="search" onclick="switchPage('searchPage')"></button>
+            <button id="search" class="search" onclick="openSearchPage()"></button>
             <button id="settings" class="settings" onclick="switchPage('settingPage')"></button>
             <button id="info" class="info" onclick="switchPage('infoPage')"></button>
             <button id="show" onclick="resize(null, true)"></button>
             <button id="minimize" onclick="currentWindow.minimize()"></button>
-            <button id="quit" onclick="onClose();currentWindow.close()"></button>
+            <button id="quit" onclick="onClose();currentWindow.close();"></button>
         </div>
     </div>
     <div style="height:20px">
@@ -39,32 +39,6 @@
     <table id="main" class="main" border="1"
         style="display:inline-block;width:100%;height:calc(100% - 60px);overflow-y:scroll;font-size:15px;position:relative">
     </table>
-    <div id="searchPage" style="width:100%;height:560px" hidden>
-        <div id="playerinput">
-            <div id="playerNameLabel" class="infoFont" style="position:absolute;top:55px;left:30px">Player Name :</div>
-            <input id="playername" type="text" style="position: absolute;top:55px;left:230px;width:350px;height:25px;">
-            <button class="searchButton" id="searchButton"
-                style="position: absolute;top:55px;left:600px;width:80px;height:32px" onclick="search()">Go!</button>
-        </div>
-        <div id="searchResult" style="height:auto">
-            <div style="margin-top:10px;position:absolute;top:85px;left:10px;width:380px;height:80%;overflow-y:scroll">
-                <div id="playerName" class="dataStyle" style="font-size: 20px"></div>
-                <div id="networkinfo" class="dataStyle"></div>
-                <div id="guild" class="dataStyle"></div>
-                <div id="status" class="dataStyle"></div>
-            </div>
-            <div id="details"
-                style="margin-top:10px;position:absolute;top:85px;left:400px;width:420px;height:80%;overflow-y:scroll">
-            </div>
-            <div style="position: absolute;top:50px;left:850px;width:120px;height:270px">
-                <img id="skin">
-                <button id="downloadSkin" class="download"
-                    style="position:absolute;top:280px;left:-20px;width:160px;height:30px"
-                    onclick="downloadSkin()">Download Skin</button>
-                <div id="socialMedia" style="position:absolute;top:320px;left:-20px;width:auto"></div>
-            </div>
-        </div>
-    </div>
     <div id="settingPage" hidden>
         <div>
             <div class="setting_subtitle" id="setting_game_type">Game Type :</div>
@@ -77,6 +51,7 @@
                 <option value="uhc">UHC Champion</option>
                 <option value="mw">Mega Wall</option>
                 <option value="ww">Wool War</option>
+                <option value="bsg">Blitz Survive Game</option>
             </select>
             <select id="subGame" style="height:auto" onchange="setSubGame()"></select>
         </div><br>

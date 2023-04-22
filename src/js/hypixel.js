@@ -68,7 +68,7 @@ class Hypixel {
         let uuid = await this.getPlayerUuid(name);
         if (uuid == null) {
             this.data[name] = { success: true, time: new Date().getTime(), nick: true };
-            
+
             if (callback != null) callback();
             return false;
         }
@@ -211,6 +211,13 @@ class Hypixel {
             buildSpan(finalsColorList.ww, api.stats?.WoolGames?.wool_wars?.stats?.kills ?? 0),
             buildSpan(winsColorList.ww, api.stats?.WoolGames?.wool_wars?.stats?.wins ?? 0),
             buildSpan(specialList.ww_wool_placed, api.stats?.WoolGames?.wool_wars?.stats?.wool_placed ?? 0)];
+        if (type == 'bsg')
+            return [basic.lvl, { format: basic.name, value: api.displayname },
+            buildSpan(wlrColorList.mm, ((api.stats?.Blitz?.wins ?? 0) / (api.stats?.Blitz?.games_played ?? 0)).toFixed(2) * 100, '', '%'),
+            buildSpan(winsColorList.sw, api.stats?.Blitz?.wins ?? 0),
+            buildSpan(kdrColorList.sw, ((api.stats?.Blitz?.kills ?? 0) / (api.stats?.Blitz?.deaths ?? 0)).toFixed(2)),
+            buildSpan(finalsColorList.sw, api.stats?.Blitz?.kills ?? 0),
+            buildSpan(specialList.uhc_score, api.stats?.Blitz?.games_played ?? 0)];
     }
     getGuild = (name) => getGuild[config.get('lang')](this.data[name].guild, this.uuids[name]);
     getStatus = async (name) => {
@@ -334,7 +341,7 @@ const bwLvlProvider = [
     (lvl) => `§b[${Math.floor(lvl / 1000)}§3${Math.floor(lvl / 100 % 10)}${Math.floor(lvl / 10 % 10)}§9${lvl % 10}⚝§1]`
 ], bwLvlProviderMax = (lvl) => `§e[3§6${Math.floor(lvl / 10 % 100)}§c${lvl % 10}⚝§4]`;
 const formatBwLevel = (lvl) => {
-    let i = Math.floor((lvl - 1) / 100);
+    let i = Math.floor(lvl / 100);
     let ret = bwLvlProvider[i];
     if (ret == null) ret = bwLvlProviderMax;
     return formatColor(ret(lvl));
