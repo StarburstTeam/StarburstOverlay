@@ -36,6 +36,41 @@ const formatDateTime = (date) => {
 
 const formatNameString = name => name.toLowerCase().split('_').reduce((ret, word) => ret + word[0].toUpperCase() + word.slice(1) + ' ', '');
 
+const compairVersion = (v1, v2) => {
+    //补位0，或者使用其它字符
+    const ZERO_STR = '000000000000000000000000000000000000000000';
+    if (v1 === v2)
+        return 0;
+    let len1 = v1 ? v1.length : 0;
+    let len2 = v2 ? v2.length : 0;
+    if (len1 === 0 && len2 === 0)
+        return 0;
+    if (len1 === 0)
+        return 1;
+    if (len2 === 0)
+        return -1;
+    const arr1 = v1.split('.');
+    const arr2 = v2.split('.');
+    const length = Math.min(arr1.length, arr2.length);
+    for (let i = 0; i < length; i++) {
+        let a = arr1[i];
+        let b = arr2[i];
+        if (a.length < b.length)
+            a = ZERO_STR.substring(0, b.length - a.length) + a;
+        else if (a.length > b.length)
+            b = ZERO_STR.substring(0, a.length - b.length) + b;
+        if (a < b)
+            return 1;
+        else if (a > b)
+            return -1;
+    }
+    if (arr1.length < arr2.length)
+        return 1;
+    else if (arr1.length > arr2.length)
+        return -1;
+    return 0;
+}
+
 // Array.equals()
 Array.prototype.equals = function (array) {
     // if the other array is a falsy value, return

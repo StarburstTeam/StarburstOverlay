@@ -1,4 +1,4 @@
-const { remote, shell,ipcRenderer } = require('electron');
+const { remote, shell, ipcRenderer } = require('electron');
 const { Notification, dialog, app } = remote;
 const { Tail } = require('tail');
 const fs = require('fs');
@@ -133,7 +133,22 @@ window.onload = async () => {
 }
 
 const findUpdate = async () => {
-  //TODO
+    try {
+        let remote = await fetch('https://raw.githubusercontent.com/IAFEnvoy/StarburstOverlay/master/package.json').then(res => res.json()).catch(err => console.log(err));
+        let local = require('../package.json');
+        console.log(remote, local);
+        if (remote == null) return;
+        if (compairVersion(remote.version, local.version) == -1) {
+            new Notification({
+                title: i18n.now().notification_update_available_title,
+                body: i18n.now().notification_update_available_body
+            }).show();
+            document.getElementById('update').hidden = false;
+        }
+    }
+    catch (err) {
+        console.log(err);
+    }
 }
 
 const changeCategory = () => {
@@ -160,7 +175,7 @@ const switchPage = (page) => {
     if (page == 'cpsPage') document.getElementById('cps').className = 'cps_stay';
 }
 
-const openSearchPage=()=>{
+const openSearchPage = () => {
     ipcRenderer.send('open-search-page');
 }
 
