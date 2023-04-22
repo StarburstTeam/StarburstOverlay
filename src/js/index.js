@@ -32,7 +32,7 @@ window.onload = async () => {
     document.getElementById('notification').checked = config.get('notification');
     document.getElementById('lang').value = config.get('lang');
     document.getElementById('infotype').innerHTML = i18n.getMainModeHTML();
-    push_error();
+    pushError();
     await readDisplayData();
     changeCategory();
     loadSubGame(nowSub);
@@ -214,13 +214,14 @@ const updateHTML = async () => {
     document.getElementById('ping').innerText = `Mojang ${hypixel.mojang_ping}ms Hypixel ${hypixel.hypixel_ping}ms`;
 
     let main = document.getElementById('main');
+    resetError(false);
 
     if (config.get('logPath') == '' || !hasLog)
-        return push_error(`${i18n.now().error_log_not_found}<br>${i18n.now().info_set_log_path}`);
+        return pushError(`${i18n.now().error_log_not_found}<br>${i18n.now().info_set_log_path}`, false);
     if (config.get('apiKey') == '')
-        return push_error(`${i18n.now().error_api_key_not_found}<br>${i18n.now().info_api_new}`);
+        return pushError(`${i18n.now().error_api_key_not_found}<br>${i18n.now().info_api_new}`, false);
     if (!hypixel.verified && !hypixel.verifying)
-        return push_error(`${i18n.now().error_api_key_invalid}<br>${i18n.now().info_api_new}`);
+        return pushError(`${i18n.now().error_api_key_invalid}<br>${i18n.now().info_api_new}`, false);
 
     clearMainPanel();
 
@@ -249,7 +250,7 @@ const updateHTML = async () => {
         ${Array.from({ length: dataList[i].data.length - 3 }, (_, x) => x + 2).reduce((p, c) => p + `<th>${dataList[i].data[c].format}</th>`, '')}</tr>`;
     }
     if (missingPlayer)
-        push_error(`${i18n.now().error_player_missing}<br>${i18n.now().info_who}`);
+        pushError(`${i18n.now().error_player_missing}<br>${i18n.now().info_who}`, false);
     if (column >= 1 && column <= 8)
         document.getElementById(`sort_${column}`).innerHTML += isUp ? '↑' : '↓';
 }
@@ -378,10 +379,19 @@ const onClose = () => {
     config.set('y', currentWindow.getPosition()[1]);
 }
 
-const push_error = (error) => {
-    if (error != '' && error != null) {
-        document.getElementById('message').style.opacity = 1;
-        document.getElementById('message').innerText = error;
-    } else
-        document.getElementById('message').style.opacity = 0;
+let stable_message = false;
+const pushNetworkError = (code) => {
+    if(code==403) pushError(`${i18n.now().error_api_key_invalid}<br>${i18n.now().info_api_new}`, true);
+    else if(code==429) pushError(`${i18n.now().error_api_limit_exceeded}`, true);
+}
+const pushError = (error, stable) => {
+    stable_message = stable;
+    if (error == '' || error == null)
+        return document.getElementById('message').style.opacity = 0;
+    document.getElementById('message').style.opacity = 1;
+    document.getElementById('message').innerHTML = error;
+}
+
+const resetError = (force) => {
+    if (force || !stable_message) return document.getElementById('message').style.opacity = 0;
 }

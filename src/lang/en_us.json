@@ -40,7 +40,8 @@
         "cps_result_right": "Your right button clicking speed is ",
         "cps_click_to_start": "Click to Start",
         "language":"Language : ",
-        "guild":"Guild : "
+        "guild":"Guild : ",
+        "error_api_limit_exceeded":"API Limit Exceeded! Please wait for reset."
     },
     "page": {
         "playerNameLabel": "Player Name :",

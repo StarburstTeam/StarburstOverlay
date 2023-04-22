@@ -46,20 +46,36 @@ class Hypixel {
         }
     }
     getPlayerData = async (uuid) => {
-        let start = new Date().getTime();
-        let res = await fetch(`https://api.hypixel.net/player?key=${this.apiKey}&uuid=${uuid}`)
-            .catch(err => { throw err })
-            .then(res => res.json());
-        this.hypixel_ping = new Date().getTime() - start;
-        return res;
+        try {
+            let start = new Date().getTime();
+            let res = await fetch(`https://api.hypixel.net/player?key=${this.apiKey}&uuid=${uuid}`)
+                .catch(err => { throw err })
+                .then(res => {
+                    if (res.ok) return res.json();
+                    throw res.status;
+                });
+            this.hypixel_ping = new Date().getTime() - start;
+            return res;
+        } catch (err) {
+            console.log(err);
+            if (pushNetworkError != null) pushNetworkError(err, true);
+        }
     }
     getGuildData = async (uuid) => {
-        let start = new Date().getTime();
-        let res = await fetch(`https://api.hypixel.net/guild?key=${this.apiKey}&player=${uuid}`)
-            .catch(err => { throw err })
-            .then(res => res.json());
-        this.hypixel_ping = new Date().getTime() - start;
-        return res;
+        try {
+            let start = new Date().getTime();
+            let res = await fetch(`https://api.hypixel.net/guild?key=${this.apiKey}&player=${uuid}`)
+                .catch(err => { throw err })
+                .then(res => {
+                    if (res.ok) return res.json();
+                    throw res.status;
+                });
+            this.hypixel_ping = new Date().getTime() - start;
+            return res;
+        } catch (err) {
+            console.log(err);
+            if (pushNetworkError != null) pushNetworkError(err, true);
+        }
     }
     download = async (name, callback) => {//true if success, false if player not found, null if api error
         if (this.data[name] != null && this.data[name].success == true && this.data[name].time + 120 * 1000 > new Date().getTime())
@@ -105,11 +121,11 @@ class Hypixel {
         else return `§7`;
     }
     getGuildName = (name) => {
-        if (this.data[name] == null || this.data[name].guild == null) return ``;
+        if (this.data[name] == null || this.data[name].guild == null) return `§7No Guild`;
         let guildJson = this.data[name].guild;
         if (guildJson.tag != null && guildJson.tagColor != null)
             return `${formatColorFromString(guildJson.tagColor)}${guildJson.name}`;
-        return ``;
+        return `§7No Guild`;
     }
     getGuildTag = (name) => {
         if (this.data[name] == null || this.data[name].guild == null) return ``;

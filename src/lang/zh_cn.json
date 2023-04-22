@@ -40,7 +40,8 @@
         "cps_result_right": "你的右键点击速度为",
         "cps_click_to_start": "点此开始测试",
         "language":"语言：",
-        "guild":"公会："
+        "guild":"公会：",
+        "error_api_limit_exceeded":"已达到API请求次数限制！请等待重置。"
     },
     "page": {
         "playerNameLabel": "玩家名：",
