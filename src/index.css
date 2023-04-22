@@ -329,3 +329,33 @@ select {
     text-align: center;
     filter: drop-shadow(2px 2px rgb(0, 0, 0));
 }
+
+.tooltip .tooltiptext {
+    padding: 5px;
+    background-color: gray;
+	border-color:aqua;
+	border-style: solid;
+	border-width:1px;
+    color: aqua;
+    text-align: center;
+    border-radius: 6px;
+    opacity: 0;
+    transition: all 0.2s ease-out;
+    position: absolute;
+    z-index: 1;
+    min-width: 10px;
+}
+
+.tooltip:hover .tooltiptext {
+    opacity: 1;
+}
+
+.message{
+    background-color: #ff0000d0;
+    font-family: "consolas";
+    font-size: larger;
+    color: white;
+    padding: 5px;
+    border-radius: 6px;
+    transition: all 0.2s ease-out;
+}

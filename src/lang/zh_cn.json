@@ -38,7 +38,9 @@
         "cps_right_click": "右键点击次数：",
         "cps_result_left": "你的左键点击速度为",
         "cps_result_right": "你的右键点击速度为",
-        "cps_click_to_start": "点此开始测试"
+        "cps_click_to_start": "点此开始测试",
+        "language":"语言：",
+        "guild":"公会："
     },
     "page": {
         "playerNameLabel": "玩家名：",

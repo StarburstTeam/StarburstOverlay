@@ -32,6 +32,7 @@ window.onload = async () => {
     document.getElementById('notification').checked = config.get('notification');
     document.getElementById('lang').value = config.get('lang');
     document.getElementById('infotype').innerHTML = i18n.getMainModeHTML();
+    push_error();
     await readDisplayData();
     changeCategory();
     loadSubGame(nowSub);
@@ -207,7 +208,6 @@ const setSubGame = (val) => {
     updateHTML();
 }
 
-
 const updateHTML = async () => {
     let type = document.getElementById('infotype'), sub = document.getElementById('subGame');
     document.getElementById('current').innerHTML = `&nbsp${type.options[type.selectedIndex].childNodes[0].data} - ${sub.options[sub.selectedIndex].childNodes[0].data}`;
@@ -216,28 +216,40 @@ const updateHTML = async () => {
     let main = document.getElementById('main');
 
     if (config.get('logPath') == '' || !hasLog)
-        return main.innerHTML = `${formatColor(`&nbsp §c${i18n.now().error_log_not_found}`)}<br>${formatColor(`&nbsp §c${i18n.now().info_set_log_path}`)}`;
+        return push_error(`${i18n.now().error_log_not_found}<br>${i18n.now().info_set_log_path}`);
     if (config.get('apiKey') == '')
-        return main.innerHTML = `${formatColor(`&nbsp §c${i18n.now().error_api_key_not_found}`)}<br>${formatColor(`&nbsp §c${i18n.now().info_api_new}`)}`;
+        return push_error(`${i18n.now().error_api_key_not_found}<br>${i18n.now().info_api_new}`);
     if (!hypixel.verified && !hypixel.verifying)
-        return main.innerHTML = `${formatColor(`&nbsp §c${i18n.now().error_api_key_invalid}`)}<br>${formatColor(`&nbsp §c${i18n.now().info_api_new}`)}`;
+        return push_error(`${i18n.now().error_api_key_invalid}<br>${i18n.now().info_api_new}`);
 
     clearMainPanel();
 
     let dataList = pickDataAndSort();
     for (let i = 0; i < dataList.length; i++) {
         if (dataList[i].nick == true) {
-            main.innerHTML += `<tr><th>${formatColor('§eN')}</th><th style="text-align:right">[ ? ]</th><td>&nbsp ${formatColor('§f' + dataList[i].name)}</td><th>?</th><th>?</th><th>?</th><th>?</th><th>?</th></tr>`;
+            main.innerHTML += `<tr><th>${formatColor('§eN')}</th>
+            <th style="text-align:right">[ ? ]</th>
+            <td>&nbsp ${formatColor('§f' + dataList[i].name)}</td>
+            <th>?</th>
+            <th>?</th>
+            <th>?</th>
+            <th>?</th>
+            <th>?</th>
+            </tr>`;
             continue;
         }
+        let tooltip = await hypixel.getToolTipData(dataList[i].name);
         main.innerHTML += `<tr><th>${dataList[i].data[dataList[i].data.length - 1].data.reduce((p, c) => { p.push(`<span style="color:${c.color}">${c.text}</span>`); return p; }, []).join('&nbsp')}</th>
         <th style="text-align:right;width:80px;height:12px">${dataList[i].data[0].format}</th>
-        <td style="word-break:keep-all;height:12px"><img src="https://crafatar.com/avatars/${await hypixel.getPlayerUuid(dataList[i].name)}?overlay" style="position:relative;width:15px;height:15px;top:2px">${dataList[i].data[1].format}</td>
+        <td style="word-break:keep-all;height:12px" class="tooltip">
+            <img src="https://crafatar.com/avatars/${await hypixel.getPlayerUuid(dataList[i].name)}?overlay" style="position:relative;width:15px;height:15px;top:2px">
+            ${dataList[i].data[1].format}
+            <span class="tooltiptext">${i18n.now().language}${tooltip[0]}<br>${i18n.now().guild}${tooltip[1]}</span>
+        </td>
         ${Array.from({ length: dataList[i].data.length - 3 }, (_, x) => x + 2).reduce((p, c) => p + `<th>${dataList[i].data[c].format}</th>`, '')}</tr>`;
     }
     if (missingPlayer)
-        main.innerHTML += `<tr><td></td><td></td><td>${formatColor(`§c${i18n.now().error_player_missing}`)}</td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td></td><td></td><td>${formatColor(`§c${i18n.now().info_who}`)}</td><td></td><td></td><td></td><td></td><td></td></tr>`;
+        push_error(`${i18n.now().error_player_missing}<br>${i18n.now().info_who}`);
     if (column >= 1 && column <= 8)
         document.getElementById(`sort_${column}`).innerHTML += isUp ? '↑' : '↓';
 }
@@ -364,4 +376,12 @@ window.onresize = () => {
 const onClose = () => {
     config.set('x', currentWindow.getPosition()[0]);
     config.set('y', currentWindow.getPosition()[1]);
+}
+
+const push_error = (error) => {
+    if (error != '' && error != null) {
+        document.getElementById('message').style.opacity = 1;
+        document.getElementById('message').innerText = error;
+    } else
+        document.getElementById('message').style.opacity = 0;
 }

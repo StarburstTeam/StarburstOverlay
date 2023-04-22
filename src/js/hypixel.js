@@ -68,7 +68,6 @@ class Hypixel {
         let uuid = await this.getPlayerUuid(name);
         if (uuid == null) {
             this.data[name] = { success: true, time: new Date().getTime(), nick: true };
-
             if (callback != null) callback();
             return false;
         }
@@ -104,6 +103,13 @@ class Hypixel {
         else if (rank == 'VIP_PLUS') return `§a[VIP§6+§a]`;
         else if (rank == 'VIP') return `§a[VIP]`;
         else return `§7`;
+    }
+    getGuildName = (name) => {
+        if (this.data[name] == null || this.data[name].guild == null) return ``;
+        let guildJson = this.data[name].guild;
+        if (guildJson.tag != null && guildJson.tagColor != null)
+            return `${formatColorFromString(guildJson.tagColor)}${guildJson.name}`;
+        return ``;
     }
     getGuildTag = (name) => {
         if (this.data[name] == null || this.data[name].guild == null) return ``;
@@ -218,6 +224,11 @@ class Hypixel {
             buildSpan(kdrColorList.sw, ((api.stats?.Blitz?.kills ?? 0) / (api.stats?.Blitz?.deaths ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.sw, api.stats?.Blitz?.kills ?? 0),
             buildSpan(specialList.uhc_score, api.stats?.Blitz?.games_played ?? 0)];
+    }
+    getToolTipData = (name) => {
+        if (this.data[name].nick) return ['?', '?'];
+        let player = this.data[name].player;
+        return [formatNameString(player.userLanguage ?? 'ENGLISH'), formatColor(this.getGuildName(name))];
     }
     getGuild = (name) => getGuild[config.get('lang')](this.data[name].guild, this.uuids[name]);
     getStatus = async (name) => {
