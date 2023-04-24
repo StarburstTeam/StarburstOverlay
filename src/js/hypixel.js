@@ -8,8 +8,8 @@ class Hypixel {
         this.uuids = [];
         this.mention_guild = [];
         this.download_count = 0;
-        this.mojang_ping = 0;
-        this.hypixel_ping = 0;
+        this.mojang_ping = this.hypixel_ping = 0;
+        this.max_rate_limit = this.remain_rate_limit = this.reset_rate_limit = 0;
     }
     verifyKey = async (callback) => {
         try {
@@ -17,7 +17,12 @@ class Hypixel {
             this.owner = null;//uuid
             let a = await fetch(`https://api.hypixel.net/key?key=${this.apiKey}`)
                 .catch(err => { throw err })
-                .then(res => res.json());
+                .then(res => {
+                    this.max_rate_limit = +res.headers.get('ratelimit-limit');
+                    this.remain_rate_limit = +res.headers.get('ratelimit-remaining');
+                    this.reset_rate_limit = +res.headers.get('ratelimit-reset');
+                    return res.json();
+                });
             if (a.success == false) throw null;
             this.owner = a.record.owner;
             this.verified = true;
@@ -51,6 +56,9 @@ class Hypixel {
             let res = await fetch(`https://api.hypixel.net/player?key=${this.apiKey}&uuid=${uuid}`)
                 .catch(err => { throw err })
                 .then(res => {
+                    this.max_rate_limit = +res.headers.get('ratelimit-limit');
+                    this.remain_rate_limit = +res.headers.get('ratelimit-remaining');
+                    this.reset_rate_limit = +res.headers.get('ratelimit-reset');
                     if (res.ok) return res.json();
                     throw res.status;
                 });
@@ -67,6 +75,9 @@ class Hypixel {
             let res = await fetch(`https://api.hypixel.net/guild?key=${this.apiKey}&player=${uuid}`)
                 .catch(err => { throw err })
                 .then(res => {
+                    this.max_rate_limit = +res.headers.get('ratelimit-limit');
+                    this.remain_rate_limit = +res.headers.get('ratelimit-remaining');
+                    this.reset_rate_limit = +res.headers.get('ratelimit-reset');
                     if (res.ok) return res.json();
                     throw res.status;
                 });

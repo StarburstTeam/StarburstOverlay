@@ -58,7 +58,7 @@ window.onload = async () => {
                 players.push(who[i]);
                 hypixel.download(who[i], updateHTML);
             }
-            missingPlayer = players.length < numplayers;
+            missingPlayer = false;
             changed = true;
         } else if (msg.indexOf(i18n.now().chat_player_join) != -1 && msg.indexOf(':') == -1) {
             resize(true);
@@ -210,11 +210,14 @@ const setSubGame = (val) => {
 
 const updateHTML = async () => {
     let type = document.getElementById('infotype'), sub = document.getElementById('subGame');
-    document.getElementById('current').innerHTML = `&nbsp${type.options[type.selectedIndex].childNodes[0].data} - ${sub.options[sub.selectedIndex].childNodes[0].data}`;
-    document.getElementById('ping').innerText = `Mojang ${hypixel.mojang_ping}ms Hypixel ${hypixel.hypixel_ping}ms`;
+    document.getElementById('current_ping').innerHTML = `&nbsp${type.options[type.selectedIndex].childNodes[0].data} - ${sub.options[sub.selectedIndex].childNodes[0].data} Mojang ${hypixel.mojang_ping}ms Hypixel ${hypixel.hypixel_ping}ms`;
 
     let main = document.getElementById('main');
     resetError(false);
+    document.getElementById('api_limit_remain').style['stroke-dashoffset'] = 100 - 100 * hypixel.remain_rate_limit / hypixel.max_rate_limit;
+    document.getElementById('api_limit_remain_num').innerHTML = hypixel.remain_rate_limit;
+    document.getElementById('api_limit_reset').style['stroke-dashoffset'] = 100 - hypixel.reset_rate_limit / 0.6;
+    document.getElementById('api_limit_reset_num').innerHTML = hypixel.reset_rate_limit;
 
     if (config.get('logPath') == '' || !hasLog)
         return pushError(`${i18n.now().error_log_not_found}<br>${i18n.now().info_set_log_path}`, false);
@@ -381,8 +384,8 @@ const onClose = () => {
 
 let stable_message = false;
 const pushNetworkError = (code) => {
-    if(code==403) pushError(`${i18n.now().error_api_key_invalid}<br>${i18n.now().info_api_new}`, true);
-    else if(code==429) pushError(`${i18n.now().error_api_limit_exceeded}`, true);
+    if (code == 403) pushError(`${i18n.now().error_api_key_invalid}<br>${i18n.now().info_api_new}`, true);
+    else if (code == 429) pushError(`${i18n.now().error_api_limit_exceeded}`, true);
 }
 const pushError = (error, stable) => {
     stable_message = stable;

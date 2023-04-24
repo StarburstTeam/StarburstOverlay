@@ -13,6 +13,7 @@
     <script src="js/debug.js"></script>
     <link rel="styleSheet" href="scrollbar.css">
     <link rel="styleSheet" href="switch.css">
+    <link rel="styleSheet" href="progress.css">
     <link rel="styleSheet" href="index.css">
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
 </head>
@@ -21,6 +22,18 @@
     <div id="menu" class="menu">
         <div class="title" style="position:absolute;left:5px;top:-5px">Starburst</div>
         <div id="buttons" style="float:right;margin-right:5px;margin-top:2px;">
+            <svg style="width:36px;height:36px;">
+                <circle class="progress_circle" cx="18" cy="18" r="15" id="api_limit_remain"></circle>
+                <text x="18" y="23" fill="#00ffff" text-anchor="middle">
+                    <tspan class="progress_text" id="api_limit_remain_num">0</tspan>
+                </text>
+            </svg>
+            <svg style="width:36px;height:36px;">
+                <circle class="progress_circle" cx="18" cy="18" r="15" id="api_limit_reset"></circle>
+                <text x="18" y="23" fill="#00ffff" text-anchor="middle">
+                    <tspan class="progress_text" id="api_limit_reset_num">0</tspan>
+                </text>
+            </svg>
             <button id="update" class="update"
                 onclick="shell.openExternal('https://github.com/IAFEnvoy/StarburstOverlay/releases')" hidden></button>
             <button id="cps" class="cps" onclick="switchPage('cpsPage')"></button>
@@ -33,8 +46,7 @@
         </div>
     </div>
     <div style="height:20px">
-        <div class="title" id="current" style="position:relative;font-size:20px;top:-3px"></div>
-        <div class="title" id="ping" style="position:relative;left:10px;font-size:20px;top:-3px">111</div>
+        <div class="title" id="current_ping" style="position:relative;font-size:20px;top:-3px;white-space:nowrap;"></div>
     </div>
     <table id="main" class="main" border="1"
         style="display:inline-block;width:100%;height:calc(100% - 60px);overflow-y:scroll;font-size:15px;position:relative">

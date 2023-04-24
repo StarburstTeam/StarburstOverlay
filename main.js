@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 
-const debug_mode = true;
+const debug_mode = false;
 
 const createWindow = () => {
   let win = new BrowserWindow({
