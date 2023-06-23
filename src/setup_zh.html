@@ -52,7 +52,7 @@
         <button class="setting_button" style="position:relative;left:20px;font-size:15px;"
             onclick="setPathFromClient('vanilla')">官方启动器</button>
         <h3>&nbsp 2.设置Hypixel API Key</h3>
-        <h4>&nbsp 可以通过在游戏内运行/api new获取</h4>
+        <h4 onclick="window.open(url, '', 'width=800,height=600,frame=true,transparent=false,alwaysOnTop=true')">&nbsp 从<a href="https://developer.hypixel.net">developer.hypixel.net</a>获取（点击此处打开）</h4>
         <input id="apikey" style="position:relative;left:20px;width:80%"
             oninput="config.set('apiKey',document.getElementById('apikey').value)">
         <br><br><br>

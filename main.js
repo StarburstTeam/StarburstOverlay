@@ -51,4 +51,4 @@ ipcMain.on('open-search-page', (_) => {
   if (debug_mode)
     win.webContents.openDevTools({ mode: "detach", activate: true });
   win.on('close', () => { win = null; search_opened = false });
-})
+});
