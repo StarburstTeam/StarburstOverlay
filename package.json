@@ -1,7 +1,7 @@
 {
   "name": "starburst-overlay",
   "productName": "Starburst Overlay",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
