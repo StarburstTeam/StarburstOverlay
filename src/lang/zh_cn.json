@@ -41,7 +41,13 @@
         "cps_click_to_start": "点此开始测试",
         "language":"语言：",
         "guild":"公会：",
-        "error_api_limit_exceeded":"已达到API请求次数限制！请等待重置。"
+        "error_api_limit_exceeded":"已达到API请求次数限制！请等待重置。",
+        "tag_developer":"开发者",
+        "tag_alt":"可能为小号",
+        "tag_sniper":"可能是狙击",
+        "tag_party":"可能为组队",
+        "tag_guild":"同公会",
+        "tag_mention_guild":"关注的公会"
     },
     "page": {
         "playerNameLabel": "玩家名：",

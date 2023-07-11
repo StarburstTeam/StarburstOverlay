@@ -6,7 +6,6 @@ class Hypixel {
         this.verifying = true;
         this.verifyKey(callback);
         this.uuids = [];
-        this.mention_guild = [];
         this.download_count = 0;
         this.mojang_ping = this.hypixel_ping = 0;
         this.max_rate_limit = this.remain_rate_limit = this.reset_rate_limit = 0;
@@ -84,7 +83,6 @@ class Hypixel {
             this.hypixel_ping = new Date().getTime() - start;
             return res;
         } catch (err) {
-            console.log(err);
             if (pushNetworkError != null) pushNetworkError(err, true);
         }
     }
@@ -153,34 +151,38 @@ class Hypixel {
         return [];
     }
     getTag = (name) => {
-        let api = this.data[name].player;
-        let guild_id = this.data[name]?.guild?._id ?? '';
-        let uuid = this.uuids[name];
+        let api = this.data[name ?? '']?.player ?? {};
+        let guild_id = this.data[name ?? '']?.guild?._id ?? '';
+        let uuid = this.uuids[name ?? ''];
         let tags = { value: 0, data: [] };
-        if (uuid == '40dff9cbb87b473f946b4dc9776949cc' || uuid == 'f1f464287e894024a5554610d635fa55') {
+        if (name == null || uuid == '40dff9cbb87b473f946b4dc9776949cc' || uuid == 'f1f464287e894024a5554610d635fa55') {
             tags.value = Math.max(tags.value, 100);
-            tags.data.push({ text: 'D', color: '#FFAA00' });//Developer
+            tags.data.push({ text: 'D', color: '#FFAA00', detail: "developer" });//Developer
         }
-        if (((api?.achievements?.bedwars_level ?? 0) < 15 && (api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) > 5)
+        if (name == null || ((api?.achievements?.bedwars_level ?? 0) < 15 && (api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) > 5)
             || ((api?.achievements?.bedwars_level ?? 0) > 15 && (api?.achievements?.bedwars_level ?? 0) < 100 && (api?.achievements?.bedwars_level ?? 0) / ((api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0)) <= 5)) {
             tags.value = Math.max(tags.value, 50);
-            tags.data.push({ text: 'A', color: '#FF5555' });//Alt
+            tags.data.push({ text: 'A', color: '#FF5555', detail: "alt" });//Alt
         }
-        if ((api?.achievements?.bedwars_level ?? 0) < 150 && (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) / (api?.stats?.Bedwars?.losses_bedwars ?? 0) < 0.75 && (api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) < 1.5) {
+        if (name == null || (api?.achievements?.bedwars_level ?? 0) < 150 && (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) / (api?.stats?.Bedwars?.losses_bedwars ?? 0) < 0.75 && (api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) < 1.5) {
             tags.value = Math.max(tags.value, 30);
-            tags.data.push({ text: 'S', color: '#55FF55' });//Sniper
+            tags.data.push({ text: 'S', color: '#55FF55', detail: "sniper" });//Sniper
         }
-        if (api.channel == 'PARTY') {
+        if (name == null || api.channel == 'PARTY') {
             tags.value = Math.max(tags.value, 10);
-            tags.data.push({ text: 'P', color: '#5555FF' });//Potential Party
+            tags.data.push({ text: 'P', color: '#5555FF', detail: "party" });//Potential Party
         }
-        if (guild_id != '' && guild_id == this.owner_guild_id) {
+        if (name == null || guild_id != '' && guild_id == this.owner_guild_id) {
             tags.value = Math.max(tags.value, 90);
-            tags.data.push({ text: 'G', color: '#FF5555' });//Same Guild
+            tags.data.push({ text: 'G', color: '#FF5555', detail: "guild" });//Same Guild
         }
-        if (guild_id != '' && this.mention_guild.indexOf(guild_id) != -1) {
+        if (name == null || blacklist.player != null && blacklist.player.find(x => x.uuid == uuid) != null) {
             tags.value = Math.max(tags.value, 60);
-            tags.data.push({ text: 'G', color: '#55FF55' });//Mention Guild
+            tags.data.push({ text: 'H', color: '#FF5555', detail: "blacklist_player" });//Blacklist Player
+        }
+        if (name == null || blacklist.guild != null && guild_id != '' && blacklist.guild.find(x => x._id == guild_id) != null) {
+            tags.value = Math.max(tags.value, 60);
+            tags.data.push({ text: 'G', color: '#55FF55', detail: "blacklist_guild" });//Blacklist Guild
         }
         return tags;
     }

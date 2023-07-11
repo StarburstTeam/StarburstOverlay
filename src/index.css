@@ -360,3 +360,10 @@ select {
     transition: all 0.3s ease-out;
     text-align: center;
 }
+
+.taginfo {
+    color: aqua;
+    text-align: left;
+    font-size: large;
+    font-family: consolas;
+}

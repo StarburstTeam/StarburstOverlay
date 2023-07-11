@@ -41,7 +41,13 @@
         "cps_click_to_start": "Click to Start",
         "language":"Language : ",
         "guild":"Guild : ",
-        "error_api_limit_exceeded":"API Limit Exceeded! Please wait for reset."
+        "error_api_limit_exceeded":"API Limit Exceeded! Please wait for reset.",
+        "tag_developer":"The Developer",
+        "tag_alt":"Potential Alt",
+        "tag_sniper":"Potential Sniper",
+        "tag_party":"Potential Party",
+        "tag_guild":"Same Guild",
+        "tag_mention_guild":"Mention Guild"
     },
     "page": {
         "playerNameLabel": "Player Name :",

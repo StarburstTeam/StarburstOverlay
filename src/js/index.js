@@ -24,8 +24,10 @@ window.onload = async () => {
     currentWindow.setPosition(config.get('x'), config.get('y'));
     currentWindow.setSize(config.get('width'), config.get('height'));
     i18n.initPage();
+    loadBlacklist();
 
     hypixel = new Hypixel(config.get('apiKey'), updateHTML);
+    initTagInfo();
     nowType = config.get('lastType');
     nowSub = config.get('lastSub');
     document.getElementById('autoShrink').checked = config.get('autoShrink');
@@ -131,6 +133,12 @@ window.onload = async () => {
     });
     tail.on('error', (err) => console.log(err));
     updateHTML();
+}
+
+const initTagInfo = () => {
+    let info = hypixel.getTag();
+    for (let { text, color, detail } of info.data)
+        document.getElementById("TagInfo").innerHTML += `&nbsp<span style="color:${color}">${text}</span>&nbsp${formatNameString(detail)}<br>`;
 }
 
 const findUpdate = async () => {
