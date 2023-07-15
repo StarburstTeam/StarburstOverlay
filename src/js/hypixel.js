@@ -162,19 +162,19 @@ class Hypixel {
         if (name == null || ((api?.achievements?.bedwars_level ?? 0) < 15 && (api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) > 5)
             || ((api?.achievements?.bedwars_level ?? 0) > 15 && (api?.achievements?.bedwars_level ?? 0) < 100 && (api?.achievements?.bedwars_level ?? 0) / ((api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0)) <= 5)) {
             tags.value = Math.max(tags.value, 50);
-            tags.data.push({ text: 'A', color: '#FF5555', detail: "alt" });//Alt
+            tags.data.push({ text: 'A', color: '#FFFF00', detail: "alt" });//Alt
         }
         if (name == null || (api?.achievements?.bedwars_level ?? 0) < 150 && (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) / (api?.stats?.Bedwars?.losses_bedwars ?? 0) < 0.75 && (api?.stats?.Bedwars?.final_kills_bedwars ?? 0) / (api?.stats?.Bedwars?.final_deaths_bedwars ?? 0) < 1.5) {
             tags.value = Math.max(tags.value, 30);
-            tags.data.push({ text: 'S', color: '#55FF55', detail: "sniper" });//Sniper
+            tags.data.push({ text: 'S', color: '#FFFF00', detail: "sniper" });//Sniper
         }
         if (name == null || api.channel == 'PARTY') {
             tags.value = Math.max(tags.value, 10);
-            tags.data.push({ text: 'P', color: '#5555FF', detail: "party" });//Potential Party
+            tags.data.push({ text: 'P', color: '#FFFF00', detail: "potential_party" });//Potential Party
         }
         if (name == null || guild_id != '' && guild_id == this.owner_guild_id) {
             tags.value = Math.max(tags.value, 90);
-            tags.data.push({ text: 'G', color: '#FF5555', detail: "guild" });//Same Guild
+            tags.data.push({ text: 'G', color: '#55FF55', detail: "same_guild" });//Same Guild
         }
         if (name == null || blacklist.player != null && blacklist.player.find(x => x.uuid == uuid) != null) {
             tags.value = Math.max(tags.value, 60);
@@ -182,7 +182,7 @@ class Hypixel {
         }
         if (name == null || blacklist.guild != null && guild_id != '' && blacklist.guild.find(x => x._id == guild_id) != null) {
             tags.value = Math.max(tags.value, 60);
-            tags.data.push({ text: 'G', color: '#55FF55', detail: "blacklist_guild" });//Blacklist Guild
+            tags.data.push({ text: 'G', color: '#FF5555', detail: "blacklist_guild" });//Blacklist Guild
         }
         return tags;
     }
@@ -197,7 +197,7 @@ class Hypixel {
         };
         if (type == 'bw')
             return [basic.lvl, { format: `${formatBwLevel(api.achievements?.bedwars_level ?? 1)}${basic.name}`, value: api.achievements?.bedwars_level ?? 1 },
-            buildSpan(wsColorList.bw, api.stats?.Bedwars?.winstreak ?? 0),
+            buildSpan(wsColorList.bw, api.stats?.Bedwars?.winstreak ?? '?'),
             buildSpan(kdrColorList.bw, ((api.stats?.Bedwars?.[`${sub}final_kills_bedwars`] ?? 0) / (api.stats?.Bedwars?.[`${sub}final_deaths_bedwars`] ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.bw, ((api.stats?.Bedwars?.[`${sub}wins_bedwars`] ?? 0) / (api.stats?.Bedwars?.[`${sub}losses_bedwars`] ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.bw, api.stats?.Bedwars?.[`${sub}final_kills_bedwars`] ?? 0),
@@ -205,7 +205,7 @@ class Hypixel {
         if (type == 'sw') {
             let level = api.stats?.SkyWars?.levelFormatted ?? '§71⋆';
             return [basic.lvl, { format: `${formatColor(`${level.substring(0, 2)}[${level.substring(2)}]`)}${basic.name}`, value: new Number(level.substring(2)) },
-            buildSpan(wsColorList.sw, api.stats?.SkyWars?.win_streak ?? 0),
+            buildSpan(wsColorList.sw, api.stats?.SkyWars?.win_streak ?? '?'),
             buildSpan(kdrColorList.sw, ((api.stats?.SkyWars?.[`kills${sub}`] ?? 0) / (api.stats?.SkyWars?.[`deaths${sub}`] ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.sw, ((api.stats?.SkyWars?.[`wins${sub}`] ?? 0) / (api.stats?.SkyWars?.[`losses${sub}`] ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.sw, api.stats?.SkyWars?.[`kills${sub}`] ?? 0),
@@ -220,7 +220,7 @@ class Hypixel {
             buildSpan(probabilityList.alpha_chance, (api.stats?.MurderMystery?.alpha_chance ?? 0), '', '%')];
         if (type == 'duel')
             return [basic.lvl, { format: `${pickDuelLvl(api.stats?.Duels?.wins ?? 0)}${basic.name}`, value: api.stats?.Duels?.wins ?? 0 },
-            buildSpan(wsColorList.duel, api.stats?.Duels?.current_winstreak ?? 0),
+            buildSpan(wsColorList.duel, api.stats?.Duels?.current_winstreak ?? '?'),
             buildSpan(kdrColorList.duel, ((api.stats?.Duels?.kills ?? 0) / (api.stats?.Duels?.deaths ?? 0)).toFixed(2)),
             buildSpan(wlrColorList.duel, ((api.stats?.Duels?.wins ?? 0) / (api.stats?.Duels?.losses ?? 0)).toFixed(2)),
             buildSpan(finalsColorList.duel, api.stats?.Duels?.kills ?? 0),

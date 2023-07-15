@@ -42,6 +42,8 @@ window.onload = async () => {
     document.getElementById('infotype').value = nowType;
     document.getElementById('subGame').value = nowSub;
 
+    setInterval(() => updateApiRate(), 1000);
+
     if (config.get('logPath') == '') return;
     hasLog = fs.existsSync(config.get('logPath'));
     const tail = new Tail(config.get('logPath'), { useWatchFile: true, nLines: 1, fsWatchOptions: { interval: 100 } });
@@ -216,16 +218,21 @@ const setSubGame = (val) => {
     updateHTML();
 }
 
+const updateApiRate = () => {
+    hypixel.reset_rate_limit--;
+    if (hypixel.remain_rate_limit == 0) hypixel.remain_rate_limit = 300;
+    document.getElementById('api_limit_remain').style['stroke-dashoffset'] = 100 - 100 * hypixel.remain_rate_limit / hypixel.max_rate_limit;
+    document.getElementById('api_limit_remain_num').innerHTML = hypixel.remain_rate_limit;
+    document.getElementById('api_limit_reset').style['stroke-dashoffset'] = 100 - hypixel.reset_rate_limit / 3;
+    document.getElementById('api_limit_reset_num').innerHTML = hypixel.reset_rate_limit;
+}
+
 const updateHTML = async () => {
     let type = document.getElementById('infotype'), sub = document.getElementById('subGame');
     document.getElementById('current_ping').innerHTML = `&nbsp${type.options[type.selectedIndex].childNodes[0].data} - ${sub.options[sub.selectedIndex].childNodes[0].data} Mojang ${hypixel.mojang_ping}ms Hypixel ${hypixel.hypixel_ping}ms`;
 
     let main = document.getElementById('main');
     resetError(false);
-    document.getElementById('api_limit_remain').style['stroke-dashoffset'] = 100 - 100 * hypixel.remain_rate_limit / hypixel.max_rate_limit;
-    document.getElementById('api_limit_remain_num').innerHTML = hypixel.remain_rate_limit;
-    document.getElementById('api_limit_reset').style['stroke-dashoffset'] = 100 - hypixel.reset_rate_limit / 0.6;
-    document.getElementById('api_limit_reset_num').innerHTML = hypixel.reset_rate_limit;
 
     if (config.get('logPath') == '' || !hasLog)
         return pushError(`${i18n.now().error_log_not_found}<br>${i18n.now().info_set_log_path}`, false);
@@ -348,8 +355,8 @@ const pickDataAndSort = () => {
     }
     if (column != 0)
         dataList = dataList.sort((a, b) => {
-            if (a.nick) return -1;
-            if (b.nick) return 1;
+            if (a.nick || b.data == NaN || b.data == '?') return -1;
+            if (b.nick || a.data == NaN || a.data == '?') return 1;
             return (a.data[column - 1].value - b.data[column - 1].value) * (isUp ? -1 : 1)
         });
     return dataList;
