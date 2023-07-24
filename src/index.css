@@ -222,6 +222,37 @@ body {
     overflow-y: scroll;
 }
 
+table {
+    font-family: consolas;
+    font-weight: bolder;
+    color: aqua;
+    overflow-y: scroll;
+    border: 1px solid #333;
+    border-style: solid;
+    border-collapse: collapse;
+}
+
+th {
+    border-left: 1px solid aqua;
+    border-top: 1px solid aqua;
+    border-bottom: 1px solid aqua;
+}
+
+td {
+    border-left: 1px solid aqua;
+    border-top: 1px solid aqua;
+    border-bottom: 1px solid aqua;
+    border: 1px solid aqua;
+    border-style: solid;
+    border-collapse: collapse;
+}
+
+thead,
+tfoot {
+    background-color: aqua;
+    color: aqua;
+}
+
 .subtitle {
     display: inline;
     position: absolute;

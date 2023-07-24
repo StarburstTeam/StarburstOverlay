@@ -45,7 +45,6 @@
   "license": "GPL-3.0",
   "description": "",
   "dependencies": {
-    "electron": "^13.3.0",
     "fastify": "^4.15.0",
     "npm ": "^2.0.1",
     "tail": "^2.2.4"

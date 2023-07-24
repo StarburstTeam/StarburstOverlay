@@ -2,7 +2,7 @@
     "id": "zh_cn",
     "name": "简体中文",
     "values": {
-        "chat_online": "在线：  ",
+        "chat_online": "ONLINE: ",
         "chat_player_join": "加入了游戏",
         "chat_player_quit": "已退出",
         "chat_sending": "正在前往",

@@ -220,7 +220,7 @@ const setSubGame = (val) => {
 
 const updateApiRate = () => {
     hypixel.reset_rate_limit--;
-    if (hypixel.remain_rate_limit == 0) hypixel.remain_rate_limit = 300;
+    if (hypixel.reset_rate_limit == 0) hypixel.reset_rate_limit = 300;
     document.getElementById('api_limit_remain').style['stroke-dashoffset'] = 100 - 100 * hypixel.remain_rate_limit / hypixel.max_rate_limit;
     document.getElementById('api_limit_remain_num').innerHTML = hypixel.remain_rate_limit;
     document.getElementById('api_limit_reset').style['stroke-dashoffset'] = 100 - hypixel.reset_rate_limit / 3;
