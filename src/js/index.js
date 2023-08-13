@@ -18,7 +18,7 @@ const config = new Config(`${app.getPath('userData')}/config.json`, {
     y: 20
 });
 const i18n = new I18n(config.get('lang'));
-let players = [], hypixel = null, nowType = null, nowSub = null, inLobby = false, missingPlayer = false, numplayers = 0, hasLog = false;
+let players = [], party = [], hypixel = null, nowType = null, nowSub = null, inLobby = false, missingPlayer = false, numplayers = 0, hasLog = false;
 
 window.onload = async () => {
     currentWindow.setPosition(config.get('x'), config.get('y'));
@@ -412,4 +412,10 @@ const pushError = (error, stable) => {
 
 const resetError = (force) => {
     if (force || !stable_message) return document.getElementById('message').style.opacity = 0;
+}
+
+const addManual = async (name) => {
+    await hypixel.download(name);
+    players.push(name);
+    updateHTML();
 }

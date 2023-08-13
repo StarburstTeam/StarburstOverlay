@@ -1,3 +1,5 @@
+const sleep = (time) => new Promise(resolve => setTimeout(() => resolve(), time))
+
 const colorMap = Object.fromEntries([
     'black', 'dark_blue', 'dark_green', 'dark_aqua', 'dark_red', 'dark_purple', 'gold', 'gray',
     'dark_gray', 'blue', 'green', 'aqua', 'red', 'light_purple', 'yellow', 'white'

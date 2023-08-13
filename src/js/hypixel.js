@@ -36,18 +36,21 @@ class Hypixel {
     }
     getPlayerUuid = async (name) => {//null when the player not found
         if (this.uuids[name] != null) return this.uuids[name];
-        try {
-            let start = new Date().getTime();
-            let a = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`)
-                .catch(err => { throw err })
-                .then(res => res.json());
-            this.mojang_ping = new Date().getTime() - start;
-            return this.uuids[name] = a.id;
-        } catch (err) {
-            console.log(err);
-            console.log('This error probably caused by a nicked player.');
-            return null;
+        let start = new Date().getTime();
+        let a = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`)
+            .then(res => {
+                if (res.status == 404) return null;
+                if (res.status == 429) return 429;
+                return res.json();
+            });
+        this.mojang_ping = new Date().getTime() - start;
+        if (a == null) return null;
+        if (a == 429) {
+            console.log('Regetting in 5 seconds');
+            await sleep(5 * 1000);
+            return await this.getPlayerUuid(name);
         }
+        return this.uuids[name] = a.id;
     }
     getPlayerData = async (uuid) => {
         try {
