@@ -26,7 +26,8 @@ window.onload = async () => {
     i18n.initPage();
     loadBlacklist();
 
-    hypixel = new Hypixel(config.get('apiKey'), updateHTML);
+    hypixel = new Hypixel(config.get('apiKey'));
+    updateHTML();
     initTagInfo();
     nowType = config.get('lastType');
     nowSub = config.get('lastSub');

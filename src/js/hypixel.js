@@ -1,38 +1,13 @@
 //this file contains api to hypixel
 class Hypixel {
-    constructor(apiKey, callback) {
+    constructor(apiKey) {
         this.apiKey = apiKey;
         this.data = {};
         this.verifying = true;
-        this.verifyKey(callback);
         this.uuids = [];
         this.download_count = 0;
         this.mojang_ping = this.hypixel_ping = 0;
-        this.max_rate_limit = this.remain_rate_limit = this.reset_rate_limit = 0;
-    }
-    verifyKey = async (callback) => {
-        try {
-            this.verified = false;
-            this.owner = null;//uuid
-            let a = await fetch(`https://api.hypixel.net/key?key=${this.apiKey}`)
-                .catch(err => { throw err })
-                .then(res => {
-                    this.max_rate_limit = +res.headers.get('ratelimit-limit');
-                    this.remain_rate_limit = +res.headers.get('ratelimit-remaining');
-                    this.reset_rate_limit = +res.headers.get('ratelimit-reset');
-                    return res.json();
-                });
-            if (a.success == false) throw null;
-            this.owner = a.record.owner;
-            this.verified = true;
-            this.verifying = false;
-            let ownerGuild = await this.getGuildData(this.owner);
-            this.owner_guild_id = ownerGuild?.guild._id ?? '';
-        } catch (err) {
-            this.verified = false;
-            this.verifying = false;
-        }
-        if (callback != null) callback();
+        this.max_rate_limit = this.remain_rate_limit = this.reset_rate_limit = 300;
     }
     getPlayerUuid = async (name) => {//null when the player not found
         if (this.uuids[name] != null) return this.uuids[name];
