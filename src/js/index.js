@@ -6,6 +6,7 @@ const fs = require('fs');
 const currentWindow = remote.getCurrentWindow();
 const config = new Config(`${app.getPath('userData')}/config.json`, {
     lang: 'en_us',
+    ign: '',
     logPath: '',
     apiKey: '',
     lastType: 'bw',
@@ -15,7 +16,8 @@ const config = new Config(`${app.getPath('userData')}/config.json`, {
     width: 1080,
     height: 550,
     x: 40,
-    y: 20
+    y: 20,
+    liveMode: false
 });
 const i18n = new I18n(config.get('lang'));
 let players = [], party = [], hypixel = null, nowType = null, nowSub = null, inLobby = false, missingPlayer = false, numplayers = 0, hasLog = false;
@@ -27,18 +29,21 @@ window.onload = async () => {
     loadBlacklist();
 
     hypixel = new Hypixel(config.get('apiKey'));
-    updateHTML();
+    hypixel.setSelfIgn(config.get('ign'));
     initTagInfo();
     nowType = config.get('lastType');
     nowSub = config.get('lastSub');
     document.getElementById('autoShrink').checked = config.get('autoShrink');
+    document.getElementById('apiKey').value = config.get('apiKey');
     document.getElementById('notification').checked = config.get('notification');
     document.getElementById('lang').value = config.get('lang');
+    document.getElementById('ign').value = config.get('ign');
     document.getElementById('infotype').innerHTML = i18n.getMainModeHTML();
     pushError();
     await readDisplayData();
     changeCategory();
     loadSubGame(nowSub);
+    updateHTML();
     findUpdate();
     document.getElementById('infotype').value = nowType;
     document.getElementById('subGame').value = nowSub;
@@ -419,4 +424,10 @@ const addManual = async (name) => {
     await hypixel.download(name);
     players.push(name);
     updateHTML();
+}
+
+const copyApiKey = () => {
+    navigator.clipboard.writeText(document.getElementById('apiKey').value);
+    document.getElementById('copy_api_key').innerHTML = i18n.data[i18n.current].page.copied_api_key;
+    setTimeout(_ => document.getElementById('copy_api_key').innerHTML = i18n.data[i18n.current].page.copy_api_key, 1000)
 }

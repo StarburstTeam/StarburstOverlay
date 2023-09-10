@@ -2,12 +2,19 @@
 class Hypixel {
     constructor(apiKey) {
         this.apiKey = apiKey;
+        this.self_ign = '';
+        this.owner_guild_id = ''
         this.data = {};
         this.verifying = true;
         this.uuids = [];
         this.download_count = 0;
         this.mojang_ping = this.hypixel_ping = 0;
         this.max_rate_limit = this.remain_rate_limit = this.reset_rate_limit = 300;
+    }
+    setSelfIgn = async (ign) => {
+        this.self_ign = ign;
+        this.self_uuid = await this.getPlayerUuid(ign);
+        this.owner_guild_id = await this.getGuildData(this.self_uuid).then(json => json?.guild?._id ?? '')
     }
     getPlayerUuid = async (name) => {//null when the player not found
         if (this.uuids[name] != null) return this.uuids[name];
@@ -150,7 +157,7 @@ class Hypixel {
             tags.value = Math.max(tags.value, 10);
             tags.data.push({ text: 'P', color: '#FFFF00', detail: "potential_party" });//Potential Party
         }
-        if (name == null || guild_id != '' && guild_id == this.owner_guild_id) {
+        if (name == null || this.owner_guild_id != '' && guild_id != '' && guild_id == this.owner_guild_id) {
             tags.value = Math.max(tags.value, 90);
             tags.data.push({ text: 'G', color: '#55FF55', detail: "same_guild" });//Same Guild
         }
