@@ -5,6 +5,8 @@
 
 **English** | [中文](https://github.com/IAFEnvoy/StarburstOverlay/blob/master/README_CN.md)
 
+**NOTE: The Electron version has stopped maintaining. For future updates, see the [Wails Version](https://github.com/IAFEnvoy/StarburstOverlay-Wails)**
+
 The Starburst Overlay is a high performance and multifunctional Hypixel stats overlay.
 
 -> The latest introduce video

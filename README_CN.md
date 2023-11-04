@@ -5,6 +5,8 @@
 
 [English](https://github.com/IAFEnvoy/StarburstOverlay/blob/master/README.md) | **中文**
 
+**注意：Electron版本已停止维护，请前往[Wails版本](https://github.com/IAFEnvoy/StarburstOverlay-Wails)继续获取新版本**
+
 Starburst Overlay是一个高速并且多功能的Hypixel数据查询软件
 
 -> 最新介绍视频
